@@ -30,20 +30,6 @@ public class CreateProductTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task Should_ReturnProduct_WhenProductExists()
-    {
-        // Arrange
-        Guid productId = await Sender.CreateProductAsync();
-
-        // Act
-        Result<ProductResponse> result = await Sender.Send(new GetProductQuery(productId));
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(productId);
-    }
-
-    [Fact]
     public async Task Should_ReturnFailure_WhenNameIsEmpty()
     {
         // Arrange

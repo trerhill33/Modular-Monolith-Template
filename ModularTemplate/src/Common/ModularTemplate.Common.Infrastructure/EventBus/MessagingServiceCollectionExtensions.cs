@@ -74,7 +74,9 @@ public static class MessagingServiceCollectionExtensions
             services.AddQuartz(q =>
             {
                 var jobKey = new JobKey(typeof(TJob).Name);
-                q.AddJob<TJob>(opts => opts.WithIdentity(jobKey));
+                q.AddJob<TJob>(opts => opts
+                    .WithIdentity(jobKey)
+                    .StoreDurably()); // Required when using multiple AddQuartz calls
                 q.AddTrigger(opts => opts
                     .ForJob(jobKey)
                     .WithIdentity($"{typeof(TJob).Name}-trigger")
