@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <!-- Allow pre-release package version resolution -->
+    <NoWarn>$(NoWarn);NU1603</NoWarn>
+    <!-- Suppress NuGet audit warnings for packages with known acceptable vulnerabilities -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
+
+  <!-- Suppress specific vulnerability warnings where we've evaluated the risk -->
+  <ItemGroup>
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-8785-wc3w-h8q6" />
+  </ItemGroup>
+</Project>

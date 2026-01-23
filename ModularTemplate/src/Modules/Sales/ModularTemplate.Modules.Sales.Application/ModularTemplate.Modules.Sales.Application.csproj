@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Modules.Sales.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ModularTemplate.Modules.Sales.Application.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ModularTemplate.Common.Application\ModularTemplate.Common.Application.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Sales.Domain\ModularTemplate.Modules.Sales.Domain.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Sales.IntegrationEvents\ModularTemplate.Modules.Sales.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\Orders\ModularTemplate.Modules.Orders.IntegrationEvents\ModularTemplate.Modules.Orders.IntegrationEvents.csproj" />
+  </ItemGroup>
+
+</Project>

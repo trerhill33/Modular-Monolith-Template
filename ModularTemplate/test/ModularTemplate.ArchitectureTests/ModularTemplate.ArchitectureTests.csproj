@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.ArchitectureTests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.12.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Common layers -->
+    <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Domain\ModularTemplate.Common.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Application\ModularTemplate.Common.Application.csproj" />
+    <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Presentation\ModularTemplate.Common.Presentation.csproj" />
+
+    <!-- Sales module (all layers for architecture tests) -->
+    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Domain\ModularTemplate.Modules.Sales.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Application\ModularTemplate.Modules.Sales.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Infrastructure\ModularTemplate.Modules.Sales.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Presentation\ModularTemplate.Modules.Sales.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.IntegrationEvents\ModularTemplate.Modules.Sales.IntegrationEvents.csproj" />
+
+    <!-- Orders module (all layers for architecture tests) -->
+    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Domain\ModularTemplate.Modules.Orders.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Application\ModularTemplate.Modules.Orders.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Infrastructure\ModularTemplate.Modules.Orders.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Presentation\ModularTemplate.Modules.Orders.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.IntegrationEvents\ModularTemplate.Modules.Orders.IntegrationEvents.csproj" />
+  </ItemGroup>
+
+</Project>

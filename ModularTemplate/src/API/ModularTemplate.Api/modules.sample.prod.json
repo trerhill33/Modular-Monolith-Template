@@ -1,0 +1,14 @@
+{
+  "Sample": {
+    "Outbox": {
+      "IntervalInSeconds": 5,
+      "BatchSize": 100,
+      "MaxRetries": 10
+    },
+    "Inbox": {
+      "IntervalInSeconds": 5,
+      "BatchSize": 100,
+      "MaxRetries": 10
+    }
+  }
+}
