@@ -20,7 +20,7 @@ var cacheConnectionString = builder.Configuration.GetConnectionString("Cache")
     ?? "localhost:6379";
 
 // Load module-specific configuration files
-builder.Configuration.AddModuleConfiguration(["sample", "sales", "orders"], builder.Environment.EnvironmentName);
+builder.Configuration.AddModuleConfiguration(["sales", "orders"], builder.Environment.EnvironmentName);
 
 // ========================================
 // Common Cross-Cutting Concerns
