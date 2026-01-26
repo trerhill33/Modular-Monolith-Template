@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Orders\\\\ModularTemplate.Modules.Orders.Application\")",
+      "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Orders\\\\ModularTemplate.Modules.Orders.Application\\\\Customers\")",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)"
+    ]
+  }
+}

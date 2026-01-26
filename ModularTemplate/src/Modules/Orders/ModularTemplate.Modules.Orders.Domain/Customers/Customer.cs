@@ -28,4 +28,12 @@ public sealed class Customer : SoftDeletableEntity
 
         return customer;
     }
+
+    public static void Update(Customer customer, string name, string email)
+    {
+        customer.Name = name;
+        customer.Email = email;
+
+        customer.Raise(new CustomerUpdatedDomainEvent(customer.Id));
+    }
 }

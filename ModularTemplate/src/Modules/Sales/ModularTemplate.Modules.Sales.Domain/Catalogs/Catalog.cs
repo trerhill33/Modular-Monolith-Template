@@ -28,4 +28,12 @@ public sealed class Catalog : SoftDeletableEntity
 
         return catalog;
     }
+
+    public static void Update(Catalog catalog, string name, string? description)
+    {
+        catalog.Name = name;
+        catalog.Description = description;
+
+        catalog.Raise(new CatalogUpdatedDomainEvent(catalog.Id));
+    }
 }
