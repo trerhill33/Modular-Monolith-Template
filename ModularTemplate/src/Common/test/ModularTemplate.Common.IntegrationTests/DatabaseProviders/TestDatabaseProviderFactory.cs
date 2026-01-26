@@ -26,37 +26,15 @@ public static class TestDatabaseProviderFactory
 
         if (string.IsNullOrEmpty(envValue))
         {
-            return IsDockerAvailable() ? TestDatabaseType.PostgreSql : TestDatabaseType.InMemory;
+            // Default to InMemory when no environment variable is set
+            return TestDatabaseType.InMemory;
         }
 
         return envValue.ToLowerInvariant() switch
         {
-            "postgresql" or "postgres" or "docker" => TestDatabaseType.PostgreSql,
+            "postgresql" or "postgres" => TestDatabaseType.PostgreSql,
             "inmemory" or "memory" or "ef" => TestDatabaseType.InMemory,
-            _ => TestDatabaseType.PostgreSql
+            _ => TestDatabaseType.InMemory
         };
-    }
-
-    private static bool IsDockerAvailable()
-    {
-        try
-        {
-            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = "docker",
-                Arguments = "info",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            });
-
-            process?.WaitForExit(5000);
-            return process?.ExitCode == 0;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }

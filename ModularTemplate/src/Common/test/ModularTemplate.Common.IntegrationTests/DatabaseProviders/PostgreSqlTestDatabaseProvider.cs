@@ -1,33 +1,23 @@
 using Microsoft.AspNetCore.Hosting;
 using Npgsql;
 using Respawn;
-using Testcontainers.PostgreSql;
-using Testcontainers.Redis;
 
 namespace ModularTemplate.Common.IntegrationTests.DatabaseProviders;
 
 public sealed class PostgreSqlTestDatabaseProvider : ITestDatabaseProvider
 {
-    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:17")
-        .WithDatabase("modulartemplate_test")
-        .WithUsername("postgres")
-        .WithPassword("postgres")
-        .Build();
-
-    private readonly RedisContainer _redisContainer = new RedisBuilder()
-        .WithImage("redis:7")
-        .Build();
+    private const string ConnectionString = "Host=localhost;Database=modulartemplate_test;Username=postgres;Password=postgres";
+    private const string CacheConnectionString = "localhost:6379";
 
     private Respawner? _respawner;
     private NpgsqlConnection? _dbConnection;
 
-    public string ProviderName => "PostgreSQL (Docker)";
+    public string ProviderName => "PostgreSQL (Local)";
 
     public void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseSetting("ConnectionStrings:Database", _dbContainer.GetConnectionString());
-        builder.UseSetting("ConnectionStrings:Cache", _redisContainer.GetConnectionString());
+        builder.UseSetting("ConnectionStrings:Database", ConnectionString);
+        builder.UseSetting("ConnectionStrings:Cache", CacheConnectionString);
     }
 
     public void SetServiceProvider(IServiceProvider serviceProvider)
@@ -35,15 +25,15 @@ public sealed class PostgreSqlTestDatabaseProvider : ITestDatabaseProvider
         // Not needed for PostgreSQL - Respawn handles reset
     }
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-        await _dbContainer.StartAsync();
-        await _redisContainer.StartAsync();
+        // No container startup needed for local PostgreSQL
+        return Task.CompletedTask;
     }
 
     private async Task InitializeRespawnerAsync()
     {
-        _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
+        _dbConnection = new NpgsqlConnection(ConnectionString);
         await _dbConnection.OpenAsync();
 
         _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
@@ -70,7 +60,5 @@ public sealed class PostgreSqlTestDatabaseProvider : ITestDatabaseProvider
         {
             await _dbConnection.DisposeAsync();
         }
-        await _dbContainer.StopAsync();
-        await _redisContainer.StopAsync();
     }
 }

@@ -5,7 +5,24 @@
       "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Orders\\\\ModularTemplate.Modules.Orders.Application\")",
       "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Orders\\\\ModularTemplate.Modules.Orders.Application\\\\Customers\")",
       "Bash(dotnet build:*)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(findstr:*)",
+      "Bash(sc query postgresql*)",
+      "Bash(where:*)",
+      "Bash(dir \"C:\\\\Program Files\\\\PostgreSQL\")",
+      "Bash(wmic service where \"name like ''%%postgres%%''\" get name,state)",
+      "Bash(sc query:*)",
+      "Bash(dir \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\bin\\\\pg_ctl.exe\")",
+      "Bash(git -C /x/SES/modular-monolith-repo show --stat 6ab57d4)",
+      "Bash(git -C /x/SES/modular-monolith-repo diff 4b56859 HEAD --name-status)",
+      "Bash(powershell -Command \"Get-Service -Name ''*postgres*'' | Select-Object Name, Status, DisplayName | Format-Table -AutoSize\")",
+      "Bash(powershell -Command \"netstat -an | Select-String '':5432''\")",
+      "Bash(powershell -Command:*)",
+      "Bash(powershell \"Get-Service *sql* | Format-Table Name, Status, DisplayName -AutoSize\")",
+      "Bash(powershell \"Get-WmiObject win32_service | Where-Object { $_PathName -like ''*postgres*'' } | Select-Object Name, State, PathName\")",
+      "Bash(powershell -File:*)",
+      "Bash(dir \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\data\")",
+      "Bash(dir /s /b \"C:\\\\Program Files\\\\PostgreSQL\\\\*pg_ctl.exe\")"
     ]
   }
 }

@@ -69,7 +69,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.ApplyMigrations(builder.Environment);
+app.ApplyMigrations(builder.Environment, databaseConnectionString);
 
 app.UseOpenApi(modules);
 app.MapHealthCheckEndpoint();
