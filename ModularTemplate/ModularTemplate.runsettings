@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+        <Configuration>
+          <CodeCoverage>
+            <!-- Assemblies to include in coverage (regex patterns) -->
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*ModularTemplate\..*\.dll$</ModulePath>
+              </Include>
+              <Exclude>
+                <!-- Exclude test assemblies -->
+                <ModulePath>.*\.Tests\.dll$</ModulePath>
+                <ModulePath>.*\.IntegrationTests\.dll$</ModulePath>
+                <ModulePath>.*ArchitectureTests\.dll$</ModulePath>
+                <!-- Exclude third-party -->
+                <ModulePath>.*xunit\..*</ModulePath>
+                <ModulePath>.*FluentAssertions\..*</ModulePath>
+                <ModulePath>.*NSubstitute\..*</ModulePath>
+                <ModulePath>.*Moq\..*</ModulePath>
+              </Exclude>
+            </ModulePaths>
+
+            <!-- Source files to exclude -->
+            <Sources>
+              <Exclude>
+                <!-- EF Core Migrations -->
+                <Source>.*\\Migrations\\.*</Source>
+                <Source>.*Migrations.*\.cs$</Source>
+                <!-- EF Core Configurations -->
+                <Source>.*\\Configurations\\.*Configuration\.cs$</Source>
+                <Source>.*Configuration\.cs$</Source>
+                <!-- DbContext files -->
+                <Source>.*DbContext\.cs$</Source>
+                <!-- Generated/Designer files -->
+                <Source>.*\.Designer\.cs$</Source>
+                <Source>.*\.g\.cs$</Source>
+              </Exclude>
+            </Sources>
+
+            <!-- Attributes that exclude code from coverage -->
+            <Attributes>
+              <Exclude>
+                <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
+                <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+              </Exclude>
+            </Attributes>
+
+            <!-- Functions to exclude -->
+            <Functions>
+              <Exclude>
+                <Function>^.*\.Program\.Main\(.*\)$</Function>
+              </Exclude>
+            </Functions>
+
+            <!-- Use source link for better source mapping -->
+            <UseSourceLink>true</UseSourceLink>
+
+            <!-- Output format -->
+            <Format>Cobertura</Format>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+
+  <LoggerRunSettings>
+    <Loggers>
+      <Logger friendlyName="console" enabled="True">
+        <Configuration>
+          <Verbosity>normal</Verbosity>
+        </Configuration>
+      </Logger>
+    </Loggers>
+  </LoggerRunSettings>
+</RunSettings>

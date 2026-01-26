@@ -79,6 +79,24 @@ The API will be available at `https://localhost:5001` with Swagger UI.
 dotnet test
 ```
 
+### Code Coverage
+
+The project includes [Microsoft Code Coverage](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage) tooling with HTML report generation.
+
+```bash
+# First time setup (restores dotnet tools)
+dotnet tool restore
+
+# Run tests with coverage and generate HTML report
+./scripts/run-coverage.ps1            # Windows
+./scripts/run-coverage.sh             # Linux/Mac
+
+# Open report automatically after generation
+./scripts/run-coverage.ps1 -OpenReport
+```
+
+Reports are generated in the `coverage/` directory. Configuration excludes migrations, EF configurations, and DbContext files.
+
 ## Creating a New Module
 
 1. Create the module folder structure:
