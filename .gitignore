@@ -73,13 +73,23 @@ node_modules/
 # Visual Studio
 .vs/
 
-# Auto Claude data directory
+# Claude / AI Agent files
+.claude/
 .auto-claude/
-
-# Auto Claude generated files
+.claude_settings.json
 .auto-claude-security.json
 .auto-claude-status
-.claude_settings.json
-.worktrees/
 .security-key
+.worktrees/
 logs/security/
+CLAUDE.md
+CLAUDE.local.md
+.planning/
+*.claude
+.cursorrules
+.cursor/
+.aider*
+.codeium/
+.continue/
+.copilot/
+.github/copilot/
