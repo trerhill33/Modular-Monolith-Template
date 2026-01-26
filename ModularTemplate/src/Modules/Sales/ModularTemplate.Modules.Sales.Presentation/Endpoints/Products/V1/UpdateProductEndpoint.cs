@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Products.UpdateProduct;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.UpdateProduct;
+namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.V1;
 
 internal sealed class UpdateProductEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class UpdateProductEndpoint : IEndpoint
         group.MapPut("/{productId:guid}", UpdateProductAsync)
             .WithSummary("Update a product")
             .WithDescription("Updates an existing product with the specified details.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)

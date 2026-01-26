@@ -1,3 +1,4 @@
+using Asp.Versioning.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 namespace ModularTemplate.Common.Presentation.Endpoints;
 
 /// <summary>
-/// Interface for module-level endpoint registration.
+/// Interface for module-level endpoint registration with API versioning support.
 /// Each module implements this to expose all its resources.
 /// </summary>
 /// <remarks>
@@ -16,7 +17,7 @@ public interface IModuleEndpoints
 {
     /// <summary>
     /// The module's URL prefix (e.g., "sample", "orders", "inventory").
-    /// All resources in this module will be prefixed with this path.
+    /// Used for Swagger/OpenAPI organization.
     /// </summary>
     string ModulePrefix { get; }
 
@@ -27,15 +28,16 @@ public interface IModuleEndpoints
     string ModuleName { get; }
 
     /// <summary>
-    /// Maps all module endpoints to the application.
+    /// Maps all module endpoints to the application with versioning.
     /// </summary>
     /// <param name="app">The endpoint route builder.</param>
+    /// <param name="versionSet">The API version set for versioned routing.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
-    IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder app);
+    IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder app, ApiVersionSet versionSet);
 }
 
 /// <summary>
-/// Base class for module endpoint registration.
+/// Base class for module endpoint registration with API versioning support.
 /// Provides common functionality for registering resources.
 /// </summary>
 public abstract class ModuleEndpoints : IModuleEndpoints
@@ -44,15 +46,16 @@ public abstract class ModuleEndpoints : IModuleEndpoints
 
     public abstract string ModuleName { get; }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder app)
+    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder app, ApiVersionSet versionSet)
     {
-        // Note: No module prefix in URL - modules are logical boundaries, not URL constructs
-        // URLs are resource-based: /sample-items, /categories, /orders
-        // NOT: /sample/sample-items, /sample/categories
+        // Create versioned route group: /api/v{version:apiVersion}
+        var versionedGroup = app
+            .MapGroup("api/v{version:apiVersion}")
+            .WithApiVersionSet(versionSet);
 
         foreach (var (resourcePath, tag, endpoints) in GetResources())
         {
-            var resourceGroup = app.MapGroup(resourcePath);
+            var resourceGroup = versionedGroup.MapGroup(resourcePath);
 
             // Apply tags and group name for Swagger organization
             resourceGroup.WithTags(tag);

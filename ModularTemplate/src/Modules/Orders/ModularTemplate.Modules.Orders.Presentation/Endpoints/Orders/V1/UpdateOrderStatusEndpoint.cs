@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,7 @@ using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Orders.UpdateOrderStatus;
 using ModularTemplate.Modules.Orders.Domain.Orders;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.UpdateOrderStatus;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.V1;
 
 internal sealed class UpdateOrderStatusEndpoint : IEndpoint
 {
@@ -16,6 +17,7 @@ internal sealed class UpdateOrderStatusEndpoint : IEndpoint
         group.MapPatch("/{orderId:guid}/status", UpdateOrderStatusAsync)
             .WithSummary("Update order status")
             .WithDescription("Updates the status of an existing order.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)

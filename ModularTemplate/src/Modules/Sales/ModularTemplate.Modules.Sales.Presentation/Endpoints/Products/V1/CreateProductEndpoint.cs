@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Products.CreateProduct;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.CreateProduct;
+namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.V1;
 
 internal sealed class CreateProductEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class CreateProductEndpoint : IEndpoint
         group.MapPost("/", CreateProductAsync)
             .WithSummary("Create a new product")
             .WithDescription("Creates a new product with the specified name, description, and price.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<CreateProductResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);

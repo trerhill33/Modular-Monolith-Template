@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Orders.GetOrder;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.GetOrderById;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.V1;
 
 internal sealed class GetOrderByIdEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class GetOrderByIdEndpoint : IEndpoint
         group.MapGet("/{orderId:guid}", GetOrderByIdAsync)
             .WithSummary("Get an order by ID")
             .WithDescription("Retrieves an order by its unique identifier.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<OrderResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

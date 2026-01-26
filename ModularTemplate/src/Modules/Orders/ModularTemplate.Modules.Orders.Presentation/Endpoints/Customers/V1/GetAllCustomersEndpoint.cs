@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,7 @@ using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Customers.GetCustomer;
 using ModularTemplate.Modules.Orders.Application.Customers.GetCustomers;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.GetAllCustomers;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.V1;
 
 internal sealed class GetAllCustomersEndpoint : IEndpoint
 {
@@ -16,6 +17,7 @@ internal sealed class GetAllCustomersEndpoint : IEndpoint
         group.MapGet("/", GetAllCustomersAsync)
             .WithSummary("Get all customers")
             .WithDescription("Retrieves all customers with optional limit.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<IReadOnlyCollection<CustomerResponse>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
     }

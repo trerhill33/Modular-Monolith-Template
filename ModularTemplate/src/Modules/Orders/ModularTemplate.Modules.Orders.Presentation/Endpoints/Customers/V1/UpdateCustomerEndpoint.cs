@@ -1,36 +1,38 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
-using ModularTemplate.Modules.Sales.Application.Catalogs.UpdateCatalog;
+using ModularTemplate.Modules.Orders.Application.Customers.UpdateCustomer;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.UpdateCatalog;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.V1;
 
-internal sealed class UpdateCatalogEndpoint : IEndpoint
+internal sealed class UpdateCustomerEndpoint : IEndpoint
 {
     public void MapEndpoint(RouteGroupBuilder group)
     {
-        group.MapPut("/{catalogId:guid}", UpdateCatalogAsync)
-            .WithSummary("Update a catalog")
-            .WithDescription("Updates an existing catalog with the specified details.")
+        group.MapPut("/{customerId:guid}", UpdateCustomerAsync)
+            .WithSummary("Update a customer")
+            .WithDescription("Updates an existing customer with the specified details.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
     }
 
-    private static async Task<IResult> UpdateCatalogAsync(
-        Guid catalogId,
-        UpdateCatalogRequest request,
+    private static async Task<IResult> UpdateCustomerAsync(
+        Guid customerId,
+        UpdateCustomerRequest request,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateCatalogCommand(
-            catalogId,
+        var command = new UpdateCustomerCommand(
+            customerId,
             request.Name,
-            request.Description);
+            request.Email);
 
         var result = await sender.Send(command, cancellationToken);
 
@@ -40,4 +42,4 @@ internal sealed class UpdateCatalogEndpoint : IEndpoint
     }
 }
 
-public sealed record UpdateCatalogRequest(string Name, string? Description);
+public sealed record UpdateCustomerRequest(string Name, string Email);

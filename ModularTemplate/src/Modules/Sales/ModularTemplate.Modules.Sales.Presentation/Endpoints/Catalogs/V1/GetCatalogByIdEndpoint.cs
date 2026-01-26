@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Catalogs.GetCatalog;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.GetCatalogById;
+namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.V1;
 
 internal sealed class GetCatalogByIdEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class GetCatalogByIdEndpoint : IEndpoint
         group.MapGet("/{catalogId:guid}", GetCatalogByIdAsync)
             .WithSummary("Get a catalog by ID")
             .WithDescription("Retrieves a catalog by its unique identifier.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<CatalogResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

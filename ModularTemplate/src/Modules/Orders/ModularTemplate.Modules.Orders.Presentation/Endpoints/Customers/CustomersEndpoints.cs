@@ -1,8 +1,5 @@
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.CreateCustomer;
-using ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.GetAllCustomers;
-using ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.GetCustomerById;
-using ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.UpdateCustomer;
+using ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.V1;
 
 namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers;
 
@@ -10,9 +7,10 @@ internal sealed class CustomersEndpoints : ResourceEndpoints
 {
     protected override IEndpoint[] Endpoints =>
     [
-        new GetAllCustomersEndpoint(),
-        new GetCustomerByIdEndpoint(),
-        new CreateCustomerEndpoint(),
-        new UpdateCustomerEndpoint()
+        // V1 endpoints
+        new V1.GetAllCustomersEndpoint(),
+        new V1.GetCustomerByIdEndpoint(),
+        new V1.CreateCustomerEndpoint(),
+        new V1.UpdateCustomerEndpoint()
     ];
 }

@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Products.GetProduct;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.GetProductById;
+namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.V1;
 
 internal sealed class GetProductByIdEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class GetProductByIdEndpoint : IEndpoint
         group.MapGet("/{productId:guid}", GetProductByIdAsync)
             .WithSummary("Get a product by ID")
             .WithDescription("Retrieves a product by its unique identifier.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<ProductResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

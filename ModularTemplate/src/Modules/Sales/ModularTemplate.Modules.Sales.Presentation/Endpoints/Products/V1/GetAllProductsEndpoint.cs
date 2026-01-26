@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,7 @@ using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Products.GetProduct;
 using ModularTemplate.Modules.Sales.Application.Products.GetProducts;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.GetAllProducts;
+namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.V1;
 
 internal sealed class GetAllProductsEndpoint : IEndpoint
 {
@@ -16,6 +17,7 @@ internal sealed class GetAllProductsEndpoint : IEndpoint
         group.MapGet("/", GetAllProductsAsync)
             .WithSummary("Get all products")
             .WithDescription("Retrieves all products with optional limit.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<IReadOnlyCollection<ProductResponse>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
     }
