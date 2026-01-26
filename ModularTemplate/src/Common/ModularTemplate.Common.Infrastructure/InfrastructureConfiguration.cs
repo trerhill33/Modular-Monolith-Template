@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ModularTemplate.Common.Application.Auditing;
 using ModularTemplate.Common.Application.Caching;
 using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Identity;
@@ -79,6 +80,11 @@ public static class InfrastructureConfiguration
         services.TryAddSingleton<InsertOutboxMessagesInterceptor>();
         services.TryAddScoped<ICacheWriteScope, CacheWriteScope>();
         services.TryAddScoped<CacheWriteGuardInterceptor>();
+
+        // Audit trail services
+        services.TryAddScoped<AuditTrailInterceptor>();
+        services.TryAddScoped<IAuditContext, AuditContext>();
+
         return services;
     }
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Infrastructure.Auditing;
 using ModularTemplate.Common.Infrastructure.Inbox.Data;
 using ModularTemplate.Common.Infrastructure.Outbox.Data;
 
@@ -26,7 +27,7 @@ public abstract class ModuleDbContext<TContext>(DbContextOptions<TContext> optio
         modelBuilder.ApplyConfiguration(new InboxMessageConfiguration());
         modelBuilder.ApplyConfiguration(new InboxMessageConsumerConfiguration());
 
-        //TODO: add audti trails
-        //modelBuilder.ApplyAuditConfigurations();
+        // Audit trail configuration
+        modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
     }
 }

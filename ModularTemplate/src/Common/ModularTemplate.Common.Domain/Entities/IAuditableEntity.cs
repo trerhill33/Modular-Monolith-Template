@@ -1,3 +1,5 @@
+using ModularTemplate.Common.Domain.Auditing;
+
 namespace ModularTemplate.Common.Domain.Entities;
 
 /// <summary>
@@ -5,7 +7,7 @@ namespace ModularTemplate.Common.Domain.Entities;
 /// Entities implementing this interface will have their audit fields
 /// automatically populated by the AuditableEntitiesInterceptor.
 /// </summary>
-public interface IAuditableEntity
+public interface IAuditableEntity : IAuditable
 {
     Guid CreatedByUserId { get; }
 

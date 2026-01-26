@@ -31,6 +31,7 @@ public static class ModuleDbContextExtensions
                     sp.GetRequiredService<CacheWriteGuardInterceptor>(),
                     sp.GetRequiredService<SoftDeleteInterceptor>(),
                     sp.GetRequiredService<AuditableEntitiesInterceptor>(),
+                    sp.GetRequiredService<AuditTrailInterceptor>(),
                     sp.GetRequiredService<InsertOutboxMessagesInterceptor>());
 
             // Apply any module-specific configuration

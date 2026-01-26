@@ -2,22 +2,25 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ModularTemplate.Modules.Sales.Infrastructure.Persistence;
+using ModularTemplate.Modules.Orders.Infrastructure.Persistence;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
+namespace ModularTemplate.Modules.Orders.Infrastructure.Database.Migrations
 {
-    [DbContext(typeof(SalesDbContext))]
-    partial class SalesDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(OrdersDbContext))]
+    [Migration("20260126191213_AddAuditLogs")]
+    partial class AddAuditLogs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("sales")
+                .HasDefaultSchema("orders")
                 .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -101,7 +104,7 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                     b.HasIndex("EntityName", "EntityId")
                         .HasDatabaseName("ix_audit_logs_entity");
 
-                    b.ToTable("audit_logs", "sales");
+                    b.ToTable("audit_logs", "orders");
                 });
 
             modelBuilder.Entity("ModularTemplate.Common.Infrastructure.Inbox.Data.InboxMessage", b =>
@@ -149,7 +152,7 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                     b.HasIndex("ProcessedOnUtc", "NextRetryAtUtc")
                         .HasDatabaseName("ix_inbox_messages_processed_next_retry");
 
-                    b.ToTable("inbox_messages", "sales");
+                    b.ToTable("inbox_messages", "orders");
                 });
 
             modelBuilder.Entity("ModularTemplate.Common.Infrastructure.Inbox.Data.InboxMessageConsumer", b =>
@@ -166,7 +169,7 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                     b.HasKey("InboxMessageId", "Name")
                         .HasName("pk_inbox_message_consumers");
 
-                    b.ToTable("inbox_message_consumers", "sales");
+                    b.ToTable("inbox_message_consumers", "orders");
                 });
 
             modelBuilder.Entity("ModularTemplate.Common.Infrastructure.Outbox.Data.OutboxMessage", b =>
@@ -214,7 +217,7 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                     b.HasIndex("ProcessedOnUtc", "NextRetryAtUtc")
                         .HasDatabaseName("ix_outbox_messages_processed_next_retry");
 
-                    b.ToTable("outbox_messages", "sales");
+                    b.ToTable("outbox_messages", "orders");
                 });
 
             modelBuilder.Entity("ModularTemplate.Common.Infrastructure.Outbox.Data.OutboxMessageConsumer", b =>
@@ -231,10 +234,10 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                     b.HasKey("OutboxMessageId", "Name")
                         .HasName("pk_outbox_message_consumers");
 
-                    b.ToTable("outbox_message_consumers", "sales");
+                    b.ToTable("outbox_message_consumers", "orders");
                 });
 
-            modelBuilder.Entity("ModularTemplate.Modules.Sales.Domain.Catalogs.Catalog", b =>
+            modelBuilder.Entity("ModularTemplate.Modules.Orders.Domain.Customers.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -257,10 +260,11 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("deleted_by_user_id");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -283,24 +287,54 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_catalogs");
+                        .HasName("pk_customers");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_customers_email");
 
                     b.HasIndex("IsDeleted")
-                        .HasDatabaseName("ix_catalog_is_deleted");
+                        .HasDatabaseName("ix_customer_is_deleted");
 
-                    b.ToTable("catalogs", "sales");
+                    b.ToTable("customers", "orders");
                 });
 
-            modelBuilder.Entity("ModularTemplate.Modules.Sales.Domain.OrdersCache.OrderCache", b =>
+            modelBuilder.Entity("ModularTemplate.Modules.Orders.Domain.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("LastSyncedAtUtc")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_synced_at_utc");
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_user_id");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at_utc");
+
+                    b.Property<Guid?>("DeletedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by_user_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("modified_at_utc");
+
+                    b.Property<Guid?>("ModifiedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("modified_by_user_id");
 
                     b.Property<DateTime>("OrderedAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -326,36 +360,23 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                         .HasColumnName("total_price");
 
                     b.HasKey("Id")
-                        .HasName("pk_orders_cache");
+                        .HasName("pk_orders");
+
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("ix_order_is_deleted");
 
                     b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_orders_cache_product_id");
+                        .HasDatabaseName("ix_orders_product_id");
 
-                    b.ToTable("orders_cache", "sales");
+                    b.ToTable("orders", "orders");
                 });
 
-            modelBuilder.Entity("ModularTemplate.Modules.Sales.Domain.Products.Product", b =>
+            modelBuilder.Entity("ModularTemplate.Modules.Orders.Domain.ProductsCache.ProductCache", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at_utc");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("created_by_user_id");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at_utc");
-
-                    b.Property<Guid?>("DeletedByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("deleted_by_user_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -363,24 +384,12 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                         .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<DateTime>("LastSyncedAtUtc")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modified_at_utc");
-
-                    b.Property<Guid?>("ModifiedByUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("modified_by_user_id");
+                        .HasColumnName("last_synced_at_utc");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -394,12 +403,12 @@ namespace ModularTemplate.Modules.Sales.Infrastructure.Database.Migrations
                         .HasColumnName("price");
 
                     b.HasKey("Id")
-                        .HasName("pk_products");
+                        .HasName("pk_products_cache");
 
-                    b.HasIndex("IsDeleted")
-                        .HasDatabaseName("ix_product_is_deleted");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_products_cache_is_active");
 
-                    b.ToTable("products", "sales");
+                    b.ToTable("products_cache", "orders");
                 });
 #pragma warning restore 612, 618
         }
