@@ -3,8 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Domain.Events;
+using ModularTemplate.Common.Infrastructure.Features;
 using ModularTemplate.Common.Infrastructure.Messaging;
 using ModularTemplate.Common.Infrastructure.Outbox.Handler;
 using ModularTemplate.Common.Infrastructure.Serialization;
@@ -28,6 +30,10 @@ namespace ModularTemplate.Common.Infrastructure.Outbox.Job;
 /// Module-specific implementations only need to provide the module name, database schema,
 /// and the assembly containing the domain event handlers.
 /// </para>
+/// <para>
+/// Processing can be disabled via the <see cref="InfrastructureFeatures.Outbox"/> feature flag.
+/// When disabled, messages remain queued and will be processed when the feature is re-enabled.
+/// </para>
 /// </remarks>
 [DisallowConcurrentExecution]
 public abstract class ProcessOutboxJobBase(
@@ -35,12 +41,14 @@ public abstract class ProcessOutboxJobBase(
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<OutboxOptions> outboxOptions,
+    IFeatureFlagService featureFlagService,
     ILogger logger) : IJob
 {
     private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly OutboxOptions _outboxOptions = outboxOptions.Value;
+    private readonly IFeatureFlagService _featureFlagService = featureFlagService;
     private readonly ILogger _logger = logger;
 
     /// <summary>
@@ -63,8 +71,21 @@ public abstract class ProcessOutboxJobBase(
     /// <summary>
     /// Executes the outbox processing job.
     /// </summary>
+    /// <remarks>
+    /// If the <see cref="InfrastructureFeatures.Outbox"/> feature flag is disabled,
+    /// the job will skip processing. Messages remain in the outbox and will be
+    /// processed when the feature is re-enabled.
+    /// </remarks>
     public async Task Execute(IJobExecutionContext context)
     {
+        if (!_featureFlagService.IsEnabled(InfrastructureFeatures.Outbox))
+        {
+            _logger.LogDebug(
+                "{Module} - Outbox processing is disabled via feature flag. Messages will remain queued.",
+                ModuleName);
+            return;
+        }
+
         _logger.LogInformation("{Module} - Beginning to process outbox messages", ModuleName);
 
         await using var connection = await _dbConnectionFactory.OpenConnectionAsync();

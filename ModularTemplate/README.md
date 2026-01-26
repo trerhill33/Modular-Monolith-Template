@@ -9,7 +9,73 @@ A production-ready .NET 10 modular monolith template implementing Domain-Driven 
 - **CQRS Pattern**: Separate command and query paths with MediatR
 - **Result Pattern**: Railway-oriented programming for error handling
 - **Outbox Pattern**: Reliable domain event publishing
+- **Feature Flags**: Configuration-based feature toggles at infrastructure and module levels
+- **API Versioning**: URL segment versioning with v1/v2 coexistence support
 - **Modern C#**: File-scoped namespaces, primary constructors, collection expressions
+
+## Feature Flag Management
+
+Feature flags allow you to toggle functionality without code changes. The system uses a two-tier approach designed for microservice extraction:
+
+### Configuration Locations
+
+| Scope | Config File | Example |
+|-------|-------------|---------|
+| Infrastructure (global) | `appsettings.json` | `Features:Infrastructure:Outbox` |
+| Module-specific | `modules.{module}.json` | `Sales:Features:CatalogV2Pagination` |
+
+### Infrastructure Flags
+
+Control cross-cutting infrastructure concerns in `appsettings.json`:
+
+```json
+{
+  "Features": {
+    "Infrastructure": {
+      "Outbox": true,         // Domain event processing
+      "Inbox": true,          // Integration event processing
+      "BackgroundJobs": true, // SQS polling and background tasks
+      "Emails": true,         // Email sending
+      "CdcEvents": true       // Change Data Capture events
+    }
+  }
+}
+```
+
+When disabled, messages **remain queued** and resume processing when re-enabled.
+
+### Module Feature Flags
+
+Each module defines its own flags in `modules.{module}.json`:
+
+```json
+{
+  "Sales": {
+    "Features": {
+      "CatalogV2Pagination": true,
+      "BulkCreateProducts": false
+    }
+  }
+}
+```
+
+### Usage
+
+**In endpoints** (returns 404 when disabled):
+```csharp
+group.MapGet("/", GetAllAsync)
+    .RequireFeature(SalesFeatures.CatalogV2Pagination);
+```
+
+**In handlers**:
+```csharp
+if (!await _featureFlags.IsEnabledAsync(SalesFeatures.BulkCreateProducts))
+    return Result.Failure(FeatureErrors.FeatureDisabled("BulkCreateProducts"));
+```
+
+### Microservice Extraction
+
+Module feature flags live in module-specific config files, so when you extract a module to a microservice, its feature flags move with it—no refactoring required.
 
 ## Project Structure
 
