@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging;
 using ModularTemplate.Common.Application.Identity;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Domain.Entities;
@@ -18,20 +17,16 @@ namespace ModularTemplate.Common.Infrastructure.Auditing;
 /// </remarks>
 public sealed class SoftDeleteInterceptor(
     ICurrentUserService currentUserService,
-    IDateTimeProvider dateTimeProvider,
-    ILogger<SoftDeleteInterceptor> logger) : SaveChangesInterceptor
+    IDateTimeProvider dateTimeProvider) : SaveChangesInterceptor
 {
     private readonly ICurrentUserService _currentUserService = currentUserService;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
-    private readonly ILogger<SoftDeleteInterceptor> _logger = logger;
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("[SoftDeleteInterceptor] SavingChangesAsync triggered");
-
         if (eventData.Context is not null)
         {
             HandleSoftDeletes(eventData.Context);
@@ -44,8 +39,6 @@ public sealed class SoftDeleteInterceptor(
         DbContextEventData eventData,
         InterceptionResult<int> result)
     {
-        _logger.LogDebug("[SoftDeleteInterceptor] SavingChanges (sync) triggered");
-
         if (eventData.Context is not null)
         {
             HandleSoftDeletes(eventData.Context);
@@ -64,13 +57,8 @@ public sealed class SoftDeleteInterceptor(
             .Where(e => e.State == EntityState.Deleted)
             .ToList();
 
-        _logger.LogDebug("[SoftDeleteInterceptor] Found {EntryCount} entities marked for deletion", entries.Count);
-
         foreach (var entry in entries)
         {
-            _logger.LogDebug("[SoftDeleteInterceptor] Converting hard delete to soft delete for {EntityType}",
-                entry.Entity.GetType().Name);
-
             // Convert delete to update
             entry.State = EntityState.Modified;
 
