@@ -1,13 +1,14 @@
 using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
 using ModularTemplate.Common.Domain.Results;
+using ModularTemplate.Modules.Orders.Domain;
 using ModularTemplate.Modules.Orders.Domain.Customers;
 
 namespace ModularTemplate.Modules.Orders.Application.Customers.UpdateCustomer;
 
 internal sealed class UpdateCustomerCommandHandler(
     ICustomerRepository customerRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork<IOrdersModule> unitOfWork)
     : ICommandHandler<UpdateCustomerCommand>
 {
     public async Task<Result> Handle(

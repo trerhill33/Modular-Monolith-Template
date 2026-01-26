@@ -7,6 +7,7 @@ using ModularTemplate.Common.Infrastructure.Inbox.Job;
 using ModularTemplate.Common.Infrastructure.Outbox.Job;
 using ModularTemplate.Common.Infrastructure.Persistence;
 using ModularTemplate.Modules.Sales.Application;
+using ModularTemplate.Modules.Sales.Domain;
 using ModularTemplate.Modules.Sales.Domain.Catalogs;
 using ModularTemplate.Modules.Sales.Domain.OrdersCache;
 using ModularTemplate.Modules.Sales.Domain.Products;
@@ -44,7 +45,7 @@ public static class SalesModule
         services.AddScoped<ICatalogRepository, CatalogRepository>();
         services.AddScoped<IOrderCacheRepository, OrderCacheRepository>();
         services.AddScoped<IOrderCacheWriter, OrderCacheRepository>();
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<SalesDbContext>());
+        services.AddScoped<IUnitOfWork<ISalesModule>>(sp => sp.GetRequiredService<SalesDbContext>());
 
         return services;
     }

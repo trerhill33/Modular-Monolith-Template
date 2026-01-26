@@ -1,6 +1,7 @@
 using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
 using ModularTemplate.Common.Domain.Results;
+using ModularTemplate.Modules.Orders.Domain;
 using ModularTemplate.Modules.Orders.Domain.Orders;
 using ModularTemplate.Modules.Orders.Domain.ProductsCache;
 
@@ -9,7 +10,7 @@ namespace ModularTemplate.Modules.Orders.Application.Orders.PlaceOrder;
 internal sealed class PlaceOrderCommandHandler(
     IOrderRepository orderRepository,
     IProductCacheRepository productCacheRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork<IOrdersModule> unitOfWork)
     : ICommandHandler<PlaceOrderCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(

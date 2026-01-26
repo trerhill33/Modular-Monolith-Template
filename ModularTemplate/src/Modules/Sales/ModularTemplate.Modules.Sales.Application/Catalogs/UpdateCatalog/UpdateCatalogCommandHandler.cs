@@ -1,13 +1,14 @@
 using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
 using ModularTemplate.Common.Domain.Results;
+using ModularTemplate.Modules.Sales.Domain;
 using ModularTemplate.Modules.Sales.Domain.Catalogs;
 
 namespace ModularTemplate.Modules.Sales.Application.Catalogs.UpdateCatalog;
 
 internal sealed class UpdateCatalogCommandHandler(
     ICatalogRepository catalogRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork<ISalesModule> unitOfWork)
     : ICommandHandler<UpdateCatalogCommand>
 {
     public async Task<Result> Handle(

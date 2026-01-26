@@ -1,13 +1,14 @@
 using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
 using ModularTemplate.Common.Domain.Results;
+using ModularTemplate.Modules.Sales.Domain;
 using ModularTemplate.Modules.Sales.Domain.Products;
 
 namespace ModularTemplate.Modules.Sales.Application.Products.CreateProduct;
 
 internal sealed class CreateProductCommandHandler(
     IProductRepository productRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork<ISalesModule> unitOfWork)
     : ICommandHandler<CreateProductCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(

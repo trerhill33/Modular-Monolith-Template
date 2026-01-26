@@ -10,3 +10,12 @@ public interface IUnitOfWork
     /// </summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
+
+/// <summary>
+/// Module-specific unit of work interface to prevent DI registration conflicts.
+/// Each module should define a marker interface that inherits from this.
+/// </summary>
+public interface IUnitOfWork<TModule> : IUnitOfWork
+    where TModule : class
+{
+}
