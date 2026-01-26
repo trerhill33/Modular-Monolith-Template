@@ -20,10 +20,8 @@ internal sealed class FeatureFlagEndpointFilter : IEndpointFilter
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
-        var featureFlagService = context.HttpContext.RequestServices
-            .GetService(typeof(IFeatureFlagService)) as IFeatureFlagService;
-
-        if (featureFlagService is null)
+        if (context.HttpContext.RequestServices
+            .GetService(typeof(IFeatureFlagService)) is not IFeatureFlagService featureFlagService)
         {
             // If the service is not registered, allow the request (fail open for development)
             return await next(context);
@@ -33,7 +31,6 @@ internal sealed class FeatureFlagEndpointFilter : IEndpointFilter
 
         if (!isEnabled)
         {
-            // Return 404 to hide the existence of the endpoint when feature is disabled
             return Microsoft.AspNetCore.Http.Results.NotFound();
         }
 
