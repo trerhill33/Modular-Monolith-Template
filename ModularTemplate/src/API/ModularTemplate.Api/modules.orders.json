@@ -1,5 +1,9 @@
 {
   "Orders": {
+    "Features": {
+      "SplitShipments": false,
+      "GuestCheckout": false
+    },
     "Outbox": {
       "IntervalInSeconds": 10,
       "BatchSize": 20,

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using ModularTemplate.Common.Application.Auditing;
 using ModularTemplate.Common.Application.Caching;
 using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Application.Identity;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Application;
@@ -15,6 +16,7 @@ using ModularTemplate.Common.Infrastructure.Authorization;
 using ModularTemplate.Common.Infrastructure.Caching;
 using ModularTemplate.Common.Infrastructure.Clock;
 using ModularTemplate.Common.Infrastructure.EventBus;
+using ModularTemplate.Common.Infrastructure.Features;
 using ModularTemplate.Common.Infrastructure.Identity;
 using ModularTemplate.Common.Infrastructure.Outbox.Data;
 using ModularTemplate.Common.Infrastructure.Persistence;
@@ -56,6 +58,7 @@ public static class InfrastructureConfiguration
 
         services
             .AddCoreServices()
+            .AddFeatureFlags(configuration)
             .AddAuditingServices()
             .AddPostgreSql(databaseConnectionString)
             .AddQuartzScheduler()
@@ -68,6 +71,13 @@ public static class InfrastructureConfiguration
     private static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
         services.TryAddSingleton<IDateTimeProvider, DateTimeProvider>();
+        return services;
+    }
+
+    private static IServiceCollection AddFeatureFlags(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.TryAddSingleton<IFeatureFlagService>(sp =>
+            new ConfigurationFeatureFlagService(configuration));
         return services;
     }
 

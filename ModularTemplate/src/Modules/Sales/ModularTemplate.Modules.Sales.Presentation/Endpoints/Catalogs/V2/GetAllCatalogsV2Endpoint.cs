@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using ModularTemplate.Common.Presentation.Endpoints;
+using ModularTemplate.Common.Presentation.Features;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Catalogs.GetCatalog;
 using ModularTemplate.Modules.Sales.Application.Catalogs.GetCatalogs;
+using ModularTemplate.Modules.Sales.Application.Features;
 
 namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.V2;
 
@@ -23,7 +25,8 @@ internal sealed class GetAllCatalogsV2Endpoint : IEndpoint
             .WithDescription("Retrieves catalogs with pagination metadata. Enhanced response format with total count and page info.")
             .MapToApiVersion(new ApiVersion(2, 0))
             .Produces<PagedCatalogResponse>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status500InternalServerError);
+            .ProducesProblem(StatusCodes.Status500InternalServerError)
+            .RequireFeature(SalesFeatures.CatalogV2Pagination);
     }
 
     private static async Task<IResult> GetAllCatalogsAsync(
