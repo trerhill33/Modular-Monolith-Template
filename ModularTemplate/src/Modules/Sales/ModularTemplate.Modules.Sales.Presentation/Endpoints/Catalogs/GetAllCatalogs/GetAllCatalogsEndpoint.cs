@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,13 +10,17 @@ using ModularTemplate.Modules.Sales.Application.Catalogs.GetCatalogs;
 
 namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.GetAllCatalogs;
 
+/// <summary>
+/// V1 endpoint: Returns a simple list of catalogs.
+/// </summary>
 internal sealed class GetAllCatalogsEndpoint : IEndpoint
 {
     public void MapEndpoint(RouteGroupBuilder group)
     {
         group.MapGet("/", GetAllCatalogsAsync)
-            .WithSummary("Get all catalogs")
-            .WithDescription("Retrieves all catalogs with optional limit.")
+            .WithSummary("Get all catalogs (v1)")
+            .WithDescription("Retrieves all catalogs with optional limit. Returns a simple array.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<IReadOnlyCollection<CatalogResponse>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
     }

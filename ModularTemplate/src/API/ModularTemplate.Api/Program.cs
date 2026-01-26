@@ -22,7 +22,6 @@ var cacheConnectionString = builder.Configuration.GetConnectionString("Cache")
 // Load module-specific configuration files
 builder.Configuration.AddModuleConfiguration(["sample", "sales", "orders"], builder.Environment.EnvironmentName);
 
-
 // ========================================
 // Common Cross-Cutting Concerns
 // ========================================
@@ -30,7 +29,8 @@ builder.Configuration.AddModuleConfiguration(["sample", "sales", "orders"], buil
 // Presentation/API layer
 builder.Services
     .AddGlobalExceptionHandling()
-    .AddOpenApi(builder.Configuration["Application:DisplayName"] ?? "API", modules)
+    .AddApiVersioningServices()
+    .AddOpenApiVersioned(builder.Configuration["Application:DisplayName"] ?? "API", modules)
     .AddCors(options =>
     {
         options.AddDefaultPolicy(policy =>
@@ -71,13 +71,18 @@ var app = builder.Build();
 
 app.ApplyMigrations(builder.Environment, databaseConnectionString);
 
-app.UseOpenApi(modules);
+// Create the API version set for endpoint mapping
+var apiVersionSet = app.CreateApiVersionSet();
+
+app.UseOpenApiVersioned(modules);
 app.MapHealthCheckEndpoint();
 app.UseGlobalExceptionHandling();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapModuleEndpoints(modules);
+
+// Map versioned module endpoints
+app.MapVersionedModuleEndpoints(apiVersionSet, modules);
 
 app.Run();
 

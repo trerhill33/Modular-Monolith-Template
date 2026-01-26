@@ -1,3 +1,4 @@
+using Asp.Versioning.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using ModularTemplate.Common.Presentation.Endpoints;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -5,7 +6,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace ModularTemplate.Api.Extensions;
 
 /// <summary>
-/// Extension methods for OpenAPI/Swagger configuration.
+/// Extension methods for OpenAPI/Swagger configuration with API versioning.
 /// </summary>
 internal static class OpenApiExtensions
 {
@@ -13,12 +14,13 @@ internal static class OpenApiExtensions
     /// Adds OpenAPI/Swagger services with per-module schema separation.
     /// Each module gets its own Swagger document in the dropdown.
     /// </summary>
-    public static IServiceCollection AddOpenApi(
+    public static IServiceCollection AddOpenApiVersioned(
         this IServiceCollection services,
         string applicationTitle,
         params IModuleEndpoints[] modules)
     {
         services.AddEndpointsApiExplorer();
+
         services.AddSwaggerGen(options =>
         {
             // Create a separate Swagger doc for each module
@@ -35,12 +37,10 @@ internal static class OpenApiExtensions
             // Filter endpoints to only show in their respective module's doc
             options.DocInclusionPredicate((docName, apiDesc) =>
             {
-                // Get the group name from the endpoint metadata
                 var groupName = apiDesc.ActionDescriptor.EndpointMetadata
                     .OfType<EndpointGroupNameAttribute>()
                     .FirstOrDefault()?.EndpointGroupName;
 
-                // Include endpoint if its group matches the doc name
                 return string.Equals(groupName, docName, StringComparison.OrdinalIgnoreCase);
             });
 
@@ -56,13 +56,19 @@ internal static class OpenApiExtensions
 
     /// <summary>
     /// Uses OpenAPI/Swagger middleware with per-module schema dropdown.
+    /// Version info is obtained from API versioning provider when available.
     /// </summary>
-    public static IApplicationBuilder UseOpenApi(
+    public static IApplicationBuilder UseOpenApiVersioned(
         this WebApplication app,
         params IModuleEndpoints[] modules)
     {
         if (app.Environment.IsDevelopment())
         {
+            // Get version info for display (optional enhancement)
+            var versionProvider = app.Services.GetService<IApiVersionDescriptionProvider>();
+            var currentVersion = versionProvider?.ApiVersionDescriptions
+                .FirstOrDefault(v => !v.IsDeprecated)?.ApiVersion.ToString() ?? "v1";
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -71,7 +77,7 @@ internal static class OpenApiExtensions
                 {
                     options.SwaggerEndpoint(
                         $"/swagger/{module.ModulePrefix}/swagger.json",
-                        module.ModuleName);
+                        $"{module.ModuleName} ({currentVersion})");
                 }
 
                 options.DisplayRequestDuration();

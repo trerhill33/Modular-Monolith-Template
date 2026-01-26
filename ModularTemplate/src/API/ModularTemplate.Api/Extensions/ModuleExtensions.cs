@@ -1,3 +1,4 @@
+using Asp.Versioning.Builder;
 using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Modules.Orders.Presentation.Endpoints;
 using ModularTemplate.Modules.Sales.Presentation.Endpoints;
@@ -23,15 +24,16 @@ internal static class ModuleExtensions
     }
 
     /// <summary>
-    /// Maps all module endpoints to the application.
+    /// Maps all module endpoints with API versioning.
     /// </summary>
-    public static IApplicationBuilder MapModuleEndpoints(
+    public static IApplicationBuilder MapVersionedModuleEndpoints(
         this WebApplication app,
+        ApiVersionSet versionSet,
         params IModuleEndpoints[] modules)
     {
         foreach (var module in modules)
         {
-            module.MapEndpoints(app);
+            module.MapEndpoints(app, versionSet);
         }
 
         return app;
