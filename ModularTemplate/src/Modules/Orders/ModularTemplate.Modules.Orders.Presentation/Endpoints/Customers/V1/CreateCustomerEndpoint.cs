@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Customers.CreateCustomer;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.CreateCustomer;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.V1;
 
 internal sealed class CreateCustomerEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class CreateCustomerEndpoint : IEndpoint
         group.MapPost("/", CreateCustomerAsync)
             .WithSummary("Create a new customer")
             .WithDescription("Creates a new customer with the specified name and email.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<CreateCustomerResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);

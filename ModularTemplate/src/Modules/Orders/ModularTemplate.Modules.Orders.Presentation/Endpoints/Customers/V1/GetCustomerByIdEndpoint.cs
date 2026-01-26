@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Customers.GetCustomer;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.GetCustomerById;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.V1;
 
 internal sealed class GetCustomerByIdEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class GetCustomerByIdEndpoint : IEndpoint
         group.MapGet("/{customerId:guid}", GetCustomerByIdAsync)
             .WithSummary("Get a customer by ID")
             .WithDescription("Retrieves a customer by its unique identifier.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<CustomerResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);

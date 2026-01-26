@@ -1,8 +1,5 @@
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.CreateProduct;
-using ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.GetAllProducts;
-using ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.GetProductById;
-using ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.UpdateProduct;
+using ModularTemplate.Modules.Sales.Presentation.Endpoints.Products.V1;
 
 namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Products;
 
@@ -10,9 +7,10 @@ internal sealed class ProductsEndpoints : ResourceEndpoints
 {
     protected override IEndpoint[] Endpoints =>
     [
-        new GetAllProductsEndpoint(),
-        new GetProductByIdEndpoint(),
-        new CreateProductEndpoint(),
-        new UpdateProductEndpoint()
+        // V1 endpoints
+        new V1.GetAllProductsEndpoint(),
+        new V1.GetProductByIdEndpoint(),
+        new V1.CreateProductEndpoint(),
+        new V1.UpdateProductEndpoint()
     ];
 }

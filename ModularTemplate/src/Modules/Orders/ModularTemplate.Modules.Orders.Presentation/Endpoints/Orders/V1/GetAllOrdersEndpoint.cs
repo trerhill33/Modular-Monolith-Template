@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +8,7 @@ using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Orders.GetOrder;
 using ModularTemplate.Modules.Orders.Application.Orders.GetOrders;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.GetAllOrders;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.V1;
 
 internal sealed class GetAllOrdersEndpoint : IEndpoint
 {
@@ -16,6 +17,7 @@ internal sealed class GetAllOrdersEndpoint : IEndpoint
         group.MapGet("/", GetAllOrdersAsync)
             .WithSummary("Get all orders")
             .WithDescription("Retrieves all orders with optional limit.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<IReadOnlyCollection<OrderResponse>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
     }

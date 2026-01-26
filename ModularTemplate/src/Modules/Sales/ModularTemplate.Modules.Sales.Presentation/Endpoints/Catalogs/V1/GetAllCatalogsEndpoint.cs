@@ -8,7 +8,7 @@ using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Sales.Application.Catalogs.GetCatalog;
 using ModularTemplate.Modules.Sales.Application.Catalogs.GetCatalogs;
 
-namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.GetAllCatalogs;
+namespace ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs.V1;
 
 /// <summary>
 /// V1 endpoint: Returns a simple list of catalogs.

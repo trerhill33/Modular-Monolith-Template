@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.Orders.Application.Orders.PlaceOrder;
 
-namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.PlaceOrder;
+namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Orders.V1;
 
 internal sealed class PlaceOrderEndpoint : IEndpoint
 {
@@ -15,6 +16,7 @@ internal sealed class PlaceOrderEndpoint : IEndpoint
         group.MapPost("/", PlaceOrderAsync)
             .WithSummary("Place a new order")
             .WithDescription("Places a new order for a product.")
+            .MapToApiVersion(new ApiVersion(1, 0))
             .Produces<PlaceOrderResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest)
