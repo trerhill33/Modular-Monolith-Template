@@ -164,8 +164,6 @@ dotnet ef migrations add <MigrationName> --project src/Modules/Organization/Modu
 # Customer Module
 dotnet ef migrations add <MigrationName> --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext --output-dir Persistence/Migrations
 
-# Inventory Module
-dotnet ef migrations add <MigrationName> --project src/Modules/Inventory/ModularTemplate.Modules.Inventory.Infrastructure --startup-project src/API/ModularTemplate.Api --context InventoryDbContext --output-dir Persistence/Migrations
 
 # Sales Module
 dotnet ef migrations add <MigrationName> --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext --output-dir Persistence/Migrations
@@ -186,8 +184,6 @@ dotnet ef migrations remove --project src/Modules/Organization/ModularTemplate.M
 # Customer Module
 dotnet ef migrations remove --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext
 
-# Inventory Module
-dotnet ef migrations remove --project src/Modules/Inventory/ModularTemplate.Modules.Inventory.Infrastructure --startup-project src/API/ModularTemplate.Api --context InventoryDbContext
 
 # Sales Module
 dotnet ef migrations remove --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext
@@ -210,8 +206,6 @@ dotnet ef database update --project src/Modules/Organization/ModularTemplate.Mod
 # Customer Module
 dotnet ef database update --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext
 
-# Inventory Module
-dotnet ef database update --project src/Modules/Inventory/ModularTemplate.Modules.Inventory.Infrastructure --startup-project src/API/ModularTemplate.Api --context InventoryDbContext
 
 # Sales Module
 dotnet ef database update --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext

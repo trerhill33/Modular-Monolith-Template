@@ -5,19 +5,20 @@ using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Outbox.Job;
+using ModularTemplate.Modules.Sample.Domain;
 using ModularTemplate.Modules.Sample.Infrastructure.Persistence;
 using System.Reflection;
 
 namespace ModularTemplate.Modules.Sample.Infrastructure.Outbox;
 
 internal sealed class ProcessOutboxJob(
-    IDbConnectionFactory dbConnectionFactory,
+    IDbConnectionFactory<ISampleModule> dbConnectionFactory,
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<OutboxOptions> outboxOptions,
     IFeatureFlagService featureFlagService,
     ILogger<ProcessOutboxJob> logger)
-    : ProcessOutboxJobBase(dbConnectionFactory, serviceScopeFactory, dateTimeProvider, outboxOptions, featureFlagService, logger)
+    : ProcessOutboxJobBase<ISampleModule>(dbConnectionFactory, serviceScopeFactory, dateTimeProvider, outboxOptions, featureFlagService, logger)
 {
     protected override string ModuleName => "Sample";
 

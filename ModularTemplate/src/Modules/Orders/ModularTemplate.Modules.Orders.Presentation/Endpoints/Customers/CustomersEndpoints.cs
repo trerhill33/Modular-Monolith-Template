@@ -1,5 +1,4 @@
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers.V1;
 
 namespace ModularTemplate.Modules.Orders.Presentation.Endpoints.Customers;
 

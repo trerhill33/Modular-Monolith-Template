@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Infrastructure;
 using ModularTemplate.Common.Infrastructure.EventBus;
 using ModularTemplate.Common.Infrastructure.Inbox.Job;
 using ModularTemplate.Common.Infrastructure.Outbox.Job;
@@ -22,6 +23,7 @@ public static class SalesModule
         string databaseConnectionString)
     {
         services
+            .AddModuleDataSource<ISalesModule>(databaseConnectionString)
             .AddPersistence(databaseConnectionString)
             .AddMessaging(configuration, environment);
 

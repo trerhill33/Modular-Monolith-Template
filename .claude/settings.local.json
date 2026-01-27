@@ -34,7 +34,12 @@
       "Bash(dotnet ef database update:*)",
       "Bash(dotnet ef migrations remove:*)",
       "Bash(dir /b \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\")",
-      "Bash(dotnet list:*)"
+      "Bash(dotnet list:*)",
+      "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Orders\\\\ModularTemplate.Modules.Orders.Infrastructure\")",
+      "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Customer\\\\ModularTemplate.Modules.Customer.Infrastructure\")",
+      "Bash(del ApiVersioningExtensions.cs ExceptionHandlingExtensions.cs HealthCheckExtensions.cs OpenApiExtensions.cs ConfigurationExtensions.cs MigrationExtensions.cs)",
+      "Bash(Remove-Item \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\ApiVersioningExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\ExceptionHandlingExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\HealthCheckExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\OpenApiExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\ConfigurationExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\MigrationExtensions.cs\" -Force)",
+      "Bash(dotnet restore:*)"
     ]
   }
 }

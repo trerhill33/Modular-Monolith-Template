@@ -29,10 +29,9 @@
     <ProjectReference Include="..\..\Modules\Organization\ModularTemplate.Modules.Organization.Presentation\ModularTemplate.Modules.Organization.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Customer\ModularTemplate.Modules.Customer.Infrastructure\ModularTemplate.Modules.Customer.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Customer\ModularTemplate.Modules.Customer.Presentation\ModularTemplate.Modules.Customer.Presentation.csproj" />
-    <ProjectReference Include="..\..\Modules\Inventory\ModularTemplate.Modules.Inventory.Infrastructure\ModularTemplate.Modules.Inventory.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Inventory\ModularTemplate.Modules.Inventory.Presentation\ModularTemplate.Modules.Inventory.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Sales\ModularTemplate.Modules.Sales.Infrastructure\ModularTemplate.Modules.Sales.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Sales\ModularTemplate.Modules.Sales.Presentation\ModularTemplate.Modules.Sales.Presentation.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Api.Shared\ModularTemplate.Api.Shared.csproj" />
   </ItemGroup>
 
   <!-- Module configuration files - use Update since SDK auto-includes Content -->

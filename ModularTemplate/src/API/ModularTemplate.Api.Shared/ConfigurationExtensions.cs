@@ -1,9 +1,11 @@
-namespace ModularTemplate.Api.Extensions;
+using Microsoft.Extensions.Configuration;
+
+namespace ModularTemplate.Api.Shared;
 
 /// <summary>
 /// Extension methods for configuring module-specific settings.
 /// </summary>
-internal static class ConfigurationExtensions
+public static class ConfigurationExtensions
 {
     /// <summary>
     /// Adds module-specific configuration from per-module host projects.
@@ -19,7 +21,10 @@ internal static class ConfigurationExtensions
     /// while allowing the main API to run all modules locally with consistent settings.
     /// </para>
     /// </remarks>
-    internal static void AddModuleConfiguration(
+    /// <param name="configurationBuilder">The configuration builder.</param>
+    /// <param name="modules">Array of module names (lowercase, e.g., "sample", "orders").</param>
+    /// <param name="environment">The current environment name.</param>
+    public static void AddModuleConfiguration(
         this IConfigurationBuilder configurationBuilder,
         string[] modules,
         string environment)

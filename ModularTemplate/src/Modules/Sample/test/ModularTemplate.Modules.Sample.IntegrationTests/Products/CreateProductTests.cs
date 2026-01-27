@@ -2,8 +2,6 @@ using FluentAssertions;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Common.IntegrationTests.Abstractions;
 using ModularTemplate.Modules.Sample.Application.Products.CreateProduct;
-using ModularTemplate.Modules.Sample.Application.Products.GetProduct;
-using ModularTemplate.Modules.Sample.IntegrationTests.Abstractions;
 
 namespace ModularTemplate.Modules.Sample.IntegrationTests.Products;
 

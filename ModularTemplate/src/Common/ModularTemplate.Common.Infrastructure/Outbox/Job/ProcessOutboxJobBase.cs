@@ -30,21 +30,18 @@ namespace ModularTemplate.Common.Infrastructure.Outbox.Job;
 /// Module-specific implementations only need to provide the module name, database schema,
 /// and the assembly containing the domain event handlers.
 /// </para>
-/// <para>
-/// Processing can be disabled via the <see cref="InfrastructureFeatures.Outbox"/> feature flag.
-/// When disabled, messages remain queued and will be processed when the feature is re-enabled.
-/// </para>
 /// </remarks>
 [DisallowConcurrentExecution]
-public abstract class ProcessOutboxJobBase(
-    IDbConnectionFactory dbConnectionFactory,
+public abstract class ProcessOutboxJobBase<TModule>(
+    IDbConnectionFactory<TModule> dbConnectionFactory,
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<OutboxOptions> outboxOptions,
     IFeatureFlagService featureFlagService,
     ILogger logger) : IJob
+    where TModule : class
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
+    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory = dbConnectionFactory;
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly OutboxOptions _outboxOptions = outboxOptions.Value;

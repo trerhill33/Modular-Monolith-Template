@@ -1,5 +1,4 @@
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Modules.Sample.Presentation.Endpoints.Products.V1;
 
 namespace ModularTemplate.Modules.Sample.Presentation.Endpoints.Products;
 

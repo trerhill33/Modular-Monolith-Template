@@ -106,6 +106,45 @@ public static class InfrastructureConfiguration
         return services;
     }
 
+    /// <summary>
+    /// Registers a module-specific database data source and connection factory.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method enables each module to have its own database connection when deployed
+    /// independently. It registers:
+    /// <list type="bullet">
+    /// <item>A keyed <see cref="NpgsqlDataSource"/> singleton using <typeparamref name="TModule"/> as the key</item>
+    /// <item>A scoped <see cref="IDbConnectionFactory{TModule}"/> that uses the keyed data source</item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// This allows Quartz jobs and other services to inject module-specific connection factories
+    /// when modules are deployed with separate databases.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TModule">The module marker interface type (e.g., IOrdersModule).</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <param name="connectionString">The module's database connection string.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddModuleDataSource<TModule>(
+        this IServiceCollection services,
+        string connectionString)
+        where TModule : class
+    {
+        var dataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
+        services.AddKeyedSingleton<NpgsqlDataSource>(typeof(TModule), dataSource);
+
+        // Use factory delegate to resolve the keyed NpgsqlDataSource
+        services.AddScoped<IDbConnectionFactory<TModule>>(sp =>
+        {
+            var keyedDataSource = sp.GetRequiredKeyedService<NpgsqlDataSource>(typeof(TModule));
+            return new DbConnectionFactory<TModule>(keyedDataSource);
+        });
+
+        return services;
+    }
+
     private static IServiceCollection AddQuartzScheduler(this IServiceCollection services)
     {
         services.AddQuartz(configurator =>

@@ -62,25 +62,6 @@ services:
       - modular-network
     restart: unless-stopped
 
-  inventory-api:
-    build:
-      context: ..
-      dockerfile: ModularTemplate/src/API/ModularTemplate.Api.Inventory/Dockerfile
-    ports:
-      - "5004:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Database=Host=postgres;Database=inventory;Username=postgres;Password=postgres
-      - ConnectionStrings__Cache=redis:6379
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    networks:
-      - modular-network
-    restart: unless-stopped
-
   organization-api:
     build:
       context: ..

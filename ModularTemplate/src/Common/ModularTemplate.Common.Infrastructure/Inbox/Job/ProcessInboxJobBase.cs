@@ -30,21 +30,18 @@ namespace ModularTemplate.Common.Infrastructure.Inbox.Job;
 /// Module-specific implementations only need to provide the module name, database schema,
 /// and the assembly containing the integration event handlers.
 /// </para>
-/// <para>
-/// Processing can be disabled via the <see cref="InfrastructureFeatures.Inbox"/> feature flag.
-/// When disabled, messages remain queued and will be processed when the feature is re-enabled.
-/// </para>
 /// </remarks>
 [DisallowConcurrentExecution]
-public abstract class ProcessInboxJobBase(
-    IDbConnectionFactory dbConnectionFactory,
+public abstract class ProcessInboxJobBase<TModule>(
+    IDbConnectionFactory<TModule> dbConnectionFactory,
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<InboxOptions> inboxOptions,
     IFeatureFlagService featureFlagService,
     ILogger logger) : IJob
+    where TModule : class
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
+    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory = dbConnectionFactory;
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly InboxOptions _inboxOptions = inboxOptions.Value;

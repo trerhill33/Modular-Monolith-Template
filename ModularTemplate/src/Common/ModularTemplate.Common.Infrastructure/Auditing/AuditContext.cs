@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using ModularTemplate.Common.Application.Auditing;
+using System.Diagnostics;
 
 namespace ModularTemplate.Common.Infrastructure.Auditing;
 

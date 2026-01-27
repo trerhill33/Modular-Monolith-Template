@@ -5,19 +5,20 @@ using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Inbox.Job;
+using ModularTemplate.Modules.Organization.Domain;
 using ModularTemplate.Modules.Organization.Infrastructure.Persistence;
 using System.Reflection;
 
 namespace ModularTemplate.Modules.Organization.Infrastructure.Inbox;
 
 internal sealed class ProcessInboxJob(
-    IDbConnectionFactory dbConnectionFactory,
+    IDbConnectionFactory<IOrganizationModule> dbConnectionFactory,
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<InboxOptions> inboxOptions,
     IFeatureFlagService featureFlagService,
     ILogger<ProcessInboxJob> logger)
-    : ProcessInboxJobBase(dbConnectionFactory, serviceScopeFactory, dateTimeProvider, inboxOptions, featureFlagService, logger)
+    : ProcessInboxJobBase<IOrganizationModule>(dbConnectionFactory, serviceScopeFactory, dateTimeProvider, inboxOptions, featureFlagService, logger)
 {
     protected override string ModuleName => "Organization";
 

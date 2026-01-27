@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
@@ -12,10 +13,18 @@ namespace ModularTemplate.Api.Shared;
 public static class MigrationExtensions
 {
     /// <summary>
-    /// Applies pending migrations for the specified DbContext when running in Development environment.
+    /// Applies pending migrations for a single DbContext when running in Development environment.
+    /// Use this overload for per-module API hosts that have only one DbContext.
+    /// </summary>
+    /// <remarks>
     /// In non-development environments (Staging, Production), migrations should be applied
     /// through CI/CD pipelines for controlled deployment.
-    /// </summary>
+    /// </remarks>
+    /// <typeparam name="TDbContext">The DbContext type to migrate.</typeparam>
+    /// <param name="app">The application builder.</param>
+    /// <param name="environment">The host environment.</param>
+    /// <param name="connectionString">The database connection string.</param>
+    /// <returns>The application builder for chaining.</returns>
     public static IApplicationBuilder ApplyMigrations<TDbContext>(
         this IApplicationBuilder app,
         IHostEnvironment environment,
@@ -27,7 +36,6 @@ public static class MigrationExtensions
             return app;
         }
 
-        // Ensure the database exists before running migrations
         EnsureDatabaseExists(connectionString);
 
         using var scope = app.ApplicationServices.CreateScope();
@@ -36,7 +44,85 @@ public static class MigrationExtensions
         return app;
     }
 
-    private static void EnsureDatabaseExists(string connectionString)
+    /// <summary>
+    /// Applies pending migrations for multiple DbContexts with optional module-specific database support.
+    /// Use this overload for the main API host that manages all modules.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method supports multi-database deployments where each module can have its own database.
+    /// It reads module-specific connection strings from configuration using the pattern
+    /// <c>Modules:{ModuleName}:ConnectionStrings:Database</c> and falls back to the default
+    /// connection string if not specified.
+    /// </para>
+    /// <para>
+    /// In non-development environments (Staging, Production), migrations should be applied
+    /// through CI/CD pipelines for controlled deployment.
+    /// </para>
+    /// </remarks>
+    /// <param name="app">The application builder.</param>
+    /// <param name="environment">The host environment.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <param name="defaultConnectionString">The fallback database connection string.</param>
+    /// <param name="dbContexts">The DbContext types to migrate with their module names.</param>
+    /// <returns>The application builder for chaining.</returns>
+    public static IApplicationBuilder ApplyMigrations(
+        this IApplicationBuilder app,
+        IHostEnvironment environment,
+        IConfiguration configuration,
+        string defaultConnectionString,
+        params (string ModuleName, Type DbContextType)[] dbContexts)
+    {
+        if (!environment.IsDevelopment())
+        {
+            return app;
+        }
+
+        // Collect all unique connection strings
+        var connectionStrings = new HashSet<string>();
+        foreach (var (moduleName, _) in dbContexts)
+        {
+            var connStr = GetModuleConnectionString(configuration, moduleName, defaultConnectionString);
+            connectionStrings.Add(connStr);
+        }
+
+        // Ensure each unique database exists
+        foreach (var connectionString in connectionStrings)
+        {
+            EnsureDatabaseExists(connectionString);
+        }
+
+        // Apply migrations for each DbContext
+        using var scope = app.ApplicationServices.CreateScope();
+        foreach (var (_, dbContextType) in dbContexts)
+        {
+            ApplyMigration(scope, dbContextType);
+        }
+
+        return app;
+    }
+
+    /// <summary>
+    /// Gets a module-specific connection string from configuration with fallback to default.
+    /// </summary>
+    /// <param name="configuration">The application configuration.</param>
+    /// <param name="moduleName">The module name (e.g., "Orders", "Sales").</param>
+    /// <param name="defaultConnectionString">The fallback connection string.</param>
+    /// <returns>The module-specific connection string or the default.</returns>
+    public static string GetModuleConnectionString(
+        IConfiguration configuration,
+        string moduleName,
+        string defaultConnectionString)
+    {
+        return configuration[$"Modules:{moduleName}:ConnectionStrings:Database"]
+               ?? defaultConnectionString;
+    }
+
+    /// <summary>
+    /// Ensures the database specified in the connection string exists, creating it if necessary.
+    /// </summary>
+    /// <param name="connectionString">The database connection string.</param>
+    public static void EnsureDatabaseExists(string connectionString)
     {
         var builder = new NpgsqlConnectionStringBuilder(connectionString);
         var databaseName = builder.Database;
@@ -69,6 +155,12 @@ public static class MigrationExtensions
         where TDbContext : DbContext
     {
         using var context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        context.Database.Migrate();
+    }
+
+    private static void ApplyMigration(IServiceScope scope, Type dbContextType)
+    {
+        using var context = (DbContext)scope.ServiceProvider.GetRequiredService(dbContextType);
         context.Database.Migrate();
     }
 }

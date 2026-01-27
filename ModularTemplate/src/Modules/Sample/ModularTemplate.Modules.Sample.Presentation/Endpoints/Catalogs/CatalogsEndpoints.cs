@@ -1,6 +1,4 @@
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Modules.Sample.Presentation.Endpoints.Catalogs.V1;
-using ModularTemplate.Modules.Sample.Presentation.Endpoints.Catalogs.V2;
 
 namespace ModularTemplate.Modules.Sample.Presentation.Endpoints.Catalogs;
 
