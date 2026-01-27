@@ -1,6 +1,6 @@
 # ModularTemplate.Api - Modular Monolith Template
 
-A production-ready .NET 9 modular monolith template implementing Domain-Driven Design (DDD), Clean Architecture, and CQRS patterns.
+A production-ready .NET 10 modular monolith template implementing Domain-Driven Design (DDD), Clean Architecture, and CQRS patterns.
 
 ## Features
 
@@ -113,7 +113,7 @@ API             → Infrastructure, Presentation
 
 ### Prerequisites
 
-- .NET 9 SDK
+- .NET 10 SDK
 - PostgreSQL
 - Redis (optional, falls back to in-memory cache)
 
@@ -213,21 +213,18 @@ dotnet ef database update --project src/Modules/Sales/ModularTemplate.Modules.Sa
 
 ### Code Coverage
 
-The project includes [Microsoft Code Coverage](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage) tooling with HTML report generation.
+Code coverage is automatically collected and reported on every pull request via GitHub Actions.
 
+**CI/CD Integration:**
+- Coverage is collected using Coverlet during test runs
+- Results are posted as a PR comment with per-assembly breakdown
+- Thresholds: 50% (warning), 75% (passing)
+
+**Local Coverage:**
 ```bash
-# First time setup (restores dotnet tools)
-dotnet tool restore
-
-# Run tests with coverage and generate HTML report
-./scripts/run-coverage.ps1            # Windows
-./scripts/run-coverage.sh             # Linux/Mac
-
-# Open report automatically after generation
-./scripts/run-coverage.ps1 -OpenReport
+# Run tests with coverage
+dotnet test --collect:"XPlat Code Coverage" --results-directory ./coverage
 ```
-
-Reports are generated in the `coverage/` directory. Configuration excludes migrations, EF configurations, and DbContext files.
 
 ## Creating a New Module
 
@@ -345,7 +342,7 @@ public sealed record GetOrderQuery(Guid OrderId) : IQuery<OrderResponse>;
 
 ## Technology Stack
 
-- .NET 9
+- .NET 10
 - Entity Framework Core 9 (PostgreSQL)
 - Dapper (read queries)
 - MediatR
