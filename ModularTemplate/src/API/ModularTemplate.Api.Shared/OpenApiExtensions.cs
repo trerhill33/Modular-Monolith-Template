@@ -132,7 +132,10 @@ public static class OpenApiExtensions
             var currentVersion = versionProvider?.ApiVersionDescriptions
                 .FirstOrDefault(v => !v.IsDeprecated)?.ApiVersion.ToString() ?? "v1";
 
-            app.UseSwagger();
+            app.UseSwagger(options =>
+            {
+                options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+            });
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint(
@@ -154,7 +157,10 @@ public static class OpenApiExtensions
     {
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
+            app.UseSwagger(options =>
+            {
+                options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+            });
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
@@ -180,7 +186,10 @@ public static class OpenApiExtensions
             var currentVersion = versionProvider?.ApiVersionDescriptions
                 .FirstOrDefault(v => !v.IsDeprecated)?.ApiVersion.ToString() ?? "v1";
 
-            app.UseSwagger();
+            app.UseSwagger(options =>
+            {
+                options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_0;
+            });
             app.UseSwaggerUI(options =>
             {
                 foreach (var module in modules)

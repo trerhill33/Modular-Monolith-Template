@@ -2,7 +2,30 @@ version: '3.8'
 
 services:
   # ========================================
-  # Module API Services
+  # Monolith API (All Modules)
+  # ========================================
+
+  api:
+    build:
+      context: ..
+      dockerfile: ModularTemplate/src/API/ModularTemplate.Api/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Database=Host=postgres;Database=modulartemplate;Username=postgres;Password=postgres
+      - ConnectionStrings__Cache=redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - modular-network
+    restart: unless-stopped
+
+  # ========================================
+  # Module API Services (Independent Deployment)
   # ========================================
 
   orders-api:

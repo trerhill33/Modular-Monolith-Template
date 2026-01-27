@@ -4,7 +4,7 @@ WORKDIR /src
 
 # Copy solution and project files for restore
 COPY ModularTemplate/ModularTemplate.Api.sln ./ModularTemplate/
-COPY ModularTemplate/src/API/ModularTemplate.Api.Host/*.csproj ./ModularTemplate/src/API/ModularTemplate.Api.Host/
+COPY ModularTemplate/src/API/ModularTemplate.Api.Shared/*.csproj ./ModularTemplate/src/API/ModularTemplate.Api.Shared/
 COPY ModularTemplate/src/API/ModularTemplate.Api.Customer/*.csproj ./ModularTemplate/src/API/ModularTemplate.Api.Customer/
 COPY ModularTemplate/src/Common/ModularTemplate.Common.Domain/*.csproj ./ModularTemplate/src/Common/ModularTemplate.Common.Domain/
 COPY ModularTemplate/src/Common/ModularTemplate.Common.Application/*.csproj ./ModularTemplate/src/Common/ModularTemplate.Common.Application/
