@@ -10,6 +10,7 @@ namespace ModularTemplate.Common.Infrastructure.Inbox.Handlers;
 /// Base decorator that ensures idempotent integration event handling by tracking consumed messages.
 /// </summary>
 /// <typeparam name="TIntegrationEvent">The type of integration event.</typeparam>
+/// <typeparam name="TModule">The module marker interface type.</typeparam>
 /// <remarks>
 /// <para>
 /// This decorator wraps an integration event handler and ensures that the same event is not
@@ -21,20 +22,21 @@ namespace ModularTemplate.Common.Infrastructure.Inbox.Handlers;
 /// inbox_message_consumers table resides.
 /// </para>
 /// </remarks>
-public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent> : IntegrationEventHandler<TIntegrationEvent>
+public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent, TModule> : IntegrationEventHandler<TIntegrationEvent>
     where TIntegrationEvent : IIntegrationEvent
+    where TModule : class
 {
     private readonly IIntegrationEventHandler<TIntegrationEvent> _decorated;
-    private readonly IDbConnectionFactory _dbConnectionFactory;
+    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="IdempotentIntegrationEventHandlerBase{TIntegrationEvent}"/> class.
+    /// Initializes a new instance of the <see cref="IdempotentIntegrationEventHandlerBase{TIntegrationEvent, TModule}"/> class.
     /// </summary>
     /// <param name="decorated">The inner handler to decorate with idempotency.</param>
     /// <param name="dbConnectionFactory">Factory for creating database connections.</param>
     protected IdempotentIntegrationEventHandlerBase(
         IIntegrationEventHandler<TIntegrationEvent> decorated,
-        IDbConnectionFactory dbConnectionFactory)
+        IDbConnectionFactory<TModule> dbConnectionFactory)
     {
         _decorated = decorated;
         _dbConnectionFactory = dbConnectionFactory;

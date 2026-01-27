@@ -102,7 +102,6 @@ public static class InfrastructureConfiguration
     {
         NpgsqlDataSource npgsqlDataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
         services.TryAddSingleton(npgsqlDataSource);
-        services.TryAddScoped<IDbConnectionFactory, DbConnectionFactory>();
         return services;
     }
 

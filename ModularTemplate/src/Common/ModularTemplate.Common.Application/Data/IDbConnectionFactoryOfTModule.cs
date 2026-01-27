@@ -1,3 +1,5 @@
+using System.Data.Common;
+
 namespace ModularTemplate.Common.Application.Data;
 
 /// <summary>
@@ -9,7 +11,18 @@ namespace ModularTemplate.Common.Application.Data;
 /// allowing modules to connect to separate databases when deployed independently.
 /// </para>
 /// <para>
-public interface IDbConnectionFactory<TModule> : IDbConnectionFactory
+/// The <typeparamref name="TModule"/> type parameter is a marker interface (e.g., IOrdersModule)
+/// that uniquely identifies the module. This enables the DI container to resolve the correct
+/// connection factory for each module.
+/// </para>
+/// </remarks>
+/// <typeparam name="TModule">The module marker interface type.</typeparam>
+public interface IDbConnectionFactory<TModule>
     where TModule : class
 {
+    /// <summary>
+    /// Opens and returns a database connection for the module.
+    /// </summary>
+    /// <returns>An open database connection.</returns>
+    ValueTask<DbConnection> OpenConnectionAsync();
 }
