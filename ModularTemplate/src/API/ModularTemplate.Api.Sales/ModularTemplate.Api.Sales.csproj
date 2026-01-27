@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Api.Sales</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Shared host extensions -->
+    <ProjectReference Include="..\ModularTemplate.Api.Shared\ModularTemplate.Api.Shared.csproj" />
+
+    <!-- Common infrastructure for shared services -->
+    <ProjectReference Include="..\..\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
+
+    <!-- Sales module -->
+    <ProjectReference Include="..\..\Modules\Sales\ModularTemplate.Modules.Sales.Infrastructure\ModularTemplate.Modules.Sales.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Sales\ModularTemplate.Modules.Sales.Presentation\ModularTemplate.Modules.Sales.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>

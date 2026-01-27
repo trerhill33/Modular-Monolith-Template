@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Api.Inventory</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Shared host extensions -->
+    <ProjectReference Include="..\ModularTemplate.Api.Shared\ModularTemplate.Api.Shared.csproj" />
+
+    <!-- Common infrastructure for shared services -->
+    <ProjectReference Include="..\..\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
+
+    <!-- Inventory module -->
+    <ProjectReference Include="..\..\Modules\Inventory\ModularTemplate.Modules.Inventory.Infrastructure\ModularTemplate.Modules.Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Inventory\ModularTemplate.Modules.Inventory.Presentation\ModularTemplate.Modules.Inventory.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,78 @@
+name: Build Module Images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+
+jobs:
+  # ========================================
+  # Build and Test
+  # ========================================
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ModularTemplate/ModularTemplate.Api.sln
+
+      - name: Build
+        run: dotnet build ModularTemplate/ModularTemplate.Api.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test ModularTemplate/ModularTemplate.Api.sln --no-build --configuration Release --verbosity normal
+
+  # ========================================
+  # Build Docker Images (Matrix)
+  # ========================================
+  build-images:
+    needs: build-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [Orders, Sales, Customer, Inventory, Organization, Sample]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push ${{ matrix.module }} image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ModularTemplate/src/API/ModularTemplate.Api.${{ matrix.module }}/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/modular-api-${{ matrix.module }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/modular-api-${{ matrix.module }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image digest
+        run: echo "Image pushed with digest ${{ steps.build-push.outputs.digest }}"

@@ -33,7 +33,8 @@
       "Bash(dotnet ef migrations add:*)",
       "Bash(dotnet ef database update:*)",
       "Bash(dotnet ef migrations remove:*)",
-      "Bash(dir /b \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\")"
+      "Bash(dir /b \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\")",
+      "Bash(dotnet list:*)"
     ]
   }
 }

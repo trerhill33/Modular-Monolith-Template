@@ -6,17 +6,17 @@ namespace ModularTemplate.Api.Extensions;
 internal static class ConfigurationExtensions
 {
     /// <summary>
-    /// Adds module-specific configuration files to the configuration builder.
+    /// Adds module-specific configuration from per-module host projects.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Each module has its own configuration file following the pattern:
-    /// - modules.{module}.json (base configuration, required)
-    /// - modules.{module}.{environment}.json (environment overrides, optional)
+    /// Loads configuration from each module's dedicated API host project:
+    /// - ModularTemplate.Api.{Module}/appsettings.json (base configuration)
+    /// - ModularTemplate.Api.{Module}/appsettings.{environment}.json (environment overrides)
     /// </para>
     /// <para>
-    /// Configuration is layered: base file is loaded first, then environment-specific
-    /// file is merged on top, allowing environment overrides while sharing common defaults.
+    /// This keeps module configuration in a single source of truth (the per-module host projects)
+    /// while allowing the main API to run all modules locally with consistent settings.
     /// </para>
     /// </remarks>
     internal static void AddModuleConfiguration(
@@ -24,19 +24,29 @@ internal static class ConfigurationExtensions
         string[] modules,
         string environment)
     {
+        // Get the directory where the main API project is located
+        var basePath = Directory.GetCurrentDirectory();
+        var apiDirectory = Directory.GetParent(basePath)?.FullName ?? basePath;
+
         foreach (var module in modules)
         {
-            // Base module config (required)
-            configurationBuilder.AddJsonFile(
-                $"modules.{module}.json",
-                 false,
-                 true);
+            // Convert module name to PascalCase for project folder name
+            var modulePascal = char.ToUpperInvariant(module[0]) + module[1..];
+            var moduleHostPath = Path.Combine(apiDirectory, $"ModularTemplate.Api.{modulePascal}");
+
+            // Base module config (optional - don't fail if module host doesn't exist yet)
+            var baseConfigPath = Path.Combine(moduleHostPath, "appsettings.json");
+            if (File.Exists(baseConfigPath))
+            {
+                configurationBuilder.AddJsonFile(baseConfigPath, optional: true, reloadOnChange: true);
+            }
 
             // Environment-specific override (optional)
-            configurationBuilder.AddJsonFile(
-                $"modules.{module}.{environment}.json",
-                true,
-                true);
+            var envConfigPath = Path.Combine(moduleHostPath, $"appsettings.{environment}.json");
+            if (File.Exists(envConfigPath))
+            {
+                configurationBuilder.AddJsonFile(envConfigPath, optional: true, reloadOnChange: true);
+            }
         }
     }
 }

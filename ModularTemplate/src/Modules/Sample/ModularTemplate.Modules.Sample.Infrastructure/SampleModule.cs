@@ -62,11 +62,11 @@ public static class SampleModule
         services.AddSqsPolling<ProcessSqsJob>(environment);
 
         // Outbox pattern
-        services.Configure<OutboxOptions>(configuration.GetSection("Sample:Outbox"));
+        services.Configure<OutboxOptions>(configuration.GetSection("Features:Messaging:Outbox"));
         services.ConfigureOptions<ConfigureProcessOutboxJob<ProcessOutboxJob>>();
 
         // Inbox pattern
-        services.Configure<InboxOptions>(configuration.GetSection("Sample:Inbox"));
+        services.Configure<InboxOptions>(configuration.GetSection("Features:Messaging:Inbox"));
         services.ConfigureOptions<ConfigureProcessInboxJob<ProcessInboxJob>>();
 
         return services;

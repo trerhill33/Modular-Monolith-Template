@@ -51,11 +51,11 @@ public static class InventoryModule
         services.AddSqsPolling<EventBus.ProcessSqsJob>(environment);
 
         // Outbox pattern
-        services.Configure<OutboxOptions>(configuration.GetSection("Inventory:Outbox"));
+        services.Configure<OutboxOptions>(configuration.GetSection("Features:Messaging:Outbox"));
         services.ConfigureOptions<ConfigureProcessOutboxJob<ProcessOutboxJob>>();
 
         // Inbox pattern
-        services.Configure<InboxOptions>(configuration.GetSection("Inventory:Inbox"));
+        services.Configure<InboxOptions>(configuration.GetSection("Features:Messaging:Inbox"));
         services.ConfigureOptions<ConfigureProcessInboxJob<ProcessInboxJob>>();
 
         return services;
