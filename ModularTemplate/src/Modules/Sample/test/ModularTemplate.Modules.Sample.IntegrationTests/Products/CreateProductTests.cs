@@ -1,4 +1,3 @@
-using FluentAssertions;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Common.IntegrationTests.Abstractions;
 using ModularTemplate.Modules.Sample.Application.Products.CreateProduct;
@@ -23,8 +22,8 @@ public class CreateProductTests : BaseIntegrationTest
         Result<Guid> result = await Sender.Send(command);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeEmpty();
+        Assert.True(result.IsSuccess);
+        Assert.NotEqual(Guid.Empty, result.Value);
     }
 
     [Fact]
@@ -37,6 +36,6 @@ public class CreateProductTests : BaseIntegrationTest
         Result<Guid> result = await Sender.Send(command);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        Assert.True(result.IsFailure);
     }
 }

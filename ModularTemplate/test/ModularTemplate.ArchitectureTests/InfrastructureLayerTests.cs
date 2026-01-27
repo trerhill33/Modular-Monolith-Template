@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NetArchTest.Rules;
 using Xunit;
 
@@ -33,7 +32,7 @@ public sealed class InfrastructureLayerTests : BaseTest
             .HaveDependencyOnAny(moduleNamespaces)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Infrastructure should not depend on any module-specific code");
     }
 
@@ -59,7 +58,7 @@ public sealed class InfrastructureLayerTests : BaseTest
                 .HaveDependencyOnAny(otherModuleNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Infrastructure should not depend on other modules. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }

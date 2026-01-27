@@ -37,7 +37,6 @@ ModularTemplate/
 │   │   ├── ModularTemplate.Api.Orders/       # Dedicated host for Orders
 │   │   ├── ModularTemplate.Api.Sales/        # Dedicated host for Sales
 │   │   ├── ModularTemplate.Api.Customer/     # Dedicated host for Customer
-│   │   ├── ModularTemplate.Api.Inventory/    # Dedicated host for Inventory
 │   │   ├── ModularTemplate.Api.Organization/ # Dedicated host for Organization
 │   │   ├── ModularTemplate.Api.Sample/       # Dedicated host for Sample
 │   │   └── ModularTemplate.Api/              # All modules (local dev)
@@ -83,7 +82,6 @@ Each module uses its own PostgreSQL database:
 | Orders | `orders-db.rds.amazonaws.com/orders` | `localhost/orders_dev` |
 | Sales | `sales-db.rds.amazonaws.com/sales` | `localhost/sales_dev` |
 | Customer | `customer-db.rds.amazonaws.com/customer` | `localhost/customer_dev` |
-| Inventory | `inventory-db.rds.amazonaws.com/inventory` | `localhost/inventory_dev` |
 | Organization | `organization-db.rds.amazonaws.com/org` | `localhost/organization_dev` |
 | Sample | `sample-db.rds.amazonaws.com/sample` | `localhost/sample_dev` |
 
@@ -115,7 +113,6 @@ Modules communicate via **integration events** using the outbox/inbox pattern:
 | Orders | 5001 | `http://localhost:5001` |
 | Sales | 5002 | `http://localhost:5002` |
 | Customer | 5003 | `http://localhost:5003` |
-| Inventory | 5004 | `http://localhost:5004` |
 | Organization | 5005 | `http://localhost:5005` |
 | Sample | 5006 | `http://localhost:5006` |
 | All Modules | 5000 | `http://localhost:5000` |
@@ -157,7 +154,7 @@ jobs:
   build:
     strategy:
       matrix:
-        module: [Orders, Sales, Customer, Inventory, Organization, Sample]
+        module: [Orders, Sales, Customer, Organization, Sample]
 ```
 
 ### Deploy Phase (Per-Module)

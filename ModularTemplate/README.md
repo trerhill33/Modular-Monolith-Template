@@ -1,6 +1,6 @@
 # ModularTemplate.Api - Modular Monolith Template
 
-A production-ready .NET 10 modular monolith template implementing Domain-Driven Design (DDD), Clean Architecture, and CQRS patterns.
+A production-ready .NET 9 modular monolith template implementing Domain-Driven Design (DDD), Clean Architecture, and CQRS patterns.
 
 ## Features
 
@@ -113,7 +113,7 @@ API             → Infrastructure, Presentation
 
 ### Prerequisites
 
-- .NET 10 SDK
+- .NET 9 SDK
 - PostgreSQL
 - Redis (optional, falls back to in-memory cache)
 
@@ -345,7 +345,7 @@ public sealed record GetOrderQuery(Guid OrderId) : IQuery<OrderResponse>;
 
 ## Technology Stack
 
-- .NET 10
+- .NET 9
 - Entity Framework Core 9 (PostgreSQL)
 - Dapper (read queries)
 - MediatR

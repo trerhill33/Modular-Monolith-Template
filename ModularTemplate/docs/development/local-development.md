@@ -50,7 +50,6 @@ dotnet run --project src/API/ModularTemplate.Api.Sales
 | Orders | `dotnet run --project src/API/ModularTemplate.Api.Orders` | `http://localhost:5001` |
 | Sales | `dotnet run --project src/API/ModularTemplate.Api.Sales` | `http://localhost:5002` |
 | Customer | `dotnet run --project src/API/ModularTemplate.Api.Customer` | `http://localhost:5003` |
-| Inventory | `dotnet run --project src/API/ModularTemplate.Api.Inventory` | `http://localhost:5004` |
 | Organization | `dotnet run --project src/API/ModularTemplate.Api.Organization` | `http://localhost:5005` |
 | Sample | `dotnet run --project src/API/ModularTemplate.Api.Sample` | `http://localhost:5006` |
 
@@ -112,7 +111,6 @@ psql -U postgres
 CREATE DATABASE orders_dev;
 CREATE DATABASE sales_dev;
 CREATE DATABASE customer_dev;
-CREATE DATABASE inventory_dev;
 CREATE DATABASE organization_dev;
 CREATE DATABASE sample_dev;
 

@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NetArchTest.Rules;
 using Xunit;
 
@@ -98,9 +97,7 @@ public sealed class ModuleIsolationTests : BaseTest
             }
         }
 
-        violations.Should().BeEmpty(
-            "Modules should be isolated from each other. " +
-            $"Found cross-module dependencies:\n{string.Join("\n", violations)}");
+        Assert.Empty(violations);
     }
 
     /// <summary>
@@ -112,9 +109,7 @@ public sealed class ModuleIsolationTests : BaseTest
     {
         var moduleNames = ModuleNames;
 
-        moduleNames.Should().NotBeEmpty(
-            "At least one module should be discovered. " +
-            "Ensure module assemblies follow the naming convention: {Prefix}.Modules.{ModuleName}.{Layer}");
+        Assert.NotEmpty(moduleNames);
 
         // Log discovered modules for visibility
         var discoveredModules = string.Join(", ", moduleNames);
@@ -143,9 +138,7 @@ public sealed class ModuleIsolationTests : BaseTest
             if (!hasPresentation) missingLayers.Add($"{moduleName}: Missing Presentation layer");
         }
 
-        missingLayers.Should().BeEmpty(
-            "Each module should have all four layers (Domain, Application, Infrastructure, Presentation). " +
-            $"Missing layers:\n{string.Join("\n", missingLayers)}");
+        Assert.Empty(missingLayers);
     }
 
     /// <summary>

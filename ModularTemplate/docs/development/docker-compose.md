@@ -23,7 +23,6 @@ This starts:
 | `orders-api` | 5001 | Orders module API |
 | `sales-api` | 5002 | Sales module API |
 | `customer-api` | 5003 | Customer module API |
-| `inventory-api` | 5004 | Inventory module API |
 | `organization-api` | 5005 | Organization module API |
 | `sample-api` | 5006 | Sample module API |
 | `postgres` | 5432 | PostgreSQL database |
@@ -103,7 +102,6 @@ Create `init-databases.sql` to initialize all module databases:
 CREATE DATABASE orders;
 CREATE DATABASE sales;
 CREATE DATABASE customer;
-CREATE DATABASE inventory;
 CREATE DATABASE organization;
 CREATE DATABASE sample;
 ```

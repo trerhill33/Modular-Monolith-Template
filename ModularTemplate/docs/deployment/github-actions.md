@@ -12,7 +12,6 @@ ModularTemplate uses GitHub Actions for continuous integration and deployment. T
 | `.github/workflows/deploy-orders.yml` | Deploy Orders module |
 | `.github/workflows/deploy-sales.yml` | Deploy Sales module |
 | `.github/workflows/deploy-customer.yml` | Deploy Customer module |
-| `.github/workflows/deploy-inventory.yml` | Deploy Inventory module |
 | `.github/workflows/deploy-organization.yml` | Deploy Organization module |
 | `.github/workflows/deploy-sample.yml` | Deploy Sample module |
 
@@ -37,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: [Orders, Sales, Customer, Inventory, Organization, Sample]
+        module: [Orders, Sales, Customer, Organization, Sample]
 
     steps:
       - name: Checkout
@@ -164,7 +163,6 @@ Create ECR repositories for each module:
 aws ecr create-repository --repository-name modular-api-orders
 aws ecr create-repository --repository-name modular-api-sales
 aws ecr create-repository --repository-name modular-api-customer
-aws ecr create-repository --repository-name modular-api-inventory
 aws ecr create-repository --repository-name modular-api-organization
 aws ecr create-repository --repository-name modular-api-sample
 

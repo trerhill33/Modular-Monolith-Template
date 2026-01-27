@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NetArchTest.Rules;
 using Xunit;
 
@@ -27,7 +26,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Application"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any Application layer");
     }
 
@@ -45,7 +44,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Infrastructure"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any Infrastructure layer");
     }
 
@@ -63,7 +62,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Presentation"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any Presentation layer");
     }
 
@@ -87,7 +86,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOnAny(moduleNamespaces)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any module-specific code");
     }
 
@@ -113,7 +112,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on any Application layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -137,7 +136,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on any Infrastructure layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -161,7 +160,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on any Presentation layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -185,7 +184,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(otherModuleNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on other modules. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }

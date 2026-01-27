@@ -150,8 +150,8 @@ public interface IReadRepository<TEntity, in TId>
 
 ## Priority 5: Documentation Cleanup
 
-- Remove Inventory module references from README.md (migration commands)
-- Update .NET version references (says .NET 10 in some places, should be .NET 9)
+- ~~Remove Inventory module references from README.md (migration commands)~~ DONE
+- ~~Update .NET version references (says .NET 10 in some places, should be .NET 9)~~ DONE
 - Add ARCHITECTURE-FAQ.md to explain design decisions
 
 ---
