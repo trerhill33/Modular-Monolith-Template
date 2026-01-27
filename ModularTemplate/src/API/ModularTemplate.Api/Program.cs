@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using ModularTemplate.Api.Extensions;
 using ModularTemplate.Api.Shared;
 using ModularTemplate.Common.Application;
@@ -47,9 +48,8 @@ builder.Services
     {
         options.AddDefaultPolicy(policy =>
         {
-            var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
             policy
-                .WithOrigins(origins)
+                .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
@@ -76,11 +76,11 @@ builder.Services.AddCommonInfrastructure(
 // ========================================
 
 builder.Services
-    .AddSampleModule(builder.Configuration, builder.Environment, MigrationExtensions.GetModuleConnectionString(builder.Configuration, "Sample", databaseConnectionString))
-    .AddOrdersModule(builder.Configuration, builder.Environment, MigrationExtensions.GetModuleConnectionString(builder.Configuration, "Orders", databaseConnectionString))
-    .AddOrganizationModule(builder.Configuration, builder.Environment, MigrationExtensions.GetModuleConnectionString(builder.Configuration, "Organization", databaseConnectionString))
-    .AddCustomerModule(builder.Configuration, builder.Environment, MigrationExtensions.GetModuleConnectionString(builder.Configuration, "Customer", databaseConnectionString))
-    .AddSalesModule(builder.Configuration, builder.Environment, MigrationExtensions.GetModuleConnectionString(builder.Configuration, "Sales", databaseConnectionString));
+    .AddSampleModule(builder.Configuration, builder.Environment, DatabaseMigrationExtensions.GetModuleConnectionString(builder.Configuration, "Sample", databaseConnectionString))
+    .AddOrdersModule(builder.Configuration, builder.Environment, DatabaseMigrationExtensions.GetModuleConnectionString(builder.Configuration, "Orders", databaseConnectionString))
+    .AddOrganizationModule(builder.Configuration, builder.Environment, DatabaseMigrationExtensions.GetModuleConnectionString(builder.Configuration, "Organization", databaseConnectionString))
+    .AddCustomerModule(builder.Configuration, builder.Environment, DatabaseMigrationExtensions.GetModuleConnectionString(builder.Configuration, "Customer", databaseConnectionString))
+    .AddSalesModule(builder.Configuration, builder.Environment, DatabaseMigrationExtensions.GetModuleConnectionString(builder.Configuration, "Sales", databaseConnectionString));
 
 // ========================================
 // Middleware Pipeline

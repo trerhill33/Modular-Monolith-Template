@@ -10,7 +10,7 @@ namespace ModularTemplate.Api.Shared;
 /// <summary>
 /// Extension methods for database migration management.
 /// </summary>
-public static class MigrationExtensions
+public static class DatabaseMigrationExtensions
 {
     /// <summary>
     /// Applies pending migrations for a single DbContext when running in Development environment.
