@@ -22,6 +22,59 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check tests exist for new handlers
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking for missing tests on new Command/Query handlers..."
+
+          # Get changed files compared to base branch
+          CHANGED_FILES=$(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD)
+
+          # Patterns to check (in Application layer)
+          PATTERNS="CommandHandler\.cs$|QueryHandler\.cs$"
+
+          # Find new handlers (exclude test files themselves)
+          HANDLERS=$(echo "$CHANGED_FILES" | grep -E "$PATTERNS" | grep -v "/test/" | grep "/Application/" || true)
+
+          if [ -z "$HANDLERS" ]; then
+            echo "No new handlers found. Skipping test check."
+            exit 0
+          fi
+
+          echo "Found new handlers:"
+          echo "$HANDLERS"
+          echo ""
+
+          MISSING=""
+          while IFS= read -r handler; do
+            [ -z "$handler" ] && continue
+
+            # Extract handler name without .cs
+            HANDLER_NAME=$(basename "$handler" .cs)
+
+            # Look for corresponding test file anywhere in test directories
+            TEST_FILE=$(find . -path "*/test/*" -name "${HANDLER_NAME}Tests.cs" -o -path "*/test/*" -name "${HANDLER_NAME}Test.cs" 2>/dev/null | head -1)
+
+            if [ -z "$TEST_FILE" ]; then
+              MISSING="$MISSING\n  - $handler (expected: ${HANDLER_NAME}Tests.cs)"
+            else
+              echo "✓ Found test for $HANDLER_NAME: $TEST_FILE"
+            fi
+          done <<< "$HANDLERS"
+
+          if [ -n "$MISSING" ]; then
+            echo ""
+            echo "::error::Missing unit tests for new handlers:$MISSING"
+            echo ""
+            echo "Please add tests for the above handlers before merging."
+            exit 1
+          fi
+
+          echo ""
+          echo "All new handlers have corresponding tests!"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
