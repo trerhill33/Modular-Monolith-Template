@@ -1,9 +1,6 @@
-using ModularTemplate.Common.Domain;
+using ModularTemplate.Common.Domain.Events;
 
 namespace ModularTemplate.Modules.Sample.Domain.TestAggregate;
 
 // Test file - should trigger CI check for missing TestCreatedDomainEventHandler.cs
-public sealed class TestCreatedDomainEvent(Guid testId) : DomainEvent
-{
-    public Guid TestId { get; } = testId;
-}
+public sealed record TestCreatedDomainEvent(Guid TestId) : DomainEvent;
