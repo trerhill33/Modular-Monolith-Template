@@ -22,7 +22,18 @@
       "Bash(powershell \"Get-WmiObject win32_service | Where-Object { $_PathName -like ''*postgres*'' } | Select-Object Name, State, PathName\")",
       "Bash(powershell -File:*)",
       "Bash(dir \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\data\")",
-      "Bash(dir /s /b \"C:\\\\Program Files\\\\PostgreSQL\\\\*pg_ctl.exe\")"
+      "Bash(dir /s /b \"C:\\\\Program Files\\\\PostgreSQL\\\\*pg_ctl.exe\")",
+      "Bash(dotnet sln:*)",
+      "Bash(git mv:*)",
+      "Bash(rename \"ModularTemplate\\\\src\\\\Modules\\\\Sales\" \"Sample\")",
+      "Bash(move \"ModularTemplate\\\\src\\\\Modules\\\\Sales\" \"ModularTemplate\\\\src\\\\Modules\\\\Sample\")",
+      "Bash(Remove-Item \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.Development.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.itg.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.prod.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.qua.json\")",
+      "Bash(Select-String -Path ModularTemplate.Api.sln -Pattern \"Sales\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet ef database update:*)",
+      "Bash(dotnet ef migrations remove:*)",
+      "Bash(dir /b \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\")"
     ]
   }
 }

@@ -3,7 +3,7 @@ using ModularTemplate.Common.Application.Caching;
 using ModularTemplate.Common.Application.EventBus;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Modules.Orders.Domain.ProductsCache;
-using ModularTemplate.Modules.Sales.IntegrationEvents;
+using ModularTemplate.Modules.Sample.IntegrationEvents;
 
 namespace ModularTemplate.Modules.Orders.Presentation.IntegrationEvents;
 

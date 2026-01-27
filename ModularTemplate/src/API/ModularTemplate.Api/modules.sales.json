@@ -1,8 +1,6 @@
 {
   "Sales": {
     "Features": {
-      "CatalogV2Pagination": true,
-      "BulkCreateProducts": false
     },
     "Outbox": {
       "IntervalInSeconds": 10,

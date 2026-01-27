@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Modules.Customer.Presentation</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ModularTemplate.Common.Presentation\ModularTemplate.Common.Presentation.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Customer.Application\ModularTemplate.Modules.Customer.Application.csproj" />
+  </ItemGroup>
+
+</Project>

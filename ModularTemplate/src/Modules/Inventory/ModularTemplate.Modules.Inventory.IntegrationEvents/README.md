@@ -1,0 +1,20 @@
+# Inventory Integration Events
+
+This project contains integration events published by the Inventory module for cross-module communication.
+
+## Usage
+
+Other modules can subscribe to these events by implementing `IIntegrationEventHandler<TEvent>` in their Presentation layer.
+
+## Events
+
+Add integration events here as the module evolves. Example:
+
+```csharp
+public sealed record StockUpdatedIntegrationEvent(
+    Guid Id,
+    DateTime OccurredOnUtc,
+    Guid ProductId,
+    int QuantityChange,
+    int NewQuantity) : IntegrationEvent(Id, OccurredOnUtc);
+```

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Modules.Customer.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ModularTemplate.Common.Application\ModularTemplate.Common.Application.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Customer.Domain\ModularTemplate.Modules.Customer.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

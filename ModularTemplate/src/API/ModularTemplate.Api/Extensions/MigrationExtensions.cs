@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ModularTemplate.Modules.Orders.Infrastructure.Persistence;
-using ModularTemplate.Modules.Sales.Infrastructure.Persistence;
+using ModularTemplate.Modules.Sample.Infrastructure.Persistence;
 using Npgsql;
 
 namespace ModularTemplate.Api.Extensions;
@@ -27,7 +27,7 @@ internal static class MigrationExtensions
 
         using var scope = app.ApplicationServices.CreateScope();
 
-        ApplyMigration<SalesDbContext>(scope);
+        ApplyMigration<SampleDbContext>(scope);
         ApplyMigration<OrdersDbContext>(scope);
 
         return app;

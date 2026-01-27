@@ -1,7 +1,11 @@
 using Asp.Versioning.Builder;
 using ModularTemplate.Common.Presentation.Endpoints;
+using ModularTemplate.Modules.Customer.Presentation.Endpoints;
+using ModularTemplate.Modules.Inventory.Presentation.Endpoints;
 using ModularTemplate.Modules.Orders.Presentation.Endpoints;
+using ModularTemplate.Modules.Organization.Presentation.Endpoints;
 using ModularTemplate.Modules.Sales.Presentation.Endpoints;
+using ModularTemplate.Modules.Sample.Presentation.Endpoints;
 
 namespace ModularTemplate.Api.Extensions;
 
@@ -18,8 +22,12 @@ internal static class ModuleExtensions
     {
         return
         [
-            new SalesModuleEndpoints(),
+            new SampleModuleEndpoints(),
             new OrdersModuleEndpoints(),
+            new OrganizationModuleEndpoints(),
+            new CustomerModuleEndpoints(),
+            new InventoryModuleEndpoints(),
+            new SalesModuleEndpoints(),
         ];
     }
 

@@ -1,6 +1,4 @@
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Modules.Sales.Presentation.Endpoints.Catalogs;
-using ModularTemplate.Modules.Sales.Presentation.Endpoints.Products;
 
 namespace ModularTemplate.Modules.Sales.Presentation.Endpoints;
 
@@ -12,7 +10,6 @@ public sealed class SalesModuleEndpoints : ModuleEndpoints
 
     protected override IEnumerable<(string ResourcePath, string Tag, IResourceEndpoints Endpoints)> GetResources()
     {
-        yield return ("products", "Products", new ProductsEndpoints());
-        yield return ("catalogs", "Catalogs", new CatalogsEndpoints());
+        yield break; // Add resources here
     }
 }

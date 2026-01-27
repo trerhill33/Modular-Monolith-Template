@@ -145,6 +145,78 @@ The API will be available at `https://localhost:5001` with Swagger UI.
 dotnet test
 ```
 
+### EF Core Migrations
+
+Each module has its own DbContext and migrations. Use the following commands to manage migrations per module.
+
+#### Add New Migration
+
+```bash
+# Sample Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure --startup-project src/API/ModularTemplate.Api --context SampleDbContext --output-dir Persistence/Migrations
+
+# Orders Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrdersDbContext --output-dir Persistence/Migrations
+
+# Organization Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrganizationDbContext --output-dir Persistence/Migrations
+
+# Customer Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext --output-dir Persistence/Migrations
+
+# Inventory Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Inventory/ModularTemplate.Modules.Inventory.Infrastructure --startup-project src/API/ModularTemplate.Api --context InventoryDbContext --output-dir Persistence/Migrations
+
+# Sales Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext --output-dir Persistence/Migrations
+```
+
+#### Remove Last Migration
+
+```bash
+# Sample Module
+dotnet ef migrations remove --project src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure --startup-project src/API/ModularTemplate.Api --context SampleDbContext
+
+# Orders Module
+dotnet ef migrations remove --project src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrdersDbContext
+
+# Organization Module
+dotnet ef migrations remove --project src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrganizationDbContext
+
+# Customer Module
+dotnet ef migrations remove --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext
+
+# Inventory Module
+dotnet ef migrations remove --project src/Modules/Inventory/ModularTemplate.Modules.Inventory.Infrastructure --startup-project src/API/ModularTemplate.Api --context InventoryDbContext
+
+# Sales Module
+dotnet ef migrations remove --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext
+```
+
+#### Apply Migrations Manually
+
+Migrations are automatically applied on application startup. To apply manually:
+
+```bash
+# Sample Module
+dotnet ef database update --project src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure --startup-project src/API/ModularTemplate.Api --context SampleDbContext
+
+# Orders Module
+dotnet ef database update --project src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrdersDbContext
+
+# Organization Module
+dotnet ef database update --project src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrganizationDbContext
+
+# Customer Module
+dotnet ef database update --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext
+
+# Inventory Module
+dotnet ef database update --project src/Modules/Inventory/ModularTemplate.Modules.Inventory.Infrastructure --startup-project src/API/ModularTemplate.Api --context InventoryDbContext
+
+# Sales Module
+dotnet ef database update --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext
+```
+
 ### Code Coverage
 
 The project includes [Microsoft Code Coverage](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage) tooling with HTML report generation.

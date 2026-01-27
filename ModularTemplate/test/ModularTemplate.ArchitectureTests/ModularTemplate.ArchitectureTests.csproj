@@ -24,12 +24,12 @@
     <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Presentation\ModularTemplate.Common.Presentation.csproj" />
 
-    <!-- Sales module (all layers for architecture tests) -->
-    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Domain\ModularTemplate.Modules.Sales.Domain.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Application\ModularTemplate.Modules.Sales.Application.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Infrastructure\ModularTemplate.Modules.Sales.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.Presentation\ModularTemplate.Modules.Sales.Presentation.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sales\ModularTemplate.Modules.Sales.IntegrationEvents\ModularTemplate.Modules.Sales.IntegrationEvents.csproj" />
+    <!-- Sample module (all layers for architecture tests) -->
+    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Domain\ModularTemplate.Modules.Sample.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Application\ModularTemplate.Modules.Sample.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Infrastructure\ModularTemplate.Modules.Sample.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Presentation\ModularTemplate.Modules.Sample.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.IntegrationEvents\ModularTemplate.Modules.Sample.IntegrationEvents.csproj" />
 
     <!-- Orders module (all layers for architecture tests) -->
     <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Domain\ModularTemplate.Modules.Orders.Domain.csproj" />
