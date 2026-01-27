@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main, ses]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 env:
   DOTNET_VERSION: '10.0.x'
 
