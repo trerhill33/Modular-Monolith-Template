@@ -76,6 +76,89 @@ jobs:
           echo ""
           echo "All new handlers have corresponding tests!"
 
+      - name: Check handlers exist for new events
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking for missing handlers on new Domain/Integration events..."
+
+          # Get changed files compared to base branch
+          CHANGED_FILES=$(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD)
+
+          MISSING=""
+
+          # ----------------------------------------
+          # Check 1: Domain Events need handlers
+          # ----------------------------------------
+          DOMAIN_EVENTS=$(echo "$CHANGED_FILES" | grep -E "DomainEvent\.cs$" | grep "/Domain/" || true)
+
+          if [ -n "$DOMAIN_EVENTS" ]; then
+            echo "Found new Domain Events:"
+            echo "$DOMAIN_EVENTS"
+            echo ""
+
+            while IFS= read -r event; do
+              [ -z "$event" ] && continue
+
+              EVENT_NAME=$(basename "$event" .cs)
+              # DomainEvent -> DomainEventHandler
+              HANDLER_NAME="${EVENT_NAME}Handler"
+
+              HANDLER_FILE=$(find . -name "${HANDLER_NAME}.cs" 2>/dev/null | grep -v "/test/" | head -1)
+
+              if [ -z "$HANDLER_FILE" ]; then
+                MISSING="$MISSING\n  - $event (expected: ${HANDLER_NAME}.cs)"
+              else
+                echo "✓ Found handler for $EVENT_NAME: $HANDLER_FILE"
+              fi
+            done <<< "$DOMAIN_EVENTS"
+          fi
+
+          # ----------------------------------------
+          # Check 2: Integration Events need handlers
+          # ----------------------------------------
+          INTEGRATION_EVENTS=$(echo "$CHANGED_FILES" | grep -E "IntegrationEvent\.cs$" | grep "/IntegrationEvents/" || true)
+
+          if [ -n "$INTEGRATION_EVENTS" ]; then
+            echo ""
+            echo "Found new Integration Events:"
+            echo "$INTEGRATION_EVENTS"
+            echo ""
+
+            while IFS= read -r event; do
+              [ -z "$event" ] && continue
+
+              EVENT_NAME=$(basename "$event" .cs)
+              HANDLER_NAME="${EVENT_NAME}Handler"
+
+              HANDLER_FILE=$(find . -name "${HANDLER_NAME}.cs" 2>/dev/null | grep -v "/test/" | head -1)
+
+              if [ -z "$HANDLER_FILE" ]; then
+                MISSING="$MISSING\n  - $event (expected: ${HANDLER_NAME}.cs in a consuming module)"
+              else
+                echo "✓ Found handler for $EVENT_NAME: $HANDLER_FILE"
+              fi
+            done <<< "$INTEGRATION_EVENTS"
+          fi
+
+          # ----------------------------------------
+          # Report results
+          # ----------------------------------------
+          if [ -z "$DOMAIN_EVENTS" ] && [ -z "$INTEGRATION_EVENTS" ]; then
+            echo "No new events found. Skipping handler check."
+            exit 0
+          fi
+
+          if [ -n "$MISSING" ]; then
+            echo ""
+            echo "::error::Missing handlers for new events:$MISSING"
+            echo ""
+            echo "Please add handlers for the above events before merging."
+            exit 1
+          fi
+
+          echo ""
+          echo "All new events have corresponding handlers!"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
