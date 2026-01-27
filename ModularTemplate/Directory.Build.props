@@ -12,11 +12,6 @@
     <NuGetAuditMode>direct</NuGetAuditMode>
   </PropertyGroup>
 
-  <!-- Suppress specific vulnerability warnings where we've evaluated the risk -->
-  <ItemGroup>
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-8785-wc3w-h8q6" />
-  </ItemGroup>
-
   <!-- Add Coverlet for code coverage to all test projects -->
   <ItemGroup Condition="'$(IsTestProject)' == 'true'">
     <PackageReference Include="coverlet.collector" Version="6.0.4">
