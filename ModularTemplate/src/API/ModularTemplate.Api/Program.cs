@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using ModularTemplate.Api.Extensions;
 using ModularTemplate.Api.Shared;
 using ModularTemplate.Common.Application;

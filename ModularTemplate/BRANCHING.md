@@ -23,7 +23,7 @@ main (production)
 
 ### `feature/*`
 - **Purpose**: New functionality
-- **Naming**: `feature/{ticket-id}-{short-description}` or `feature/{short-description}`
+- **Naming**: `feature/{JIRA-TICKET}-{short-description}`
 - **Lifetime**: 1-3 days max
 - **Base**: Branch from `main`
 - **Merge**: PR back to `main`
@@ -32,33 +32,33 @@ main (production)
 # Example
 git checkout main
 git pull origin main
-git checkout -b feature/add-customer-reassign
+git checkout -b feature/PROJ-123-add-customer-reassign
 # ... work ...
-git push origin feature/add-customer-reassign
+git push origin feature/PROJ-123-add-customer-reassign
 # Create PR to main
 ```
 
 ### `bugfix/*`
 - **Purpose**: Non-urgent bug fixes
-- **Naming**: `bugfix/{ticket-id}-{short-description}`
+- **Naming**: `bugfix/{JIRA-TICKET}-{short-description}`
 - **Lifetime**: Hours to 1 day
 - **Base**: Branch from `main`
 - **Merge**: PR back to `main`
 
 ```bash
-git checkout -b bugfix/fix-order-validation
+git checkout -b bugfix/PROJ-456-fix-order-validation
 ```
 
 ### `hotfix/*`
 - **Purpose**: Urgent production fixes
-- **Naming**: `hotfix/{ticket-id}-{short-description}`
+- **Naming**: `hotfix/{JIRA-TICKET}-{short-description}`
 - **Lifetime**: Hours
 - **Base**: Branch from `main`
 - **Merge**: PR to `main`, then cherry-pick to any active release branches
 
 ```bash
 git checkout main
-git checkout -b hotfix/fix-critical-auth-bug
+git checkout -b hotfix/PROJ-789-fix-critical-auth-bug
 # ... fix ...
 # PR to main (expedited review)
 ```
@@ -97,26 +97,31 @@ git merge release/v1.2.0
 
 ### Commit Messages
 
-Follow conventional commits:
+Follow conventional commits with JIRA ticket reference:
 
 ```
-feat: add customer reassignment endpoint
-fix: resolve null reference in order validation
-refactor: consolidate DbConnectionFactory pattern
-docs: update branching strategy
-chore: update package dependencies
-test: add integration tests for product creation
+feat(PROJ-123): add customer reassignment endpoint
+fix(PROJ-456): resolve null reference in order validation
+refactor(PROJ-789): consolidate DbConnectionFactory pattern
+docs(PROJ-101): update branching strategy
+chore(PROJ-102): update package dependencies
+test(PROJ-103): add integration tests for product creation
 ```
+
+The JIRA ticket in the commit message enables automatic linking in JIRA and makes it easy to trace changes back to requirements.
 
 ### Pull Request Guidelines
 
-**Title**: Same format as commit messages
+**Title**: Include JIRA ticket
 ```
-feat: add customer reassignment endpoint
+feat(PROJ-123): add customer reassignment endpoint
 ```
 
 **Description**:
 ```markdown
+## JIRA
+[PROJ-123](https://yourcompany.atlassian.net/browse/PROJ-123)
+
 ## Summary
 Brief description of changes
 
@@ -129,9 +134,6 @@ Brief description of changes
 - [ ] Unit tests pass
 - [ ] Integration tests pass
 - [ ] Manual testing completed
-
-## Related
-Closes #123
 ```
 
 ## CI/CD Integration
@@ -155,43 +157,46 @@ Closes #123
 
 ## Module-Specific Considerations
 
-When working on a specific module:
+When working on a specific module, include both JIRA ticket and module context:
 
 ```bash
-# Good: Descriptive branch name with module context
-git checkout -b feature/orders-add-split-shipment
-git checkout -b bugfix/customer-fix-email-validation
+# Good: JIRA ticket + module context + description
+git checkout -b feature/PROJ-123-orders-add-split-shipment
+git checkout -b bugfix/PROJ-456-customer-fix-email-validation
 
-# Avoid: Vague names
+# Avoid: Missing JIRA ticket or vague names
 git checkout -b feature/update
 git checkout -b fix
+git checkout -b feature/add-stuff
 ```
 
 ## Quick Reference
 
 ```bash
-# Start new feature
+# Start new feature (always include JIRA ticket)
 git checkout main && git pull
-git checkout -b feature/my-feature
+git checkout -b feature/PROJ-123-my-feature
 
 # Keep branch updated (if long-lived)
 git fetch origin
 git rebase origin/main
 
 # Push and create PR
-git push -u origin feature/my-feature
+git push -u origin feature/PROJ-123-my-feature
 
 # After PR merged, cleanup
 git checkout main && git pull
-git branch -d feature/my-feature
+git branch -d feature/PROJ-123-my-feature
 ```
 
 ## Anti-Patterns to Avoid
 
 | Don't | Do Instead |
 |-------|------------|
+| Branch without JIRA ticket | Always include ticket: `feature/PROJ-123-...` |
 | Long-lived feature branches (weeks) | Break into smaller PRs |
 | Merge commits from main into feature | Rebase onto main |
 | Direct commits to main | Always use PRs |
 | Giant PRs (1000+ lines) | Smaller, focused PRs |
-| Vague branch names | Descriptive names with context |
+| Vague branch names | Descriptive names with JIRA + context |
+| Commits without ticket reference | Include ticket: `feat(PROJ-123): ...` |
