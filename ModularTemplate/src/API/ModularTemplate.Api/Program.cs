@@ -47,8 +47,9 @@ builder.Services
     {
         options.AddDefaultPolicy(policy =>
         {
+            var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
             policy
-                .AllowAnyOrigin()
+                .WithOrigins(origins)
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
