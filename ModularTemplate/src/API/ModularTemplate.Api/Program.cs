@@ -53,7 +53,8 @@ builder.Services
                 .AllowAnyHeader();
         });
     })
-    .AddHealthChecks(databaseConnectionString, cacheConnectionString);
+    .AddHealthChecks(databaseConnectionString, cacheConnectionString)
+    .AddGranularHealthChecks(builder.Configuration);
 
 // Application layer (MediatR, FluentValidation, Pipeline Behaviors)
 builder.Services.AddCommonApplication([
@@ -103,6 +104,8 @@ var apiVersionSet = app.CreateApiVersionSet();
 
 app.UseOpenApiVersioned(modules);
 app.MapHealthCheckEndpoint();
+app.MapTaggedHealthCheckEndpoint("/health/messaging", "messaging");
+app.MapTaggedHealthCheckEndpoint("/health/modules", "module");
 app.UseGlobalExceptionHandling();
 app.UseCors();
 app.UseAuthentication();
