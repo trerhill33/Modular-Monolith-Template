@@ -16,7 +16,6 @@ namespace ModularTemplate.Api.Shared;
 /// </summary>
 public static class HealthCheckExtensions
 {
-
     /// <summary>
     /// Adds health check services for database and cache connectivity.
     /// </summary>
@@ -46,15 +45,16 @@ public static class HealthCheckExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The application configuration.</param>
     /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// Requires ApplicationOptions to be registered first via AddApplicationOptions().
+    /// Validation is handled by ValidateOnStart() at app startup.
+    /// </remarks>
     public static IServiceCollection AddGranularHealthChecks(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         // Get module schemas from ApplicationOptions (single source of truth)
-        var applicationOptions = configuration
-            .GetSection(ApplicationOptions.SectionName)
-            .Get<ApplicationOptions>();
-        var moduleSchemas = applicationOptions?.GetModules() ?? ["sample"];
+        var moduleSchemas = GetModuleSchemas(configuration);
 
         // Configure options from configuration with validation
         // Use PostConfigure to inject schemas from ApplicationOptions
@@ -102,10 +102,7 @@ public static class HealthCheckExtensions
         IConfiguration configuration)
     {
         // Get module schemas from ApplicationOptions (single source of truth)
-        var applicationOptions = configuration
-            .GetSection(ApplicationOptions.SectionName)
-            .Get<ApplicationOptions>();
-        var moduleSchemas = applicationOptions?.GetModules() ?? ["sample"];
+        var moduleSchemas = GetModuleSchemas(configuration);
 
         var healthChecksBuilder = services.AddHealthChecks();
 
@@ -184,5 +181,25 @@ public static class HealthCheckExtensions
         }).AllowAnonymous();
 
         return app;
+    }
+
+    /// <summary>
+    /// Gets module schemas from ApplicationOptions configuration.
+    /// </summary>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The array of module schema names.</returns>
+    /// <remarks>
+    /// ApplicationOptions must be registered with ValidateOnStart() before this is called.
+    /// Validation of required fields is handled by ValidateOnStart() during app startup.
+    /// </remarks>
+    private static string[] GetModuleSchemas(IConfiguration configuration)
+    {
+        var applicationOptions = configuration
+            .GetSection(ApplicationOptions.SectionName)
+            .Get<ApplicationOptions>();
+
+        // GetModules() returns Modules array if set, otherwise derives from DatabaseName/Name
+        // If config is invalid, ValidateOnStart() will fail at app.Build()
+        return applicationOptions?.GetModules() ?? [];
     }
 }

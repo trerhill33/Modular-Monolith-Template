@@ -42,13 +42,8 @@ public static class InfrastructureConfiguration
         string databaseConnectionString,
         string redisConnectionString)
     {
-        // Register centralized application identity configuration with validation
-        services.AddOptions<ApplicationOptions>()
-            .Bind(configuration.GetSection(ApplicationOptions.SectionName))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
         // Register post-configure handlers to derive values from ApplicationOptions
+        // Note: ApplicationOptions must be registered before this via AddApplicationOptions()
         services.ConfigureOptions<ConfigureAwsMessagingOptions>();
 
         services.AddAuthenticationInternal(configuration);

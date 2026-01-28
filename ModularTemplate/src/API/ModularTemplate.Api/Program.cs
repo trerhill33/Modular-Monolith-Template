@@ -2,6 +2,7 @@ using ModularTemplate.Api.Extensions;
 using ModularTemplate.Api.Shared;
 using ModularTemplate.Common.Application;
 using ModularTemplate.Common.Infrastructure;
+using ModularTemplate.Common.Infrastructure.Application;
 using ModularTemplate.Modules.Customer.Infrastructure;
 using ModularTemplate.Modules.Customer.Infrastructure.Persistence;
 using ModularTemplate.Modules.Orders.Infrastructure;
@@ -44,6 +45,12 @@ builder.Configuration.AddModuleConfiguration(["sample", "orders", "organization"
 // ========================================
 // Common Cross-Cutting Concerns
 // ========================================
+
+// Application identity - must be registered first as other services depend on it
+builder.Services.AddOptions<ApplicationOptions>()
+    .Bind(builder.Configuration.GetSection(ApplicationOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 // Presentation/API layer
 builder.Services

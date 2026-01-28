@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ModularTemplate.Common.Infrastructure.Application;
 using ModularTemplate.Common.Presentation.Endpoints;
 
 namespace ModularTemplate.Api.Shared;
@@ -28,6 +29,12 @@ public static class HostExtensions
         string? cacheConnectionString = null,
         IModuleEndpoints? moduleEndpoints = null)
     {
+        // Application identity - must be registered first as other services depend on it
+        builder.Services.AddOptions<ApplicationOptions>()
+            .Bind(builder.Configuration.GetSection(ApplicationOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         // Health checks
         var healthChecks = builder.Services.AddHealthChecks()
             .AddNpgSql(databaseConnectionString, name: "database");
