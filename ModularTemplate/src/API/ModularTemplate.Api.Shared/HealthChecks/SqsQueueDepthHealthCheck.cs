@@ -24,17 +24,17 @@ public sealed class SqsQueueDepthHealthCheckOptions
     /// <summary>
     /// Gets or sets the message count threshold for degraded health.
     /// </summary>
-    public int DegradedThreshold { get; set; }
+    public int DegradedThreshold { get; set; } = 1000;
 
     /// <summary>
     /// Gets or sets the message count threshold for unhealthy status.
     /// </summary>
-    public int UnhealthyThreshold { get; set; }
+    public int UnhealthyThreshold { get; set; } = 10000;
 
     /// <summary>
     /// Gets or sets whether to include dead letter queue metrics if available.
     /// </summary>
-    public bool IncludeDeadLetterQueue { get; set; }
+    public bool IncludeDeadLetterQueue { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the dead letter queue URL to check.
@@ -44,7 +44,7 @@ public sealed class SqsQueueDepthHealthCheckOptions
     /// <summary>
     /// Gets or sets the threshold for messages in the dead letter queue that indicates unhealthy status.
     /// </summary>
-    public int DeadLetterQueueUnhealthyThreshold { get; set; }
+    public int DeadLetterQueueUnhealthyThreshold { get; set; } = 1;
 }
 
 /// <summary>

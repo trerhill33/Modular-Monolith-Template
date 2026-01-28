@@ -43,5 +43,5 @@ public sealed class AuthenticationOptions
     /// <summary>
     /// Gets or sets whether HTTPS is required for metadata retrieval.
     /// </summary>
-    public bool RequireHttpsMetadata { get; set; }
+    public bool RequireHttpsMetadata { get; set; } = true;
 }

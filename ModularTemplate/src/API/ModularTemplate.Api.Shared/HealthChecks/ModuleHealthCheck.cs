@@ -21,22 +21,22 @@ public sealed class ModuleHealthCheckOptions
     /// <summary>
     /// Gets or sets the age threshold in seconds for pending outbox messages to indicate degraded health.
     /// </summary>
-    public int OutboxDegradedThresholdSeconds { get; set; }
+    public int OutboxDegradedThresholdSeconds { get; set; } = 60;
 
     /// <summary>
     /// Gets or sets the age threshold in seconds for pending outbox messages to indicate unhealthy status.
     /// </summary>
-    public int OutboxUnhealthyThresholdSeconds { get; set; }
+    public int OutboxUnhealthyThresholdSeconds { get; set; } = 300;
 
     /// <summary>
     /// Gets or sets the count threshold for pending outbox messages to indicate degraded health.
     /// </summary>
-    public int OutboxDegradedCountThreshold { get; set; }
+    public int OutboxDegradedCountThreshold { get; set; } = 50;
 
     /// <summary>
     /// Gets or sets the count threshold for pending outbox messages to indicate unhealthy status.
     /// </summary>
-    public int OutboxUnhealthyCountThreshold { get; set; }
+    public int OutboxUnhealthyCountThreshold { get; set; } = 500;
 }
 
 /// <summary>

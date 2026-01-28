@@ -17,27 +17,27 @@ public sealed class InboxLagHealthCheckOptions
     /// <summary>
     /// Gets or sets the database schemas to check for inbox messages.
     /// </summary>
-    public string[] Schemas { get; set; } = [];
+    public string[] Schemas { get; set; } = ["sample", "orders", "organization", "customer", "sales"];
 
     /// <summary>
     /// Gets or sets the age threshold in seconds after which pending messages indicate degraded health.
     /// </summary>
-    public int DegradedThresholdSeconds { get; set; }
+    public int DegradedThresholdSeconds { get; set; } = 60;
 
     /// <summary>
     /// Gets or sets the age threshold in seconds after which pending messages indicate unhealthy status.
     /// </summary>
-    public int UnhealthyThresholdSeconds { get; set; }
+    public int UnhealthyThresholdSeconds { get; set; } = 300;
 
     /// <summary>
     /// Gets or sets the count threshold after which pending messages indicate degraded health.
     /// </summary>
-    public int DegradedCountThreshold { get; set; }
+    public int DegradedCountThreshold { get; set; } = 100;
 
     /// <summary>
     /// Gets or sets the count threshold after which pending messages indicate unhealthy status.
     /// </summary>
-    public int UnhealthyCountThreshold { get; set; }
+    public int UnhealthyCountThreshold { get; set; } = 1000;
 }
 
 /// <summary>
