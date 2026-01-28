@@ -2,7 +2,23 @@
 
 ## Overview
 
-Trunk-based development with short-lived feature branches. All branches merge to `main` via PR.
+Git Flow with `development` as the integration branch. Feature branches merge to `development`, which is CI/CD deployed to lower environments. Production releases merge from `development` to `main`.
+
+## Branch Flow
+
+```
+feature/PROJ-123 ──→ development ──→ main
+                          │            │
+                          ▼            ▼
+                    dev/itg/qua    production
+```
+
+## Environment Mapping
+
+| Branch | Environments | Purpose |
+|--------|--------------|---------|
+| `development` | dev, itg, qua | Integration testing, QA validation |
+| `main` | production | Live releases |
 
 ## Branch Naming
 
@@ -29,23 +45,35 @@ test: add integration tests for product creation
 ## Quick Reference
 
 ```bash
-# Start work
-git checkout main && git pull
+# Start feature work
+git checkout development && git pull
 git checkout -b feature/PROJ-123
 
-# Push and create PR
+# Push and create PR to development
 git push -u origin feature/PROJ-123
 
-# After merge, cleanup
-git checkout main && git pull
+# After merge to development, cleanup
+git checkout development && git pull
 git branch -d feature/PROJ-123
+
+# Production release (from development to main)
+git checkout main && git pull
+git merge development
+git push
 ```
 
-## Branch Protection (main)
+## Branch Protection
 
+### development
 - Require PR with approval
 - Require passing CI (build, tests)
 - No direct commits
+
+### main
+- Require PR with approval
+- Require passing CI (build, tests)
+- No direct commits
+- Merges from `development` only
 
 ## Anti-Patterns
 
@@ -53,5 +81,6 @@ git branch -d feature/PROJ-123
 |-------|------------|
 | Branch without JIRA ticket | `feature/PROJ-123` |
 | Long-lived branches (weeks) | Break into smaller PRs |
-| Direct commits to main | Always use PRs |
+| Direct commits to development/main | Always use PRs |
 | Giant PRs (1000+ lines) | Smaller, focused PRs |
+| Merge to main without QA sign-off | Validate in qua environment first |
