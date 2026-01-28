@@ -12,6 +12,7 @@ using ModularTemplate.Modules.Sales.Infrastructure;
 using ModularTemplate.Modules.Sales.Infrastructure.Persistence;
 using ModularTemplate.Modules.Sample.Infrastructure;
 using ModularTemplate.Modules.Sample.Infrastructure.Persistence;
+using Serilog;
 using CustomerApplication = ModularTemplate.Modules.Customer.Application.AssemblyReference;
 using OrdersApplication = ModularTemplate.Modules.Orders.Application.AssemblyReference;
 using OrganizationApplication = ModularTemplate.Modules.Organization.Application.AssemblyReference;
@@ -20,6 +21,12 @@ using SampleApplication = ModularTemplate.Modules.Sample.Application.AssemblyRef
 
 var builder = WebApplication.CreateBuilder(args);
 var modules = ModuleExtensions.GetModuleEndpoints();
+
+// ========================================
+// Serilog Configuration
+// ========================================
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // ========================================
 // Service Configuration
@@ -100,6 +107,26 @@ app.ApplyMigrations(
 
 // Create the API version set for endpoint mapping
 var apiVersionSet = app.CreateApiVersionSet();
+
+// Serilog request logging
+app.UseSerilogRequestLogging(options =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? "unknown");
+        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+        diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
+
+        if (httpContext.User.Identity?.IsAuthenticated == true)
+        {
+            var userId = httpContext.User.FindFirst("sub")?.Value;
+            if (userId is not null)
+            {
+                diagnosticContext.Set("UserId", userId);
+            }
+        }
+    };
+});
 
 app.UseOpenApiVersioned(modules);
 app.MapHealthCheckEndpoint();
