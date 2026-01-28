@@ -83,7 +83,7 @@ public static class ApiResults
 
         return new Dictionary<string, object?>
         {
-            { "errors", validationError.Errors }
+            ["errors"] = validationError.Errors
         };
     }
 }

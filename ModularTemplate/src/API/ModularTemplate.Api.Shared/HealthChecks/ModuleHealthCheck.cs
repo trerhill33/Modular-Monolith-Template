@@ -21,44 +21,31 @@ public sealed class ModuleHealthCheckOptions
     /// <summary>
     /// Gets or sets the age threshold in seconds for pending outbox messages to indicate degraded health.
     /// </summary>
-    public int OutboxDegradedThresholdSeconds { get; set; } = 60;
+    public int OutboxDegradedThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the age threshold in seconds for pending outbox messages to indicate unhealthy status.
     /// </summary>
-    public int OutboxUnhealthyThresholdSeconds { get; set; } = 300;
+    public int OutboxUnhealthyThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold for pending outbox messages to indicate degraded health.
     /// </summary>
-    public int OutboxDegradedCountThreshold { get; set; } = 50;
+    public int OutboxDegradedCountThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold for pending outbox messages to indicate unhealthy status.
     /// </summary>
-    public int OutboxUnhealthyCountThreshold { get; set; } = 500;
+    public int OutboxUnhealthyCountThreshold { get; set; }
 }
 
 /// <summary>
 /// Health check for an individual module that monitors its outbox and inbox queues.
 /// </summary>
-public sealed class ModuleHealthCheck : IHealthCheck
+public sealed class ModuleHealthCheck(
+    NpgsqlDataSource dataSource,
+    ModuleHealthCheckOptions options) : IHealthCheck
 {
-    private readonly NpgsqlDataSource _dataSource;
-    private readonly ModuleHealthCheckOptions _options;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ModuleHealthCheck"/> class.
-    /// </summary>
-    /// <param name="dataSource">The PostgreSQL data source.</param>
-    /// <param name="options">Configuration options for the module health check.</param>
-    public ModuleHealthCheck(NpgsqlDataSource dataSource, ModuleHealthCheckOptions options)
-    {
-        _dataSource = dataSource;
-        _options = options;
-    }
-
-    /// <inheritdoc/>
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
@@ -67,8 +54,8 @@ public sealed class ModuleHealthCheck : IHealthCheck
         {
             var data = new Dictionary<string, object>
             {
-                ["module"] = _options.ModuleName,
-                ["schema"] = _options.Schema
+                ["module"] = options.ModuleName,
+                ["schema"] = options.Schema
             };
 
             // Check outbox status
@@ -107,16 +94,16 @@ public sealed class ModuleHealthCheck : IHealthCheck
 
             var description = overallStatus switch
             {
-                HealthStatus.Healthy => $"Module {_options.ModuleName} healthy",
-                HealthStatus.Degraded => $"Module {_options.ModuleName} degraded: outbox={outboxStatus.PendingCount} pending, inbox={inboxStatus.PendingCount} pending",
-                _ => $"Module {_options.ModuleName} unhealthy: outbox={outboxStatus.PendingCount} pending/{outboxStatus.FailedCount} failed, inbox={inboxStatus.PendingCount} pending/{inboxStatus.FailedCount} failed"
+                HealthStatus.Healthy => $"Module {options.ModuleName} healthy",
+                HealthStatus.Degraded => $"Module {options.ModuleName} degraded: outbox={outboxStatus.PendingCount} pending, inbox={inboxStatus.PendingCount} pending",
+                _ => $"Module {options.ModuleName} unhealthy: outbox={outboxStatus.PendingCount} pending/{outboxStatus.FailedCount} failed, inbox={inboxStatus.PendingCount} pending/{inboxStatus.FailedCount} failed"
             };
 
             return new HealthCheckResult(overallStatus, description, data: data);
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy($"Failed to check module {_options.ModuleName} health", ex);
+            return HealthCheckResult.Unhealthy($"Failed to check module {options.ModuleName} health", ex);
         }
     }
 
@@ -132,14 +119,14 @@ public sealed class ModuleHealthCheck : IHealthCheck
 
     private async Task<MessageQueueStatus> CheckMessageTableAsync(string tableName, CancellationToken cancellationToken)
     {
-        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
+        await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
 
         var query = $"""
             SELECT
                 COUNT(*) FILTER (WHERE processed_on_utc IS NULL) as pending_count,
                 COALESCE(EXTRACT(EPOCH FROM (NOW() - MIN(occurred_on_utc))) FILTER (WHERE processed_on_utc IS NULL), 0) as oldest_age_seconds,
                 COUNT(*) FILTER (WHERE processed_on_utc IS NULL AND error IS NOT NULL) as failed_count
-            FROM {_options.Schema}.{tableName}
+            FROM {options.Schema}.{tableName}
             WHERE processed_on_utc IS NULL
                OR (processed_on_utc IS NULL AND occurred_on_utc > NOW() - INTERVAL '1 day')
             """;
@@ -160,14 +147,14 @@ public sealed class ModuleHealthCheck : IHealthCheck
 
     private HealthStatus DetermineOutboxStatus(MessageQueueStatus status)
     {
-        if (status.OldestPendingAgeSeconds >= _options.OutboxUnhealthyThresholdSeconds ||
-            status.PendingCount >= _options.OutboxUnhealthyCountThreshold)
+        if (status.OldestPendingAgeSeconds >= options.OutboxUnhealthyThresholdSeconds ||
+            status.PendingCount >= options.OutboxUnhealthyCountThreshold)
         {
             return HealthStatus.Unhealthy;
         }
 
-        if (status.OldestPendingAgeSeconds >= _options.OutboxDegradedThresholdSeconds ||
-            status.PendingCount >= _options.OutboxDegradedCountThreshold)
+        if (status.OldestPendingAgeSeconds >= options.OutboxDegradedThresholdSeconds ||
+            status.PendingCount >= options.OutboxDegradedCountThreshold)
         {
             return HealthStatus.Degraded;
         }

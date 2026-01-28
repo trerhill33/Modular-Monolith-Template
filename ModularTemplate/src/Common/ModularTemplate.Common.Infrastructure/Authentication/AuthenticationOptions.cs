@@ -32,7 +32,7 @@ public sealed class AuthenticationOptions
     /// Gets or sets the Keycloak base URL (e.g., "http://localhost:8080").
     /// Used to construct MetadataAddress if not explicitly set.
     /// </summary>
-    public string KeycloakBaseUrl { get; set; } = "http://localhost:8080";
+    public string KeycloakBaseUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the Keycloak realm name.
@@ -43,5 +43,5 @@ public sealed class AuthenticationOptions
     /// <summary>
     /// Gets or sets whether HTTPS is required for metadata retrieval.
     /// </summary>
-    public bool RequireHttpsMetadata { get; set; } = true;
+    public bool RequireHttpsMetadata { get; set; }
 }

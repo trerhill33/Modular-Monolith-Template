@@ -79,7 +79,7 @@ public static class DatabaseMigrationExtensions
         }
 
         // Collect all unique connection strings
-        var connectionStrings = new HashSet<string>();
+        HashSet<string> connectionStrings = [];
         foreach (var (moduleName, _) in dbContexts)
         {
             var connStr = GetModuleConnectionString(configuration, moduleName, defaultConnectionString);

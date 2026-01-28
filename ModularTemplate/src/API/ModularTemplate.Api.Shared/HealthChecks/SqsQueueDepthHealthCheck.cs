@@ -23,20 +23,18 @@ public sealed class SqsQueueDepthHealthCheckOptions
 
     /// <summary>
     /// Gets or sets the message count threshold for degraded health.
-    /// Default is 1000 messages.
     /// </summary>
-    public int DegradedThreshold { get; set; } = 1000;
+    public int DegradedThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets the message count threshold for unhealthy status.
-    /// Default is 10000 messages.
     /// </summary>
-    public int UnhealthyThreshold { get; set; } = 10000;
+    public int UnhealthyThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets whether to include dead letter queue metrics if available.
     /// </summary>
-    public bool IncludeDeadLetterQueue { get; set; } = true;
+    public bool IncludeDeadLetterQueue { get; set; }
 
     /// <summary>
     /// Gets or sets the dead letter queue URL to check.
@@ -45,43 +43,26 @@ public sealed class SqsQueueDepthHealthCheckOptions
 
     /// <summary>
     /// Gets or sets the threshold for messages in the dead letter queue that indicates unhealthy status.
-    /// Default is 1 message (any message in DLQ is concerning).
     /// </summary>
-    public int DeadLetterQueueUnhealthyThreshold { get; set; } = 1;
+    public int DeadLetterQueueUnhealthyThreshold { get; set; }
 }
 
 /// <summary>
 /// Health check that monitors SQS queue depth and dead letter queue status.
 /// </summary>
-public sealed class SqsQueueDepthHealthCheck : IHealthCheck
+public sealed class SqsQueueDepthHealthCheck(
+    IAmazonSQS? sqsClient,
+    IOptions<SqsQueueDepthHealthCheckOptions> options,
+    ILogger<SqsQueueDepthHealthCheck> logger) : IHealthCheck
 {
-    private readonly IAmazonSQS? _sqsClient;
-    private readonly SqsQueueDepthHealthCheckOptions _options;
-    private readonly ILogger<SqsQueueDepthHealthCheck> _logger;
+    private readonly SqsQueueDepthHealthCheckOptions _options = options.Value;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SqsQueueDepthHealthCheck"/> class.
-    /// </summary>
-    /// <param name="sqsClient">The AWS SQS client (optional - may be null if AWS is not configured).</param>
-    /// <param name="options">Configuration options for the health check.</param>
-    /// <param name="logger">The logger instance.</param>
-    public SqsQueueDepthHealthCheck(
-        IAmazonSQS? sqsClient,
-        IOptions<SqsQueueDepthHealthCheckOptions> options,
-        ILogger<SqsQueueDepthHealthCheck> logger)
-    {
-        _sqsClient = sqsClient;
-        _options = options.Value;
-        _logger = logger;
-    }
-
-    /// <inheritdoc/>
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
         // If SQS is not configured, skip this check gracefully
-        if (_sqsClient is null || string.IsNullOrEmpty(_options.QueueUrl))
+        if (sqsClient is null || string.IsNullOrEmpty(_options.QueueUrl))
         {
             return HealthCheckResult.Healthy(
                 "SQS queue depth check skipped: AWS SQS is not configured",
@@ -90,7 +71,7 @@ public sealed class SqsQueueDepthHealthCheck : IHealthCheck
 
         try
         {
-            var data = new Dictionary<string, object>();
+            Dictionary<string, object> data = [];
 
             // Get main queue attributes
             var mainQueueMetrics = await GetQueueMetricsAsync(_options.QueueUrl, cancellationToken);
@@ -138,7 +119,7 @@ public sealed class SqsQueueDepthHealthCheck : IHealthCheck
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to check SQS queue depth for {QueueUrl}", _options.QueueUrl);
+            logger.LogWarning(ex, "Failed to check SQS queue depth for {QueueUrl}", _options.QueueUrl);
             return HealthCheckResult.Unhealthy("Failed to check SQS queue depth", ex);
         }
     }
@@ -156,7 +137,7 @@ public sealed class SqsQueueDepthHealthCheck : IHealthCheck
             ]
         };
 
-        var response = await _sqsClient!.GetQueueAttributesAsync(request, cancellationToken);
+        var response = await sqsClient!.GetQueueAttributesAsync(request, cancellationToken);
 
         return new QueueMetrics(
             GetAttributeValue(response, "ApproximateNumberOfMessages"),

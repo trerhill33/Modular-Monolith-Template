@@ -7,15 +7,8 @@ namespace ModularTemplate.Common.Presentation.Features;
 /// Endpoint filter that checks if a feature is enabled before allowing the request to proceed.
 /// Returns 404 Not Found if the feature is disabled, making the endpoint appear non-existent.
 /// </summary>
-internal sealed class FeatureFlagEndpointFilter : IEndpointFilter
+internal sealed class FeatureFlagEndpointFilter(string featureName) : IEndpointFilter
 {
-    private readonly string _featureName;
-
-    public FeatureFlagEndpointFilter(string featureName)
-    {
-        _featureName = featureName;
-    }
-
     public async ValueTask<object?> InvokeAsync(
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
@@ -27,7 +20,7 @@ internal sealed class FeatureFlagEndpointFilter : IEndpointFilter
             return await next(context);
         }
 
-        var isEnabled = await featureFlagService.IsEnabledAsync(_featureName, context.HttpContext.RequestAborted);
+        var isEnabled = await featureFlagService.IsEnabledAsync(featureName, context.HttpContext.RequestAborted);
 
         if (!isEnabled)
         {
