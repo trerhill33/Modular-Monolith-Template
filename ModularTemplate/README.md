@@ -89,12 +89,12 @@ ModularTemplate.Api/
 │   │   ├── ModularTemplate.Common.Application/    # CQRS, behaviors
 │   │   ├── ModularTemplate.Common.Infrastructure/ # Database, caching, auth
 │   │   └── ModularTemplate.Common.Presentation/   # Endpoints, API results
-│   └── Modules/
-│       └── Sample/                            # Example module
-│           ├── ModularTemplate.Modules.Sample.Domain/
-│           ├── ModularTemplate.Modules.Sample.Application/
-│           ├── ModularTemplate.Modules.Sample.Infrastructure/
-│           └── ModularTemplate.Modules.Sample.Presentation/
+│   └── Modules/                           # Business modules (5 modules)
+│       ├── Customer/                      # Customer management
+│       ├── Orders/                        # Order processing
+│       ├── Organization/                  # Organization management
+│       ├── Sales/                         # Sales and products
+│       └── Sample/                        # Example module
 └── test/
     └── ModularTemplate.ArchitectureTests/        # Architecture validation
 ```
@@ -124,7 +124,7 @@ Update `appsettings.json` with your connection strings:
 ```json
 {
   "ConnectionStrings": {
-    "Database": "Host=localhost;Database=retailcore;Username=postgres;Password=postgres",
+    "Database": "Host=localhost;Database=modulartemplate;Username=postgres;Password=postgres",
     "Cache": "localhost:6379"
   }
 }
@@ -281,18 +281,32 @@ internal sealed class CreateYourEntityCommandHandler(
 ```csharp
 internal sealed class CreateYourEntityEndpoint : IEndpoint
 {
-    public void MapEndpoint(IEndpointRouteBuilder app)
+    public void MapEndpoint(RouteGroupBuilder group)
     {
-        app.MapPost("your-entities", async (Request request, ISender sender) =>
-        {
-            var command = new CreateYourEntityCommand(request.Name);
-            Result<Guid> result = await sender.Send(command);
-            return result.Match(
-                id => Results.Created($"/your-entities/{id}", new { id }),
-                ApiResults.Problem);
-        });
+        group.MapPost("/", CreateYourEntityAsync)
+            .WithSummary("Create a new entity")
+            .WithDescription("Creates a new entity with the specified properties.")
+            .MapToApiVersion(new ApiVersion(1, 0))
+            .Produces<CreateYourEntityResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+    }
+
+    private static async Task<IResult> CreateYourEntityAsync(
+        CreateYourEntityRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var command = new CreateYourEntityCommand(request.Name);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match(
+            id => Results.Created($"/your-entities/{id}", new CreateYourEntityResponse(id)),
+            ApiResults.Problem);
     }
 }
+
+public sealed record CreateYourEntityRequest(string Name);
+public sealed record CreateYourEntityResponse(Guid Id);
 ```
 
 7. Register the module in `Program.cs`:

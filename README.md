@@ -39,20 +39,20 @@ API available at `https://localhost:5001` with Swagger UI.
 
 ## Branching Strategy
 
-Git Flow with `development` as the integration branch. Feature branches merge to `development`, which deploys to lower environments. Production releases merge from `development` to `main`.
+Git Flow with `ses` as the integration branch. Feature branches merge to `ses`, which deploys to staging. Production releases merge from `ses` to `main`.
 
 ```
-feature/PROJ-123 ──→ development ──→ main
-                          │            │
-                          ▼            ▼
-                    dev/itg/qua    production
+feature/PROJ-123 ──→ ses ──→ main
+                       │        │
+                       ▼        ▼
+                   staging  production
 ```
 
 ### Environment Mapping
 
 | Branch | Environments | Purpose |
 |--------|--------------|---------|
-| `development` | dev, itg, qua | Integration testing, QA validation |
+| `ses` | staging | Integration testing, QA validation |
 | `main` | production | Live releases |
 
 ### Branch Naming
@@ -79,19 +79,19 @@ test: add integration tests for product creation
 
 ```bash
 # Start feature work
-git checkout development && git pull
+git checkout ses && git pull
 git checkout -b feature/PROJ-123
 
-# Push and create PR to development
+# Push and create PR to ses
 git push -u origin feature/PROJ-123
 
-# After merge to development, cleanup
-git checkout development && git pull
+# After merge to ses, cleanup
+git checkout ses && git pull
 git branch -d feature/PROJ-123
 
-# Production release (from development to main)
+# Production release (from ses to main)
 git checkout main && git pull
-git merge development
+git merge ses
 git push
 ```
 
@@ -99,8 +99,18 @@ git push
 
 | Branch | Rules |
 |--------|-------|
-| `development` | Require PR approval, passing CI, no direct commits |
-| `main` | Require PR approval, passing CI, merges from `development` only |
+| `ses` | Require PR approval, passing CI, no direct commits |
+| `main` | Require PR approval, passing CI, merges from `ses` only |
+
+### Required GitHub Secrets
+
+For CI/CD deployment to work, configure these secrets in your repository:
+
+| Secret | Description |
+|--------|-------------|
+| `AWS_ACCESS_KEY_ID` | AWS access key for ECR/ECS deployment |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key for ECR/ECS deployment |
+| `AWS_REGION` | AWS region (e.g., `us-east-1`) |
 
 ## CI/CD Pipeline
 

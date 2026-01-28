@@ -24,8 +24,7 @@ The Event Bus provides asynchronous communication between modules using integrat
 ```csharp
 // In a domain event handler or application service
 await eventBus.PublishAsync(
-    new OrderCreatedIntegrationEvent(
-        ...
+    new OrderCreatedIntegrationEvent(...),
     cancellationToken);
 ```
 
@@ -55,7 +54,7 @@ No configuration needed. `InMemoryEventBus` is automatically registered.
 ```json
 {
   "AwsMessaging": {
-    "EventBusName": "retail-core-events",
+    "EventBusName": "modular-template-events",
     "EventSource": "ModularTemplate",
     "SqsQueueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/my-module-queue",
     "PollingIntervalSeconds": 5,
