@@ -22,11 +22,11 @@ public abstract class ReadRepository<TEntity, TId, TDbContext>(TDbContext dbCont
     protected abstract Expression<Func<TEntity, TId>> IdSelector { get; }
 
     public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
-        => await DbSet.FirstOrDefaultAsync(BuildIdPredicate(id), cancellationToken);
+        => await DbSet.AsNoTracking().FirstOrDefaultAsync(BuildIdPredicate(id), cancellationToken);
 
     public virtual async Task<IReadOnlyCollection<TEntity>> GetAllAsync(int? limit = 100, CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> query = DbSet;
+        IQueryable<TEntity> query = DbSet.AsNoTracking();
 
         if (limit.HasValue)
         {

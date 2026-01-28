@@ -12,7 +12,7 @@ internal sealed class OrderRepository(OrdersDbContext dbContext)
 
     public override async Task<IReadOnlyCollection<Order>> GetAllAsync(int? limit = 100, CancellationToken cancellationToken = default)
     {
-        IQueryable<Order> query = DbSet.OrderByDescending(o => o.OrderedAtUtc);
+        IQueryable<Order> query = DbSet.AsNoTracking().OrderByDescending(o => o.OrderedAtUtc);
 
         if (limit.HasValue)
         {
@@ -25,6 +25,7 @@ internal sealed class OrderRepository(OrdersDbContext dbContext)
     public async Task<IReadOnlyCollection<Order>> GetByProductIdAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         return await DbSet
+            .AsNoTracking()
             .Where(o => o.ProductId == productId)
             .OrderByDescending(o => o.OrderedAtUtc)
             .ToListAsync(cancellationToken);

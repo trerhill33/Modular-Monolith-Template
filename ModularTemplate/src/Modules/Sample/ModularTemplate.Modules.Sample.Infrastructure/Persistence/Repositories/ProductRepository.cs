@@ -12,7 +12,7 @@ internal sealed class ProductRepository(SampleDbContext dbContext)
 
     public override async Task<IReadOnlyCollection<Product>> GetAllAsync(int? limit = 100, CancellationToken cancellationToken = default)
     {
-        IQueryable<Product> query = DbSet.OrderByDescending(p => p.CreatedAtUtc);
+        IQueryable<Product> query = DbSet.AsNoTracking().OrderByDescending(p => p.CreatedAtUtc);
 
         if (limit.HasValue)
         {
