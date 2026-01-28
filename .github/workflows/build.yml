@@ -40,7 +40,7 @@ jobs:
             --no-build \
             --configuration Release \
             --verbosity normal \
-            --collect:"XPlat Code Coverage" \
+            --settings ModularTemplate/ModularTemplate.runsettings \
             --results-directory ./coverage
 
       - name: Code Coverage Summary
