@@ -3,7 +3,7 @@
     Bootstrap this modular monolith template with your project name.
 
 .DESCRIPTION
-    This script renames the template from "Retail.Core" to your specified project name.
+    This script renames the template from "ModularTemplate" to your specified project name.
     It updates:
     - Application configuration (appsettings.json)
     - All namespaces and using statements
@@ -47,7 +47,7 @@ $ErrorActionPreference = "Stop"
 # =============================================================================
 
 $TemplateName = "ModularTemplate"
-$RootPath = $PSScriptRoot
+$RootPath = Split-Path -Parent $PSScriptRoot  # Go up from scripts/ to ModularTemplate/
 
 # Derive all naming variants from the input
 # Handles both "Acme.Orders" and "ModularTemplate" formats
@@ -111,10 +111,13 @@ if ($TemplateName -match '\.') {
 }
 
 # Files to process for text replacement
-$FilePatterns = @("*.cs", "*.csproj", "*.sln", "*.json", "*.md", ".editorconfig")
+$FilePatterns = @("*.cs", "*.csproj", "*.sln", "*.json", "*.md", "*.yml", "*.yaml", "*.ps1", "*.sh", "*.runsettings", "Dockerfile", ".editorconfig")
 
 # Directories to exclude
 $ExcludeDirs = @("bin", "obj", ".vs", ".git", "node_modules")
+
+# Files to exclude (don't modify bootstrap script while it's running)
+$ExcludeFiles = @("bootstrap.ps1")
 
 # =============================================================================
 # Helper Functions
@@ -145,6 +148,10 @@ function Test-ShouldExclude {
     param([string]$Path)
     foreach ($dir in $ExcludeDirs) {
         if ($Path -match "\\$dir\\") { return $true }
+    }
+    $fileName = Split-Path -Leaf $Path
+    foreach ($file in $ExcludeFiles) {
+        if ($fileName -eq $file) { return $true }
     }
     return $false
 }
@@ -201,8 +208,8 @@ if ($artifactDirs) {
 Write-Step "Step 2: Updating appsettings.json..."
 
 $appSettingsFiles = @(
-    "$RootPath\src\API\Retail.Core.Api\appsettings.json",
-    "$RootPath\src\API\Retail.Core.Api\appsettings.Development.json"
+    "$RootPath\src\API\$TemplateName.Api\appsettings.json",
+    "$RootPath\src\API\$TemplateName.Api\appsettings.Development.json"
 )
 
 foreach ($settingsFile in $appSettingsFiles) {
@@ -234,8 +241,8 @@ foreach ($settingsFile in $appSettingsFiles) {
 Write-Step "Step 3: Replacing text content in files..."
 
 $replacements = @(
-    @{ Old = $TemplateNames.PascalCase; New = $Names.PascalCase },      # Retail.Core -> Acme.Orders
-    @{ Old = $TemplateNames.LowerDot; New = $Names.LowerDot }          # retail.core -> acme.orders
+    @{ Old = $TemplateNames.PascalCase; New = $Names.PascalCase },      # ModularTemplate -> Acme.Orders
+    @{ Old = $TemplateNames.LowerDot; New = $Names.LowerDot }           # modular.template -> acme.orders
 )
 
 $filesUpdated = 0
