@@ -12,7 +12,7 @@ internal sealed class CustomerRepository(OrdersDbContext dbContext)
 
     public override async Task<IReadOnlyCollection<Customer>> GetAllAsync(int? limit = 100, CancellationToken cancellationToken = default)
     {
-        IQueryable<Customer> query = DbSet.OrderByDescending(c => c.CreatedAtUtc);
+        IQueryable<Customer> query = DbSet.AsNoTracking().OrderByDescending(c => c.CreatedAtUtc);
 
         if (limit.HasValue)
         {
@@ -24,6 +24,6 @@ internal sealed class CustomerRepository(OrdersDbContext dbContext)
 
     public async Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await DbSet.FirstOrDefaultAsync(c => c.Email == email, cancellationToken);
+        return await DbSet.AsNoTracking().FirstOrDefaultAsync(c => c.Email == email, cancellationToken);
     }
 }
