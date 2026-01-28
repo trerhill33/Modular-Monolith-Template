@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ModularTemplate.Common.Infrastructure.Application;
 
 /// <summary>
@@ -28,7 +30,7 @@ namespace ModularTemplate.Common.Infrastructure.Application;
 /// </list>
 /// </para>
 /// </remarks>
-public sealed class ApplicationOptions
+public sealed class ApplicationOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name.
@@ -64,10 +66,45 @@ public sealed class ApplicationOptions
     public string DatabaseName { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the list of module schemas this application manages.
+    /// For single-module deployments, leave empty to auto-derive from <see cref="DatabaseName"/>.
+    /// For the monolith, list all module schemas.
+    /// </summary>
+    /// <example>["sales"], ["sample", "orders", "organization", "customer", "sales"]</example>
+    public string[] Modules { get; set; } = [];
+
+    /// <summary>
     /// Gets the derived database name, computing it from Name if not explicitly set.
     /// </summary>
     public string GetDatabaseName() =>
         string.IsNullOrEmpty(DatabaseName)
             ? Name.Replace(".", "").ToLowerInvariant()
             : DatabaseName;
+
+    /// <summary>
+    /// Gets the module schemas, defaulting to DatabaseName if not explicitly configured.
+    /// </summary>
+    public string[] GetModules() =>
+        Modules.Length > 0
+            ? Modules
+            : [GetDatabaseName()];
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (string.IsNullOrWhiteSpace(Name))
+        {
+            yield return new ValidationResult("Name is required.", [nameof(Name)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(DisplayName))
+        {
+            yield return new ValidationResult("DisplayName is required.", [nameof(DisplayName)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(ShortName))
+        {
+            yield return new ValidationResult("ShortName is required.", [nameof(ShortName)]);
+        }
+    }
 }

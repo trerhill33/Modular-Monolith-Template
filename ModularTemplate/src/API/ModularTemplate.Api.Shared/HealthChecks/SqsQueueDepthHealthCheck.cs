@@ -3,13 +3,14 @@ using Amazon.SQS.Model;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations;
 
 namespace ModularTemplate.Api.Shared.HealthChecks;
 
 /// <summary>
 /// Configuration options for the SQS queue depth health check.
 /// </summary>
-public sealed class SqsQueueDepthHealthCheckOptions
+public sealed class SqsQueueDepthHealthCheckOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name.
@@ -24,17 +25,17 @@ public sealed class SqsQueueDepthHealthCheckOptions
     /// <summary>
     /// Gets or sets the message count threshold for degraded health.
     /// </summary>
-    public int DegradedThreshold { get; set; } = 1000;
+    public int DegradedThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets the message count threshold for unhealthy status.
     /// </summary>
-    public int UnhealthyThreshold { get; set; } = 10000;
+    public int UnhealthyThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets whether to include dead letter queue metrics if available.
     /// </summary>
-    public bool IncludeDeadLetterQueue { get; set; } = true;
+    public bool IncludeDeadLetterQueue { get; set; }
 
     /// <summary>
     /// Gets or sets the dead letter queue URL to check.
@@ -44,7 +45,43 @@ public sealed class SqsQueueDepthHealthCheckOptions
     /// <summary>
     /// Gets or sets the threshold for messages in the dead letter queue that indicates unhealthy status.
     /// </summary>
-    public int DeadLetterQueueUnhealthyThreshold { get; set; } = 1;
+    public int DeadLetterQueueUnhealthyThreshold { get; set; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        // Only validate thresholds if SQS is configured (QueueUrl is set)
+        if (!string.IsNullOrWhiteSpace(QueueUrl))
+        {
+            if (DegradedThreshold <= 0)
+            {
+                yield return new ValidationResult(
+                    "DegradedThreshold must be positive when SQS is configured.",
+                    [nameof(DegradedThreshold)]);
+            }
+
+            if (UnhealthyThreshold <= 0)
+            {
+                yield return new ValidationResult(
+                    "UnhealthyThreshold must be positive when SQS is configured.",
+                    [nameof(UnhealthyThreshold)]);
+            }
+
+            if (UnhealthyThreshold <= DegradedThreshold)
+            {
+                yield return new ValidationResult(
+                    "UnhealthyThreshold must be greater than DegradedThreshold.",
+                    [nameof(UnhealthyThreshold), nameof(DegradedThreshold)]);
+            }
+
+            if (IncludeDeadLetterQueue && DeadLetterQueueUnhealthyThreshold < 0)
+            {
+                yield return new ValidationResult(
+                    "DeadLetterQueueUnhealthyThreshold cannot be negative.",
+                    [nameof(DeadLetterQueueUnhealthyThreshold)]);
+            }
+        }
+    }
 }
 
 /// <summary>

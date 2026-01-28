@@ -14,9 +14,11 @@ internal static class AuthenticationExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Register AuthenticationOptions from config section
-        services.Configure<AuthenticationOptions>(
-            configuration.GetSection(AuthenticationOptions.SectionName));
+        // Register AuthenticationOptions from config section with validation
+        services.AddOptions<AuthenticationOptions>()
+            .Bind(configuration.GetSection(AuthenticationOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         // Register post-configure to derive values from ApplicationOptions
         services.ConfigureOptions<ConfigureAuthenticationOptions>();

@@ -41,8 +41,10 @@ public static class MessagingServiceCollectionExtensions
         else
         {
             // Production: EventBridge + SQS
-            services.Configure<AwsMessagingOptions>(
-                configuration.GetSection(AwsMessagingOptions.SectionName));
+            services.AddOptions<AwsMessagingOptions>()
+                .Bind(configuration.GetSection(AwsMessagingOptions.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             // Register AWS SDK clients
             services.AddAWSService<IAmazonEventBridge>();

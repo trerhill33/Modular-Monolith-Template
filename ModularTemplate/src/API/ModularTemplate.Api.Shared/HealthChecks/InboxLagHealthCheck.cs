@@ -1,13 +1,14 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using System.ComponentModel.DataAnnotations;
 
 namespace ModularTemplate.Api.Shared.HealthChecks;
 
 /// <summary>
 /// Configuration options for the inbox lag health check.
 /// </summary>
-public sealed class InboxLagHealthCheckOptions
+public sealed class InboxLagHealthCheckOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name.
@@ -17,27 +18,81 @@ public sealed class InboxLagHealthCheckOptions
     /// <summary>
     /// Gets or sets the database schemas to check for inbox messages.
     /// </summary>
-    public string[] Schemas { get; set; } = ["sample", "orders", "organization", "customer", "sales"];
+    public string[] Schemas { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the age threshold in seconds after which pending messages indicate degraded health.
     /// </summary>
-    public int DegradedThresholdSeconds { get; set; } = 60;
+    public int DegradedThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the age threshold in seconds after which pending messages indicate unhealthy status.
     /// </summary>
-    public int UnhealthyThresholdSeconds { get; set; } = 300;
+    public int UnhealthyThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold after which pending messages indicate degraded health.
     /// </summary>
-    public int DegradedCountThreshold { get; set; } = 100;
+    public int DegradedCountThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold after which pending messages indicate unhealthy status.
     /// </summary>
-    public int UnhealthyCountThreshold { get; set; } = 1000;
+    public int UnhealthyCountThreshold { get; set; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        // Schemas are injected from ApplicationOptions via PostConfigure
+        if (Schemas.Length == 0)
+        {
+            yield return new ValidationResult(
+                "Schemas must be configured via Application:Modules or derived from Application:DatabaseName.",
+                [nameof(Schemas)]);
+        }
+
+        if (DegradedThresholdSeconds <= 0)
+        {
+            yield return new ValidationResult(
+                "DegradedThresholdSeconds must be positive.",
+                [nameof(DegradedThresholdSeconds)]);
+        }
+
+        if (UnhealthyThresholdSeconds <= 0)
+        {
+            yield return new ValidationResult(
+                "UnhealthyThresholdSeconds must be positive.",
+                [nameof(UnhealthyThresholdSeconds)]);
+        }
+
+        if (UnhealthyThresholdSeconds <= DegradedThresholdSeconds)
+        {
+            yield return new ValidationResult(
+                "UnhealthyThresholdSeconds must be greater than DegradedThresholdSeconds.",
+                [nameof(UnhealthyThresholdSeconds), nameof(DegradedThresholdSeconds)]);
+        }
+
+        if (DegradedCountThreshold <= 0)
+        {
+            yield return new ValidationResult(
+                "DegradedCountThreshold must be positive.",
+                [nameof(DegradedCountThreshold)]);
+        }
+
+        if (UnhealthyCountThreshold <= 0)
+        {
+            yield return new ValidationResult(
+                "UnhealthyCountThreshold must be positive.",
+                [nameof(UnhealthyCountThreshold)]);
+        }
+
+        if (UnhealthyCountThreshold <= DegradedCountThreshold)
+        {
+            yield return new ValidationResult(
+                "UnhealthyCountThreshold must be greater than DegradedCountThreshold.",
+                [nameof(UnhealthyCountThreshold), nameof(DegradedCountThreshold)]);
+        }
+    }
 }
 
 /// <summary>

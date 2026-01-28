@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
+using System.ComponentModel.DataAnnotations;
 
 namespace ModularTemplate.Api.Shared.HealthChecks;
 
 /// <summary>
 /// Configuration for a module health check.
 /// </summary>
-public sealed class ModuleHealthCheckOptions
+public sealed class ModuleHealthCheckOptions : IValidatableObject
 {
     /// <summary>
     /// Gets or sets the module name.
@@ -21,22 +22,82 @@ public sealed class ModuleHealthCheckOptions
     /// <summary>
     /// Gets or sets the age threshold in seconds for pending outbox messages to indicate degraded health.
     /// </summary>
-    public int OutboxDegradedThresholdSeconds { get; set; } = 60;
+    public int OutboxDegradedThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the age threshold in seconds for pending outbox messages to indicate unhealthy status.
     /// </summary>
-    public int OutboxUnhealthyThresholdSeconds { get; set; } = 300;
+    public int OutboxUnhealthyThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold for pending outbox messages to indicate degraded health.
     /// </summary>
-    public int OutboxDegradedCountThreshold { get; set; } = 50;
+    public int OutboxDegradedCountThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold for pending outbox messages to indicate unhealthy status.
     /// </summary>
-    public int OutboxUnhealthyCountThreshold { get; set; } = 500;
+    public int OutboxUnhealthyCountThreshold { get; set; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (string.IsNullOrWhiteSpace(ModuleName))
+        {
+            yield return new ValidationResult(
+                "ModuleName is required.",
+                [nameof(ModuleName)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(Schema))
+        {
+            yield return new ValidationResult(
+                "Schema is required.",
+                [nameof(Schema)]);
+        }
+
+        if (OutboxDegradedThresholdSeconds <= 0)
+        {
+            yield return new ValidationResult(
+                "OutboxDegradedThresholdSeconds must be positive.",
+                [nameof(OutboxDegradedThresholdSeconds)]);
+        }
+
+        if (OutboxUnhealthyThresholdSeconds <= 0)
+        {
+            yield return new ValidationResult(
+                "OutboxUnhealthyThresholdSeconds must be positive.",
+                [nameof(OutboxUnhealthyThresholdSeconds)]);
+        }
+
+        if (OutboxUnhealthyThresholdSeconds <= OutboxDegradedThresholdSeconds)
+        {
+            yield return new ValidationResult(
+                "OutboxUnhealthyThresholdSeconds must be greater than OutboxDegradedThresholdSeconds.",
+                [nameof(OutboxUnhealthyThresholdSeconds), nameof(OutboxDegradedThresholdSeconds)]);
+        }
+
+        if (OutboxDegradedCountThreshold <= 0)
+        {
+            yield return new ValidationResult(
+                "OutboxDegradedCountThreshold must be positive.",
+                [nameof(OutboxDegradedCountThreshold)]);
+        }
+
+        if (OutboxUnhealthyCountThreshold <= 0)
+        {
+            yield return new ValidationResult(
+                "OutboxUnhealthyCountThreshold must be positive.",
+                [nameof(OutboxUnhealthyCountThreshold)]);
+        }
+
+        if (OutboxUnhealthyCountThreshold <= OutboxDegradedCountThreshold)
+        {
+            yield return new ValidationResult(
+                "OutboxUnhealthyCountThreshold must be greater than OutboxDegradedCountThreshold.",
+                [nameof(OutboxUnhealthyCountThreshold), nameof(OutboxDegradedCountThreshold)]);
+        }
+    }
 }
 
 /// <summary>

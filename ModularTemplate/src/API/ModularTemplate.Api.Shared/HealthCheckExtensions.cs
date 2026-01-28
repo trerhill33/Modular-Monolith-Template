@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ModularTemplate.Api.Shared.HealthChecks;
+using ModularTemplate.Common.Infrastructure.Application;
 using Npgsql;
 
 namespace ModularTemplate.Api.Shared;
@@ -16,10 +16,6 @@ namespace ModularTemplate.Api.Shared;
 /// </summary>
 public static class HealthCheckExtensions
 {
-    /// <summary>
-    /// Default module schemas for health checks.
-    /// </summary>
-    private static readonly string[] DefaultModuleSchemas = ["sample", "orders", "organization", "customer", "sales"];
 
     /// <summary>
     /// Adds health check services for database and cache connectivity.
@@ -54,13 +50,28 @@ public static class HealthCheckExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Configure options from configuration
-        services.Configure<OutboxLagHealthCheckOptions>(
-            configuration.GetSection(OutboxLagHealthCheckOptions.SectionName));
-        services.Configure<InboxLagHealthCheckOptions>(
-            configuration.GetSection(InboxLagHealthCheckOptions.SectionName));
-        services.Configure<SqsQueueDepthHealthCheckOptions>(
-            configuration.GetSection(SqsQueueDepthHealthCheckOptions.SectionName));
+        // Get module schemas from ApplicationOptions (single source of truth)
+        var applicationOptions = configuration
+            .GetSection(ApplicationOptions.SectionName)
+            .Get<ApplicationOptions>();
+        var moduleSchemas = applicationOptions?.GetModules() ?? ["sample"];
+
+        // Configure options from configuration with validation
+        // Use PostConfigure to inject schemas from ApplicationOptions
+        services.AddOptions<OutboxLagHealthCheckOptions>()
+            .Bind(configuration.GetSection(OutboxLagHealthCheckOptions.SectionName))
+            .PostConfigure(options => options.Schemas = moduleSchemas)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddOptions<InboxLagHealthCheckOptions>()
+            .Bind(configuration.GetSection(InboxLagHealthCheckOptions.SectionName))
+            .PostConfigure(options => options.Schemas = moduleSchemas)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddOptions<SqsQueueDepthHealthCheckOptions>()
+            .Bind(configuration.GetSection(SqsQueueDepthHealthCheckOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         // Register health checks
         services.AddHealthChecks()
@@ -90,9 +101,11 @@ public static class HealthCheckExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var moduleSchemas = configuration
-            .GetSection("HealthChecks:Modules")
-            .Get<string[]>() ?? DefaultModuleSchemas;
+        // Get module schemas from ApplicationOptions (single source of truth)
+        var applicationOptions = configuration
+            .GetSection(ApplicationOptions.SectionName)
+            .Get<ApplicationOptions>();
+        var moduleSchemas = applicationOptions?.GetModules() ?? ["sample"];
 
         var healthChecksBuilder = services.AddHealthChecks();
 
