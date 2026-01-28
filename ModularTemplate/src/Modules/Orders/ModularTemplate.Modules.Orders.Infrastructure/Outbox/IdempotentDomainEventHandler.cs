@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Events;
 using ModularTemplate.Common.Infrastructure.Outbox.Handler;
 using ModularTemplate.Modules.Orders.Domain;

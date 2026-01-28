@@ -1,4 +1,4 @@
-using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Persistence;
 using Npgsql;
 using System.Data.Common;
 

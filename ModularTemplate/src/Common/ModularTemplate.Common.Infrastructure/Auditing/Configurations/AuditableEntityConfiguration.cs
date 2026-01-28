@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ModularTemplate.Common.Domain.Entities;
 
-namespace ModularTemplate.Common.Infrastructure.Auditing;
+namespace ModularTemplate.Common.Infrastructure.Auditing.Configurations;
 
 /// <summary>
 /// Extension methods for configuring auditable entity properties in EF Core.

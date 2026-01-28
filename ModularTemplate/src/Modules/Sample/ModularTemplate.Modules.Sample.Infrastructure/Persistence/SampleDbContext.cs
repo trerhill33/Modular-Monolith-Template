@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Infrastructure.Persistence;
 using ModularTemplate.Modules.Sample.Domain;
 using ModularTemplate.Modules.Sample.Domain.Catalogs;

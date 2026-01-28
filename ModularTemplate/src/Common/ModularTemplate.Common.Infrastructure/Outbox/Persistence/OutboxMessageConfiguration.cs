@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ModularTemplate.Common.Infrastructure.Outbox.Data;
+namespace ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 
 /// <summary>
 /// EF Core configuration for OutboxMessage entity.

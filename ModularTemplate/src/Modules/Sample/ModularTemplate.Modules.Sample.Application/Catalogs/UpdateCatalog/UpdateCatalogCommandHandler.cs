@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Modules.Sample.Domain;
 using ModularTemplate.Modules.Sample.Domain.Catalogs;
@@ -15,7 +15,7 @@ internal sealed class UpdateCatalogCommandHandler(
         UpdateCatalogCommand request,
         CancellationToken cancellationToken)
     {
-        Catalog? catalog = await catalogRepository.GetByIdAsync(request.CatalogId, cancellationToken);
+        var catalog = await catalogRepository.GetByIdAsync(request.CatalogId, cancellationToken);
 
         if (catalog is null)
         {

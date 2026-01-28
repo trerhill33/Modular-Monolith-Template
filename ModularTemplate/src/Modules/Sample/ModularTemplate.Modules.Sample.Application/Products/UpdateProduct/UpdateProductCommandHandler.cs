@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Modules.Sample.Domain;
 using ModularTemplate.Modules.Sample.Domain.Products;
@@ -15,7 +15,7 @@ internal sealed class UpdateProductCommandHandler(
         UpdateProductCommand request,
         CancellationToken cancellationToken)
     {
-        Product? product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
+        var product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken);
 
         if (product is null)
         {

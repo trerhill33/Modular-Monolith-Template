@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Modules.Orders.Domain;
 using ModularTemplate.Modules.Orders.Domain.Orders;
@@ -18,7 +18,7 @@ internal sealed class PlaceOrderCommandHandler(
         CancellationToken cancellationToken)
     {
         // Get product from local cache (synced from Sales module)
-        ProductCache? product = await productCacheRepository.GetByIdAsync(
+        var product = await productCacheRepository.GetByIdAsync(
             request.ProductId,
             cancellationToken);
 

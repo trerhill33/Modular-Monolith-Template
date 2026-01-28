@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ModularTemplate.Common.Infrastructure.Inbox.Data;
+namespace ModularTemplate.Common.Infrastructure.Inbox.Persistence;
 
 /// <summary>
 /// EF Core configuration for InboxMessage entity.

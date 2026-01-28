@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Modules.Orders.Domain;
 using ModularTemplate.Modules.Orders.Domain.Customers;
@@ -15,7 +15,7 @@ internal sealed class UpdateCustomerCommandHandler(
         UpdateCustomerCommand request,
         CancellationToken cancellationToken)
     {
-        Customer? customer = await customerRepository.GetByIdAsync(request.CustomerId, cancellationToken);
+        var customer = await customerRepository.GetByIdAsync(request.CustomerId, cancellationToken);
 
         if (customer is null)
         {

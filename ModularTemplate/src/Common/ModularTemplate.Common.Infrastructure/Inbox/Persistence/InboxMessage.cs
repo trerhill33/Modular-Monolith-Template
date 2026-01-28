@@ -1,9 +1,9 @@
-namespace ModularTemplate.Common.Infrastructure.Outbox.Data;
+namespace ModularTemplate.Common.Infrastructure.Inbox.Persistence;
 
 /// <summary>
-/// Represents a message in the outbox for reliable event publishing.
+/// Represents a message in the inbox for idempotent event handling.
 /// </summary>
-public sealed class OutboxMessage
+public sealed class InboxMessage
 {
     /// <summary>
     /// Unique identifier of the message.
@@ -11,12 +11,12 @@ public sealed class OutboxMessage
     public Guid Id { get; init; }
 
     /// <summary>
-    /// Type name of the domain event.
+    /// Type name of the integration event.
     /// </summary>
     public required string Type { get; init; }
 
     /// <summary>
-    /// Serialized content of the domain event.
+    /// Serialized content of the integration event.
     /// </summary>
     public required string Content { get; init; }
 

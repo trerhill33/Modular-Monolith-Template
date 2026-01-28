@@ -1,8 +1,8 @@
 using Dapper;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Events;
-using ModularTemplate.Common.Infrastructure.Outbox.Data;
+using ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 using System.Data.Common;
 
 namespace ModularTemplate.Common.Infrastructure.Outbox.Handler;
@@ -10,49 +10,20 @@ namespace ModularTemplate.Common.Infrastructure.Outbox.Handler;
 /// <summary>
 /// Base decorator that ensures idempotent domain event handling by tracking consumed messages.
 /// </summary>
-/// <typeparam name="TDomainEvent">The type of domain event.</typeparam>
-/// <typeparam name="TModule">The module marker interface type.</typeparam>
-/// <remarks>
-/// <para>
-/// This decorator wraps a domain event handler and ensures that the same event is not
-/// processed twice by the same handler. It uses a database table to track which handlers
-/// have already consumed a given message.
-/// </para>
-/// <para>
-/// Module-specific implementations only need to provide the database schema where the
-/// outbox_message_consumers table resides.
-/// </para>
-/// </remarks>
-public abstract class IdempotentDomainEventHandlerBase<TDomainEvent, TModule> : DomainEventHandler<TDomainEvent>
+public abstract class IdempotentDomainEventHandlerBase<TDomainEvent, TModule>(
+    IDomainEventHandler<TDomainEvent> decorated,
+    IDbConnectionFactory<TModule> dbConnectionFactory) : DomainEventHandler<TDomainEvent>
     where TDomainEvent : IDomainEvent
     where TModule : class
 {
-    private readonly IDomainEventHandler<TDomainEvent> _decorated;
-    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="IdempotentDomainEventHandlerBase{TDomainEvent, TModule}"/> class.
-    /// </summary>
-    /// <param name="decorated">The inner handler to decorate with idempotency.</param>
-    /// <param name="dbConnectionFactory">Factory for creating database connections.</param>
-    protected IdempotentDomainEventHandlerBase(
-        IDomainEventHandler<TDomainEvent> decorated,
-        IDbConnectionFactory<TModule> dbConnectionFactory)
-    {
-        _decorated = decorated;
-        _dbConnectionFactory = dbConnectionFactory;
-    }
+    private readonly IDomainEventHandler<TDomainEvent> _decorated = decorated;
+    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory = dbConnectionFactory;
 
     /// <summary>
     /// Gets the database schema where the outbox_message_consumers table resides.
     /// </summary>
     protected abstract string Schema { get; }
 
-    /// <summary>
-    /// Handles the domain event with idempotency checking.
-    /// </summary>
-    /// <param name="domainEvent">The domain event to handle.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
     public override async Task Handle(TDomainEvent domainEvent, CancellationToken cancellationToken = default)
     {
         await using var connection = await _dbConnectionFactory.OpenConnectionAsync();

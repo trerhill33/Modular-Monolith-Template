@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Infrastructure;
 using ModularTemplate.Common.Infrastructure.EventBus;
 using ModularTemplate.Common.Infrastructure.Inbox.Job;

@@ -4,7 +4,7 @@ using ModularTemplate.Common.Domain.Entities;
 using ModularTemplate.Common.Infrastructure.Serialization;
 using Newtonsoft.Json;
 
-namespace ModularTemplate.Common.Infrastructure.Outbox.Data;
+namespace ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 
 /// <summary>
 /// EF Core interceptor that captures domain events and inserts them into the outbox.

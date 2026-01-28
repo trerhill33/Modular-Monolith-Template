@@ -2,9 +2,9 @@ using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.EventBus;
 using ModularTemplate.Common.Application.Features;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Features;
 using ModularTemplate.Common.Infrastructure.Inbox.Handlers;
@@ -65,19 +65,12 @@ public abstract class ProcessInboxJobBase<TModule>(
     /// </summary>
     protected abstract Assembly HandlersAssembly { get; }
 
-    /// <summary>
-    /// Executes the inbox processing job.
-    /// </summary>
-    /// <remarks>
-    /// If the <see cref="InfrastructureFeatures.Inbox"/> feature flag is disabled,
-    /// the job will skip processing. Messages remain in the inbox and will be
-    /// processed when the feature is re-enabled.
-    /// </remarks>
+
     public async Task Execute(IJobExecutionContext context)
     {
         if (!_featureFlagService.IsEnabled(InfrastructureFeatures.Inbox))
         {
-            _logger.LogDebug(
+            _logger.LogWarning(
                 "{Module} - Inbox processing is disabled via feature flag. Messages will remain queued.",
                 ModuleName);
             return;
@@ -88,9 +81,9 @@ public abstract class ProcessInboxJobBase<TModule>(
         await using var connection = await _dbConnectionFactory.OpenConnectionAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        IReadOnlyList<InboxMessageResponse> inboxMessages = await GetInboxMessagesAsync(connection, transaction);
+        var inboxMessages = await GetInboxMessagesAsync(connection, transaction);
 
-        foreach (InboxMessageResponse inboxMessage in inboxMessages)
+        foreach (var inboxMessage in inboxMessages)
         {
             Exception? exception = null;
 
@@ -112,7 +105,7 @@ public abstract class ProcessInboxJobBase<TModule>(
                     scope.ServiceProvider,
                     HandlersAssembly);
 
-                foreach (IIntegrationEventHandler integrationEventHandler in handlers)
+                foreach (var integrationEventHandler in handlers)
                 {
                     await integrationEventHandler.HandleAsync(integrationEvent, context.CancellationToken);
                 }
@@ -155,7 +148,7 @@ public abstract class ProcessInboxJobBase<TModule>(
              FOR UPDATE
              """;
 
-        IEnumerable<InboxMessageResponse> inboxMessages = await connection.QueryAsync<InboxMessageResponse>(
+        var inboxMessages = await connection.QueryAsync<InboxMessageResponse>(
             sql,
             new { Now = _dateTimeProvider.UtcNow },
             transaction: transaction);

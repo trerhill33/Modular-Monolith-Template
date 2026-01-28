@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ModularTemplate.Common.Infrastructure.Auditing;
+using ModularTemplate.Common.Infrastructure.Auditing.Configurations;
 using ModularTemplate.Modules.Orders.Domain.Customers;
 
 namespace ModularTemplate.Modules.Orders.Infrastructure.Persistence.Configurations;

@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.EventBus;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Infrastructure.Inbox.Handlers;
 using ModularTemplate.Modules.Sample.Domain;
 using ModularTemplate.Modules.Sample.Infrastructure.Persistence;

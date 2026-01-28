@@ -1,4 +1,4 @@
-namespace ModularTemplate.Common.Infrastructure.Inbox.Data;
+namespace ModularTemplate.Common.Infrastructure.Inbox.Persistence;
 
 /// <summary>
 /// Tracks which handlers have consumed an inbox message for idempotency.

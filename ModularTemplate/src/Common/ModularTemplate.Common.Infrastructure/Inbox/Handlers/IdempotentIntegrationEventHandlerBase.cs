@@ -1,7 +1,7 @@
 using Dapper;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.EventBus;
-using ModularTemplate.Common.Infrastructure.Inbox.Data;
+using ModularTemplate.Common.Application.Persistence;
+using ModularTemplate.Common.Infrastructure.Inbox.Persistence;
 using System.Data.Common;
 
 namespace ModularTemplate.Common.Infrastructure.Inbox.Handlers;
@@ -22,25 +22,19 @@ namespace ModularTemplate.Common.Infrastructure.Inbox.Handlers;
 /// inbox_message_consumers table resides.
 /// </para>
 /// </remarks>
-public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent, TModule> : IntegrationEventHandler<TIntegrationEvent>
+/// <remarks>
+/// Initializes a new instance of the <see cref="IdempotentIntegrationEventHandlerBase{TIntegrationEvent, TModule}"/> class.
+/// </remarks>
+/// <param name="decorated">The inner handler to decorate with idempotency.</param>
+/// <param name="dbConnectionFactory">Factory for creating database connections.</param>
+public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent, TModule>(
+    IIntegrationEventHandler<TIntegrationEvent> decorated,
+    IDbConnectionFactory<TModule> dbConnectionFactory) : IntegrationEventHandler<TIntegrationEvent>
     where TIntegrationEvent : IIntegrationEvent
     where TModule : class
 {
-    private readonly IIntegrationEventHandler<TIntegrationEvent> _decorated;
-    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="IdempotentIntegrationEventHandlerBase{TIntegrationEvent, TModule}"/> class.
-    /// </summary>
-    /// <param name="decorated">The inner handler to decorate with idempotency.</param>
-    /// <param name="dbConnectionFactory">Factory for creating database connections.</param>
-    protected IdempotentIntegrationEventHandlerBase(
-        IIntegrationEventHandler<TIntegrationEvent> decorated,
-        IDbConnectionFactory<TModule> dbConnectionFactory)
-    {
-        _decorated = decorated;
-        _dbConnectionFactory = dbConnectionFactory;
-    }
+    private readonly IIntegrationEventHandler<TIntegrationEvent> _decorated = decorated;
+    private readonly IDbConnectionFactory<TModule> _dbConnectionFactory = dbConnectionFactory;
 
     /// <summary>
     /// Gets the database schema where the inbox_message_consumers table resides.
@@ -50,11 +44,9 @@ public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent, T
     /// <summary>
     /// Handles the integration event with idempotency checking.
     /// </summary>
-    /// <param name="integrationEvent">The integration event to handle.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
     public override async Task HandleAsync(TIntegrationEvent integrationEvent, CancellationToken cancellationToken = default)
     {
-        await using DbConnection connection = await _dbConnectionFactory.OpenConnectionAsync();
+        await using var connection = await _dbConnectionFactory.OpenConnectionAsync();
 
         var inboxMessageConsumer = new InboxMessageConsumer(integrationEvent.Id, _decorated.GetType().Name);
 
@@ -72,7 +64,7 @@ public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent, T
         DbConnection dbConnection,
         InboxMessageConsumer inboxMessageConsumer)
     {
-        string sql =
+        var sql =
             $"""
             SELECT EXISTS(
                 SELECT 1
@@ -89,7 +81,7 @@ public abstract class IdempotentIntegrationEventHandlerBase<TIntegrationEvent, T
         DbConnection dbConnection,
         InboxMessageConsumer inboxMessageConsumer)
     {
-        string sql =
+        var sql =
             $"""
             INSERT INTO {Schema}.inbox_message_consumers(inbox_message_id, name)
             VALUES (@InboxMessageId, @Name)

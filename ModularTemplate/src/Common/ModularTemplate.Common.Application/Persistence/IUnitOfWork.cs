@@ -1,4 +1,4 @@
-namespace ModularTemplate.Common.Application.Data;
+namespace ModularTemplate.Common.Application.Persistence;
 
 /// <summary>
 /// Represents a unit of work for coordinating persistence operations.

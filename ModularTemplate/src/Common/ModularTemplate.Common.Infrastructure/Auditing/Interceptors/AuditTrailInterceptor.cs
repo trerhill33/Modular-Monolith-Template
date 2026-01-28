@@ -6,7 +6,7 @@ using ModularTemplate.Common.Application.Identity;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Domain.Auditing;
 
-namespace ModularTemplate.Common.Infrastructure.Auditing;
+namespace ModularTemplate.Common.Infrastructure.Auditing.Interceptors;
 
 /// <summary>
 /// EF Core interceptor that captures field-level changes and writes audit logs.

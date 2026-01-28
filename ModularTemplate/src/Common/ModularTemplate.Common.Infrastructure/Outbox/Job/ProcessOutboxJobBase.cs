@@ -2,8 +2,8 @@ using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Features;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Domain.Events;
 using ModularTemplate.Common.Infrastructure.Features;
@@ -77,7 +77,7 @@ public abstract class ProcessOutboxJobBase<TModule>(
     {
         if (!_featureFlagService.IsEnabled(InfrastructureFeatures.Outbox))
         {
-            _logger.LogDebug(
+            _logger.LogWarning(
                 "{Module} - Outbox processing is disabled via feature flag. Messages will remain queued.",
                 ModuleName);
             return;

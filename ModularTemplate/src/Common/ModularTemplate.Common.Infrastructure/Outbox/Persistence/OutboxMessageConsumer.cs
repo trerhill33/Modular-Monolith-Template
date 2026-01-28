@@ -1,4 +1,4 @@
-namespace ModularTemplate.Common.Infrastructure.Outbox.Data;
+namespace ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 
 /// <summary>
 /// Tracks which handlers have consumed an outbox message for idempotency.

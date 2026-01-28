@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ModularTemplate.Common.Infrastructure.Auditing;
+namespace ModularTemplate.Common.Infrastructure.Auditing.Configurations;
 
 internal sealed class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
 {

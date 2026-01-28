@@ -1,5 +1,5 @@
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Messaging;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain.Results;
 using ModularTemplate.Modules.Orders.Domain;
 using ModularTemplate.Modules.Orders.Domain.Orders;
@@ -15,7 +15,7 @@ internal sealed class UpdateOrderStatusCommandHandler(
         UpdateOrderStatusCommand request,
         CancellationToken cancellationToken)
     {
-        Order? order = await orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
+        var order = await orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
 
         if (order is null)
         {

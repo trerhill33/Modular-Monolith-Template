@@ -1,6 +1,6 @@
 using System.Data.Common;
 
-namespace ModularTemplate.Common.Application.Data;
+namespace ModularTemplate.Common.Application.Persistence;
 
 /// <summary>
 /// Module-specific factory for creating database connections.
