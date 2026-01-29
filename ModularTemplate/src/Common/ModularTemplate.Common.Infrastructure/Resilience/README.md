@@ -43,109 +43,33 @@ The resilience pipeline is applied in the following order (outermost to innermos
 
 ```
      ┌────────────────────────────────────────────┐
-     │                  CLOSED                     │
-     │    (Normal operation - calls go through)    │
-     │                                             │
-     │  Tracks: failure count / total requests     │
-     └──────────────────┬──────────────────────────┘
+     │                  CLOSED                    │
+     │    (Normal operation - calls go through)   │
+     │                                            │
+     │  Tracks: failure count / total requests    │
+     └──────────────────┬─────────────────────────┘
                         │
             Failure threshold exceeded
             (e.g., 20% failures over 10s)
                         │
                         ▼
      ┌────────────────────────────────────────────┐
-     │                   OPEN                      │
+     │                   OPEN                     │
      │   (Fail-fast - immediately reject calls)   │
-     │                                             │
-     │          Wait for BreakDuration             │
-     └──────────────────┬──────────────────────────┘
+     │                                            │
+     │          Wait for BreakDuration            │
+     └──────────────────┬─────────────────────────┘
                         │
               Break duration elapsed
                         │
                         ▼
      ┌────────────────────────────────────────────┐
-     │               HALF-OPEN                     │
+     │               HALF-OPEN                    │
      │    (Test the waters - allow one call)      │
-     │                                             │
+     │                                            │
      │   Success → CLOSED   |   Failure → OPEN    │
      └────────────────────────────────────────────┘
 ```
-
-## Configuration
-
-Configure resilience behavior in `appsettings.json`:
-
-```json
-{
-  "Resilience": {
-    "Retry": {
-      "MaxRetryAttempts": 3,
-      "BaseDelayMilliseconds": 1000,
-      "UseJitter": true
-    },
-    "CircuitBreaker": {
-      "SamplingDurationSeconds": 10,
-      "FailureRatio": 0.2,
-      "MinimumThroughput": 3,
-      "BreakDurationSeconds": 30
-    },
-    "Timeout": {
-      "TotalTimeoutSeconds": 30,
-      "AttemptTimeoutSeconds": 10
-    }
-  }
-}
-```
-
-### Configuration Options
-
-#### Retry Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `MaxRetryAttempts` | 3 | Maximum number of retry attempts before failing |
-| `BaseDelayMilliseconds` | 1000 | Base delay between retries (increases exponentially) |
-| `UseJitter` | true | Add randomness to prevent thundering herd problems |
-
-#### Circuit Breaker Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `SamplingDurationSeconds` | 10 | Time window for measuring failure rate |
-| `FailureRatio` | 0.2 | Failure percentage (0.0-1.0) to trigger circuit open |
-| `MinimumThroughput` | 3 | Minimum requests before circuit can evaluate |
-| `BreakDurationSeconds` | 30 | How long circuit stays open before testing |
-
-#### Timeout Options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `TotalTimeoutSeconds` | 30 | Maximum time for entire operation including retries |
-| `AttemptTimeoutSeconds` | 10 | Maximum time for each individual attempt |
-
-### Environment-Specific Configuration
-
-**Development** (`appsettings.Development.json`):
-```json
-{
-  "Resilience": {
-    "Retry": {
-      "MaxRetryAttempts": 2,
-      "BaseDelayMilliseconds": 500
-    },
-    "CircuitBreaker": {
-      "SamplingDurationSeconds": 5,
-      "BreakDurationSeconds": 10
-    },
-    "Timeout": {
-      "TotalTimeoutSeconds": 10,
-      "AttemptTimeoutSeconds": 3
-    }
-  }
-}
-```
-
-Shorter timeouts and fewer retries in development for faster feedback.
 
 ## Logging
 
@@ -169,24 +93,6 @@ Example log output:
 [INF] Circuit breaker CLOSED for EventBus. Resuming normal operations
 ```
 
-## Usage
-
-The `ResilientEventBridgeEventBus` is automatically registered in production environments. No code changes are required - it decorates the existing `EventBridgeEventBus`.
-
-```csharp
-// This automatically uses the resilient wrapper in production
-await eventBus.PublishAsync(new OrderCreatedIntegrationEvent(...), ct);
-```
-
-## Behavior During Failures
-
-| Scenario | Behavior |
-|----------|----------|
-| **Transient failure** | Retries with exponential backoff + jitter |
-| **Slow response** | Attempt times out, triggers retry |
-| **Repeated failures** | Circuit opens, fails fast for `BreakDurationSeconds` |
-| **Circuit open** | Throws `BrokenCircuitException` immediately |
-| **Total timeout exceeded** | Throws `TimeoutRejectedException` |
 
 ## Integration with Outbox Pattern
 
