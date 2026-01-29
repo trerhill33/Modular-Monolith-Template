@@ -19,9 +19,6 @@ public sealed class SoftDeleteInterceptor(
     ICurrentUserService currentUserService,
     IDateTimeProvider dateTimeProvider) : SaveChangesInterceptor
 {
-    private readonly ICurrentUserService _currentUserService = currentUserService;
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
-
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
@@ -49,8 +46,8 @@ public sealed class SoftDeleteInterceptor(
 
     private void HandleSoftDeletes(DbContext context)
     {
-        var utcNow = _dateTimeProvider.UtcNow;
-        var userId = _currentUserService.UserId ?? Guid.Empty;
+        var utcNow = dateTimeProvider.UtcNow;
+        var userId = currentUserService.UserId ?? Guid.Empty;
 
         var entries = context.ChangeTracker
             .Entries<SoftDeletableEntity>()

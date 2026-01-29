@@ -29,7 +29,6 @@ internal sealed class EventBridgeEventBus(
 {
     private readonly AwsMessagingOptions _options = options.Value;
 
-    /// <inheritdoc />
     public async Task PublishAsync<T>(T integrationEvent, CancellationToken cancellationToken = default)
         where T : IIntegrationEvent
     {

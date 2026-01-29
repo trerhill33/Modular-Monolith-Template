@@ -7,26 +7,17 @@ namespace ModularTemplate.Common.Infrastructure.Features;
 /// Feature flag service that reads feature flags from IConfiguration.
 /// Supports hierarchical configuration paths using colon notation (e.g., "Sales:Features:CatalogV2Pagination").
 /// </summary>
-internal sealed class ConfigurationFeatureFlagService : IFeatureFlagService
+internal sealed class ConfigurationFeatureFlagService(IConfiguration configuration) : IFeatureFlagService
 {
-    private readonly IConfiguration _configuration;
-
-    public ConfigurationFeatureFlagService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
-    /// <inheritdoc />
     public Task<bool> IsEnabledAsync(string featureName, CancellationToken ct = default)
     {
         return Task.FromResult(IsEnabled(featureName));
     }
 
-    /// <inheritdoc />
     public bool IsEnabled(string featureName)
     {
         // Get the value from configuration
-        var value = _configuration[featureName];
+        var value = configuration[featureName];
 
         // If the value is not set, default to false (feature disabled)
         if (string.IsNullOrEmpty(value))

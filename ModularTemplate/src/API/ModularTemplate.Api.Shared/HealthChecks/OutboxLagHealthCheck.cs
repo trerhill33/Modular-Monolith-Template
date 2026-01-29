@@ -1,13 +1,14 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using System.ComponentModel.DataAnnotations;
 
 namespace ModularTemplate.Api.Shared.HealthChecks;
 
 /// <summary>
 /// Configuration options for the outbox lag health check.
 /// </summary>
-public sealed class OutboxLagHealthCheckOptions
+public sealed class OutboxLagHealthCheckOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name.
@@ -17,63 +18,100 @@ public sealed class OutboxLagHealthCheckOptions
     /// <summary>
     /// Gets or sets the database schemas to check for outbox messages.
     /// </summary>
-    public string[] Schemas { get; set; } = ["sample", "orders", "organization", "customer", "sales"];
+    public string[] Schemas { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the age threshold in seconds after which pending messages indicate degraded health.
-    /// Default is 60 seconds.
     /// </summary>
-    public int DegradedThresholdSeconds { get; set; } = 60;
+    public int DegradedThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the age threshold in seconds after which pending messages indicate unhealthy status.
-    /// Default is 300 seconds (5 minutes).
     /// </summary>
-    public int UnhealthyThresholdSeconds { get; set; } = 300;
+    public int UnhealthyThresholdSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold after which pending messages indicate degraded health.
-    /// Default is 100 messages.
     /// </summary>
-    public int DegradedCountThreshold { get; set; } = 100;
+    public int DegradedCountThreshold { get; set; }
 
     /// <summary>
     /// Gets or sets the count threshold after which pending messages indicate unhealthy status.
-    /// Default is 1000 messages.
     /// </summary>
-    public int UnhealthyCountThreshold { get; set; } = 1000;
+    public int UnhealthyCountThreshold { get; set; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        // Schemas are injected from ApplicationOptions via PostConfigure
+        if (Schemas.Length == 0)
+        {
+            yield return new ValidationResult(
+                "Schemas must be configured via Application:Modules or derived from Application:DatabaseName.",
+                [nameof(Schemas)]);
+        }
+
+        if (DegradedThresholdSeconds <= 0)
+        {
+            yield return new ValidationResult(
+                "DegradedThresholdSeconds must be positive.",
+                [nameof(DegradedThresholdSeconds)]);
+        }
+
+        if (UnhealthyThresholdSeconds <= 0)
+        {
+            yield return new ValidationResult(
+                "UnhealthyThresholdSeconds must be positive.",
+                [nameof(UnhealthyThresholdSeconds)]);
+        }
+
+        if (UnhealthyThresholdSeconds <= DegradedThresholdSeconds)
+        {
+            yield return new ValidationResult(
+                "UnhealthyThresholdSeconds must be greater than DegradedThresholdSeconds.",
+                [nameof(UnhealthyThresholdSeconds), nameof(DegradedThresholdSeconds)]);
+        }
+
+        if (DegradedCountThreshold <= 0)
+        {
+            yield return new ValidationResult(
+                "DegradedCountThreshold must be positive.",
+                [nameof(DegradedCountThreshold)]);
+        }
+
+        if (UnhealthyCountThreshold <= 0)
+        {
+            yield return new ValidationResult(
+                "UnhealthyCountThreshold must be positive.",
+                [nameof(UnhealthyCountThreshold)]);
+        }
+
+        if (UnhealthyCountThreshold <= DegradedCountThreshold)
+        {
+            yield return new ValidationResult(
+                "UnhealthyCountThreshold must be greater than DegradedCountThreshold.",
+                [nameof(UnhealthyCountThreshold), nameof(DegradedCountThreshold)]);
+        }
+    }
 }
 
 /// <summary>
 /// Health check that monitors the outbox message processing lag.
 /// Checks for pending messages that are older than configurable thresholds.
 /// </summary>
-public sealed class OutboxLagHealthCheck : IHealthCheck
+public sealed class OutboxLagHealthCheck(
+    NpgsqlDataSource dataSource,
+    IOptions<OutboxLagHealthCheckOptions> options) : IHealthCheck
 {
-    private readonly NpgsqlDataSource _dataSource;
-    private readonly OutboxLagHealthCheckOptions _options;
+    private readonly OutboxLagHealthCheckOptions _options = options.Value;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OutboxLagHealthCheck"/> class.
-    /// </summary>
-    /// <param name="dataSource">The PostgreSQL data source.</param>
-    /// <param name="options">Configuration options for the health check.</param>
-    public OutboxLagHealthCheck(
-        NpgsqlDataSource dataSource,
-        IOptions<OutboxLagHealthCheckOptions> options)
-    {
-        _dataSource = dataSource;
-        _options = options.Value;
-    }
-
-    /// <inheritdoc/>
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            var schemaResults = new Dictionary<string, OutboxSchemaStatus>();
+            Dictionary<string, OutboxSchemaStatus> schemaResults = [];
             var overallStatus = HealthStatus.Healthy;
 
             foreach (var schema in _options.Schemas)
@@ -129,7 +167,7 @@ public sealed class OutboxLagHealthCheck : IHealthCheck
 
     private async Task<OutboxSchemaStatus> CheckSchemaOutboxAsync(string schema, CancellationToken cancellationToken)
     {
-        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
+        await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
 
         // Query for pending messages count and oldest age
         var query = $"""

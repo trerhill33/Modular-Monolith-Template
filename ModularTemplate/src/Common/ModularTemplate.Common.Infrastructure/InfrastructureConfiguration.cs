@@ -42,10 +42,8 @@ public static class InfrastructureConfiguration
         string databaseConnectionString,
         string redisConnectionString)
     {
-        // Register centralized application identity configuration
-        services.Configure<ApplicationOptions>(configuration.GetSection(ApplicationOptions.SectionName));
-
         // Register post-configure handlers to derive values from ApplicationOptions
+        // Note: ApplicationOptions must be registered before this via AddApplicationOptions()
         services.ConfigureOptions<ConfigureAwsMessagingOptions>();
 
         services.AddAuthenticationInternal(configuration);
@@ -139,7 +137,10 @@ public static class InfrastructureConfiguration
         IConfiguration configuration,
         string redisConnectionString)
     {
-        services.Configure<CachingOptions>(configuration.GetSection(CachingOptions.SectionName));
+        services.AddOptions<CachingOptions>()
+            .Bind(configuration.GetSection(CachingOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         try
         {

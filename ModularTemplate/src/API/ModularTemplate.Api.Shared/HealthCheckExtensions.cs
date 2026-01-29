@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ModularTemplate.Api.Shared.HealthChecks;
+using ModularTemplate.Common.Infrastructure.Application;
 using Npgsql;
 
 namespace ModularTemplate.Api.Shared;
@@ -16,11 +16,6 @@ namespace ModularTemplate.Api.Shared;
 /// </summary>
 public static class HealthCheckExtensions
 {
-    /// <summary>
-    /// Default module schemas for health checks.
-    /// </summary>
-    private static readonly string[] DefaultModuleSchemas = ["sample", "orders", "organization", "customer", "sales"];
-
     /// <summary>
     /// Adds health check services for database and cache connectivity.
     /// </summary>
@@ -50,17 +45,33 @@ public static class HealthCheckExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The application configuration.</param>
     /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// Requires ApplicationOptions to be registered first via AddApplicationOptions().
+    /// Validation is handled by ValidateOnStart() at app startup.
+    /// </remarks>
     public static IServiceCollection AddGranularHealthChecks(
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Configure options from configuration
-        services.Configure<OutboxLagHealthCheckOptions>(
-            configuration.GetSection(OutboxLagHealthCheckOptions.SectionName));
-        services.Configure<InboxLagHealthCheckOptions>(
-            configuration.GetSection(InboxLagHealthCheckOptions.SectionName));
-        services.Configure<SqsQueueDepthHealthCheckOptions>(
-            configuration.GetSection(SqsQueueDepthHealthCheckOptions.SectionName));
+        // Get module schemas from ApplicationOptions (single source of truth)
+        var moduleSchemas = GetModuleSchemas(configuration);
+
+        // Configure options from configuration with validation
+        // Use PostConfigure to inject schemas from ApplicationOptions
+        services.AddOptions<OutboxLagHealthCheckOptions>()
+            .Bind(configuration.GetSection(OutboxLagHealthCheckOptions.SectionName))
+            .PostConfigure(options => options.Schemas = moduleSchemas)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddOptions<InboxLagHealthCheckOptions>()
+            .Bind(configuration.GetSection(InboxLagHealthCheckOptions.SectionName))
+            .PostConfigure(options => options.Schemas = moduleSchemas)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddOptions<SqsQueueDepthHealthCheckOptions>()
+            .Bind(configuration.GetSection(SqsQueueDepthHealthCheckOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         // Register health checks
         services.AddHealthChecks()
@@ -90,9 +101,8 @@ public static class HealthCheckExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var moduleSchemas = configuration
-            .GetSection("HealthChecks:Modules")
-            .Get<string[]>() ?? DefaultModuleSchemas;
+        // Get module schemas from ApplicationOptions (single source of truth)
+        var moduleSchemas = GetModuleSchemas(configuration);
 
         var healthChecksBuilder = services.AddHealthChecks();
 
@@ -171,5 +181,25 @@ public static class HealthCheckExtensions
         }).AllowAnonymous();
 
         return app;
+    }
+
+    /// <summary>
+    /// Gets module schemas from ApplicationOptions configuration.
+    /// </summary>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The array of module schema names.</returns>
+    /// <remarks>
+    /// ApplicationOptions must be registered with ValidateOnStart() before this is called.
+    /// Validation of required fields is handled by ValidateOnStart() during app startup.
+    /// </remarks>
+    private static string[] GetModuleSchemas(IConfiguration configuration)
+    {
+        var applicationOptions = configuration
+            .GetSection(ApplicationOptions.SectionName)
+            .Get<ApplicationOptions>();
+
+        // GetModules() returns Modules array if set, otherwise derives from DatabaseName/Name
+        // If config is invalid, ValidateOnStart() will fail at app.Build()
+        return applicationOptions?.GetModules() ?? [];
     }
 }

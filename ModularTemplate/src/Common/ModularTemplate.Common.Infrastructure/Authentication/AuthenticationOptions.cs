@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ModularTemplate.Common.Infrastructure.Authentication;
 
 /// <summary>
@@ -10,7 +12,7 @@ namespace ModularTemplate.Common.Infrastructure.Authentication;
 ///   <item><c>KeycloakRealm</c>: Defaults to {Application:ShortName}</item>
 /// </list>
 /// </remarks>
-public sealed class AuthenticationOptions
+public sealed class AuthenticationOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name.
@@ -32,7 +34,7 @@ public sealed class AuthenticationOptions
     /// Gets or sets the Keycloak base URL (e.g., "http://localhost:8080").
     /// Used to construct MetadataAddress if not explicitly set.
     /// </summary>
-    public string KeycloakBaseUrl { get; set; } = "http://localhost:8080";
+    public string KeycloakBaseUrl { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the Keycloak realm name.
@@ -44,4 +46,16 @@ public sealed class AuthenticationOptions
     /// Gets or sets whether HTTPS is required for metadata retrieval.
     /// </summary>
     public bool RequireHttpsMetadata { get; set; } = true;
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        // KeycloakBaseUrl is required if MetadataAddress is not set
+        if (string.IsNullOrWhiteSpace(MetadataAddress) && string.IsNullOrWhiteSpace(KeycloakBaseUrl))
+        {
+            yield return new ValidationResult(
+                "Either MetadataAddress or KeycloakBaseUrl must be configured.",
+                [nameof(MetadataAddress), nameof(KeycloakBaseUrl)]);
+        }
+    }
 }
