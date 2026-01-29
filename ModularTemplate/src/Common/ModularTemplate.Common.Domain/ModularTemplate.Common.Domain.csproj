@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ModularTemplate.Common.Infrastructure" />
+    <InternalsVisibleTo Include="ModularTemplate.Common.Domain.Tests" />
   </ItemGroup>
 
 </Project>

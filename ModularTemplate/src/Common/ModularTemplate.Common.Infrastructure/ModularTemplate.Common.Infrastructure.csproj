@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ModularTemplate.Common.Infrastructure.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AWSSDK.EventBridge" Version="4.0.5.14" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.21" />
     <PackageReference Include="AWSSDK.SQS" Version="4.0.2.13" />
