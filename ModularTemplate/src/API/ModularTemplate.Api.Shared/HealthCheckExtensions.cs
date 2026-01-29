@@ -19,10 +19,6 @@ public static class HealthCheckExtensions
     /// <summary>
     /// Adds health check services for database and cache connectivity.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="databaseConnectionString">The PostgreSQL database connection string.</param>
-    /// <param name="cacheConnectionString">The Redis cache connection string (optional).</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddHealthChecks(
         this IServiceCollection services,
         string databaseConnectionString,
@@ -42,13 +38,6 @@ public static class HealthCheckExtensions
     /// <summary>
     /// Adds granular health checks for outbox lag, inbox lag, queue depth, and per-module health.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <returns>The service collection for chaining.</returns>
-    /// <remarks>
-    /// Requires ApplicationOptions to be registered first via AddApplicationOptions().
-    /// Validation is handled by ValidateOnStart() at app startup.
-    /// </remarks>
     public static IServiceCollection AddGranularHealthChecks(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -165,10 +154,6 @@ public static class HealthCheckExtensions
     /// <summary>
     /// Maps a filtered health check endpoint that only runs health checks with specific tags.
     /// </summary>
-    /// <param name="app">The endpoint route builder.</param>
-    /// <param name="pattern">The URL pattern for the endpoint.</param>
-    /// <param name="tags">The tags to filter health checks by.</param>
-    /// <returns>The endpoint route builder for chaining.</returns>
     public static IEndpointRouteBuilder MapTaggedHealthCheckEndpoint(
         this IEndpointRouteBuilder app,
         string pattern,
@@ -186,12 +171,6 @@ public static class HealthCheckExtensions
     /// <summary>
     /// Gets module schemas from ApplicationOptions configuration.
     /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    /// <returns>The array of module schema names.</returns>
-    /// <remarks>
-    /// ApplicationOptions must be registered with ValidateOnStart() before this is called.
-    /// Validation of required fields is handled by ValidateOnStart() during app startup.
-    /// </remarks>
     private static string[] GetModuleSchemas(IConfiguration configuration)
     {
         var applicationOptions = configuration

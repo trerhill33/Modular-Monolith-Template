@@ -20,11 +20,6 @@ public static class DatabaseMigrationExtensions
     /// In non-development environments (Staging, Production), migrations should be applied
     /// through CI/CD pipelines for controlled deployment.
     /// </remarks>
-    /// <typeparam name="TDbContext">The DbContext type to migrate.</typeparam>
-    /// <param name="app">The application builder.</param>
-    /// <param name="environment">The host environment.</param>
-    /// <param name="connectionString">The database connection string.</param>
-    /// <returns>The application builder for chaining.</returns>
     public static IApplicationBuilder ApplyMigrations<TDbContext>(
         this IApplicationBuilder app,
         IHostEnvironment environment,
@@ -60,12 +55,6 @@ public static class DatabaseMigrationExtensions
     /// through CI/CD pipelines for controlled deployment.
     /// </para>
     /// </remarks>
-    /// <param name="app">The application builder.</param>
-    /// <param name="environment">The host environment.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="defaultConnectionString">The fallback database connection string.</param>
-    /// <param name="dbContexts">The DbContext types to migrate with their module names.</param>
-    /// <returns>The application builder for chaining.</returns>
     public static IApplicationBuilder ApplyMigrations(
         this IApplicationBuilder app,
         IHostEnvironment environment,
@@ -105,10 +94,6 @@ public static class DatabaseMigrationExtensions
     /// <summary>
     /// Gets a module-specific connection string from configuration with fallback to default.
     /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="moduleName">The module name (e.g., "Orders", "Sales").</param>
-    /// <param name="defaultConnectionString">The fallback connection string.</param>
-    /// <returns>The module-specific connection string or the default.</returns>
     public static string GetModuleConnectionString(
         IConfiguration configuration,
         string moduleName,
@@ -121,7 +106,6 @@ public static class DatabaseMigrationExtensions
     /// <summary>
     /// Ensures the database specified in the connection string exists, creating it if necessary.
     /// </summary>
-    /// <param name="connectionString">The database connection string.</param>
     public static void EnsureDatabaseExists(string connectionString)
     {
         var builder = new NpgsqlConnectionStringBuilder(connectionString);

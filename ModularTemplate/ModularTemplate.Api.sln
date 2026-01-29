@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.1.11312.151
@@ -25,47 +24,47 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModularTemplate.Api", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModularTemplate.ArchitectureTests", "test\ModularTemplate.ArchitectureTests\ModularTemplate.ArchitectureTests.csproj", "{77777777-7777-7777-7777-777777777777}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{1CF6108A-1185-35DE-5336-C1AA265239B1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleSales", "SampleSales", "{1CF6108A-1185-35DE-5336-C1AA265239B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.Domain", "src\Modules\Sample\ModularTemplate.Modules.Sample.Domain\ModularTemplate.Modules.Sample.Domain.csproj", "{B2EAACFF-A197-41CE-BE3D-07A0A0772EA8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.Domain", "src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Domain\ModularTemplate.Modules.SampleSales.Domain.csproj", "{B2EAACFF-A197-41CE-BE3D-07A0A0772EA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.Application", "src\Modules\Sample\ModularTemplate.Modules.Sample.Application\ModularTemplate.Modules.Sample.Application.csproj", "{0FCD0F38-8509-419D-AAF7-D028DE7D706A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.Application", "src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Application\ModularTemplate.Modules.SampleSales.Application.csproj", "{0FCD0F38-8509-419D-AAF7-D028DE7D706A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.IntegrationEvents", "src\Modules\Sample\ModularTemplate.Modules.Sample.IntegrationEvents\ModularTemplate.Modules.Sample.IntegrationEvents.csproj", "{669554E2-7FD5-4E67-AB21-3A845234832B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.IntegrationEvents", "src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.IntegrationEvents\ModularTemplate.Modules.SampleSales.IntegrationEvents.csproj", "{669554E2-7FD5-4E67-AB21-3A845234832B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orders", "Orders", "{D1808495-CEA6-9182-464B-E341048D0084}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleOrders", "SampleOrders", "{D1808495-CEA6-9182-464B-E341048D0084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.IntegrationEvents", "src\Modules\Orders\ModularTemplate.Modules.Orders.IntegrationEvents\ModularTemplate.Modules.Orders.IntegrationEvents.csproj", "{C3576F69-20DB-440D-BD53-8DAE00EF5D3A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.IntegrationEvents", "src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.IntegrationEvents\ModularTemplate.Modules.SampleOrders.IntegrationEvents.csproj", "{C3576F69-20DB-440D-BD53-8DAE00EF5D3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.Infrastructure", "src\Modules\Sample\ModularTemplate.Modules.Sample.Infrastructure\ModularTemplate.Modules.Sample.Infrastructure.csproj", "{63C47541-7654-409D-8DB4-BA045427725F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.Infrastructure", "src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Infrastructure\ModularTemplate.Modules.SampleSales.Infrastructure.csproj", "{63C47541-7654-409D-8DB4-BA045427725F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.Presentation", "src\Modules\Sample\ModularTemplate.Modules.Sample.Presentation\ModularTemplate.Modules.Sample.Presentation.csproj", "{167CAECA-4AA2-4F97-AE4F-3A822445F2BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.Presentation", "src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Presentation\ModularTemplate.Modules.SampleSales.Presentation.csproj", "{167CAECA-4AA2-4F97-AE4F-3A822445F2BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.Domain", "src\Modules\Orders\ModularTemplate.Modules.Orders.Domain\ModularTemplate.Modules.Orders.Domain.csproj", "{5879098A-2DB3-437A-AB24-D714BF41DE3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.Domain", "src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Domain\ModularTemplate.Modules.SampleOrders.Domain.csproj", "{5879098A-2DB3-437A-AB24-D714BF41DE3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.Application", "src\Modules\Orders\ModularTemplate.Modules.Orders.Application\ModularTemplate.Modules.Orders.Application.csproj", "{CE2D77F8-B6C7-4BE3-BA94-F7530E869DB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.Application", "src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Application\ModularTemplate.Modules.SampleOrders.Application.csproj", "{CE2D77F8-B6C7-4BE3-BA94-F7530E869DB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.Infrastructure", "src\Modules\Orders\ModularTemplate.Modules.Orders.Infrastructure\ModularTemplate.Modules.Orders.Infrastructure.csproj", "{AA87B7B7-CEA3-4E5C-B62C-8EAC2B8898D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.Infrastructure", "src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Infrastructure\ModularTemplate.Modules.SampleOrders.Infrastructure.csproj", "{AA87B7B7-CEA3-4E5C-B62C-8EAC2B8898D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.Presentation", "src\Modules\Orders\ModularTemplate.Modules.Orders.Presentation\ModularTemplate.Modules.Orders.Presentation.csproj", "{63A5CEAD-1133-4137-A4F8-4303B14CCC29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.Presentation", "src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Presentation\ModularTemplate.Modules.SampleOrders.Presentation.csproj", "{63A5CEAD-1133-4137-A4F8-4303B14CCC29}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{18DAEF29-55A3-BEDD-F3E8-9126768E3534}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.Domain.Tests", "src\Modules\Sample\test\ModularTemplate.Modules.Sample.Domain.Tests\ModularTemplate.Modules.Sample.Domain.Tests.csproj", "{25B13C2D-1496-4D86-82AF-4B416EC0DEED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.Domain.Tests", "src\Modules\SampleSales\test\ModularTemplate.Modules.SampleSales.Domain.Tests\ModularTemplate.Modules.SampleSales.Domain.Tests.csproj", "{25B13C2D-1496-4D86-82AF-4B416EC0DEED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.Application.Tests", "src\Modules\Sample\test\ModularTemplate.Modules.Sample.Application.Tests\ModularTemplate.Modules.Sample.Application.Tests.csproj", "{A4E7DD2B-B904-4AA4-B196-D134609FE46C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.Application.Tests", "src\Modules\SampleSales\test\ModularTemplate.Modules.SampleSales.Application.Tests\ModularTemplate.Modules.SampleSales.Application.Tests.csproj", "{A4E7DD2B-B904-4AA4-B196-D134609FE46C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9A805616-B6DC-3A22-2787-69BF736FCE68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.Domain.Tests", "src\Modules\Orders\test\ModularTemplate.Modules.Orders.Domain.Tests\ModularTemplate.Modules.Orders.Domain.Tests.csproj", "{84D65A12-0560-4583-9B26-715294362703}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.Domain.Tests", "src\Modules\SampleOrders\test\ModularTemplate.Modules.SampleOrders.Domain.Tests\ModularTemplate.Modules.SampleOrders.Domain.Tests.csproj", "{84D65A12-0560-4583-9B26-715294362703}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Orders.Application.Tests", "src\Modules\Orders\test\ModularTemplate.Modules.Orders.Application.Tests\ModularTemplate.Modules.Orders.Application.Tests.csproj", "{2F2298F5-5C4A-4071-9FC0-3D642C545EB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleOrders.Application.Tests", "src\Modules\SampleOrders\test\ModularTemplate.Modules.SampleOrders.Application.Tests\ModularTemplate.Modules.SampleOrders.Application.Tests.csproj", "{2F2298F5-5C4A-4071-9FC0-3D642C545EB0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D269E6B0-7F09-94EF-0285-FCEBCC09D17C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Common.IntegrationTests", "src\Common\test\ModularTemplate.Common.IntegrationTests\ModularTemplate.Common.IntegrationTests.csproj", "{690240BD-4077-4DB1-929B-8A5B8A58A22F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sample.IntegrationTests", "src\Modules\Sample\test\ModularTemplate.Modules.Sample.IntegrationTests\ModularTemplate.Modules.Sample.IntegrationTests.csproj", "{E66C60B9-BF26-4A3C-ADED-75C35791AEC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.SampleSales.IntegrationTests", "src\Modules\SampleSales\test\ModularTemplate.Modules.SampleSales.IntegrationTests\ModularTemplate.Modules.SampleSales.IntegrationTests.csproj", "{E66C60B9-BF26-4A3C-ADED-75C35791AEC6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Organization", "Organization", "{3430B5D7-3442-E940-2D9C-B36223823D65}"
 EndProject
@@ -103,7 +102,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Org
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Modules.Sales.IntegrationEvents", "src\Modules\Sales\ModularTemplate.Modules.Sales.IntegrationEvents\ModularTemplate.Modules.Sales.IntegrationEvents.csproj", "{38D8B77C-4916-47CF-86C5-AB0D44208679}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.Orders", "src\API\ModularTemplate.Api.Orders\ModularTemplate.Api.Orders.csproj", "{BCA061CF-6D5A-432E-B341-691E92DBE828}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.SampleOrders", "src\API\ModularTemplate.Api.SampleOrders\ModularTemplate.Api.SampleOrders.csproj", "{BCA061CF-6D5A-432E-B341-691E92DBE828}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.Sales", "src\API\ModularTemplate.Api.Sales\ModularTemplate.Api.Sales.csproj", "{EAEA3F18-D48D-47AC-B811-333C1A5E9933}"
 EndProject
@@ -111,7 +110,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.Custome
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.Organization", "src\API\ModularTemplate.Api.Organization\ModularTemplate.Api.Organization.csproj", "{001C514C-0416-40CA-892B-2F395D46EBE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.Sample", "src\API\ModularTemplate.Api.Sample\ModularTemplate.Api.Sample.csproj", "{DCC07720-D865-4BD9-BB84-DC62945328D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.SampleSales", "src\API\ModularTemplate.Api.SampleSales\ModularTemplate.Api.SampleSales.csproj", "{DCC07720-D865-4BD9-BB84-DC62945328D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularTemplate.Api.Shared", "src\API\ModularTemplate.Api.Shared\ModularTemplate.Api.Shared.csproj", "{6773C282-E79C-427A-B132-D74AA34204FD}"
 EndProject

@@ -11,7 +11,7 @@ namespace ModularTemplate.Common.Application.Persistence;
 /// allowing modules to connect to separate databases when deployed independently.
 /// </para>
 /// <para>
-/// The <typeparamref name="TModule"/> type parameter is a marker interface (e.g., IOrdersModule)
+/// The <typeparamref name="TModule"/> type parameter is a marker interface (e.g., ISampleOrdersModule)
 /// that uniquely identifies the module. This enables the DI container to resolve the correct
 /// connection factory for each module.
 /// </para>

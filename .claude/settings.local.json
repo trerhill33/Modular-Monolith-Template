@@ -45,7 +45,8 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nrefactor: simplify logging for Datadog readiness\n\nRemove over-engineered Serilog configuration in favor of clean console-only\noutput that''s easy to extend for Datadog/CloudWatch later.\n\nChanges:\n- Remove Serilog.Sinks.File, Serilog.Enrichers.Environment, Serilog.Enrichers.Thread packages\n- Simplify appsettings.json Serilog config \\(remove file sink, unnecessary enrichers\\)\n- Simplify UseSerilogRequestLogging\\(\\) to single-line call\n\nKept: CorrelationId enricher \\(essential for distributed tracing\\), structured logging\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git push)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh pr list:*)"
     ]
   }
 }

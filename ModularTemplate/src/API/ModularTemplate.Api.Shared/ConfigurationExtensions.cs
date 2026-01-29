@@ -21,9 +21,6 @@ public static class ConfigurationExtensions
     /// while allowing the main API to run all modules locally with consistent settings.
     /// </para>
     /// </remarks>
-    /// <param name="configurationBuilder">The configuration builder.</param>
-    /// <param name="modules">Array of module names (lowercase, e.g., "sample", "orders").</param>
-    /// <param name="environment">The current environment name.</param>
     public static void AddModuleConfiguration(
         this IConfigurationBuilder configurationBuilder,
         string[] modules,

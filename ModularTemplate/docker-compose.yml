@@ -28,15 +28,15 @@ services:
   # Module API Services (Independent Deployment)
   # ========================================
 
-  orders-api:
+  sampleorders-api:
     build:
       context: ..
-      dockerfile: ModularTemplate/src/API/ModularTemplate.Api.Orders/Dockerfile
+      dockerfile: ModularTemplate/src/API/ModularTemplate.Api.SampleOrders/Dockerfile
     ports:
       - "5001:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Database=Host=postgres;Database=orders;Username=postgres;Password=postgres
+      - ConnectionStrings__Database=Host=postgres;Database=sampleorders;Username=postgres;Password=postgres
       - ConnectionStrings__Cache=redis:6379
     depends_on:
       postgres:
@@ -104,15 +104,15 @@ services:
       - modular-network
     restart: unless-stopped
 
-  sample-api:
+  samplesales-api:
     build:
       context: ..
-      dockerfile: ModularTemplate/src/API/ModularTemplate.Api.Sample/Dockerfile
+      dockerfile: ModularTemplate/src/API/ModularTemplate.Api.SampleSales/Dockerfile
     ports:
       - "5006:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Database=Host=postgres;Database=sample;Username=postgres;Password=postgres
+      - ConnectionStrings__Database=Host=postgres;Database=samplesales;Username=postgres;Password=postgres
       - ConnectionStrings__Cache=redis:6379
     depends_on:
       postgres:

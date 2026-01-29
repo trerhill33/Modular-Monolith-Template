@@ -30,14 +30,7 @@ namespace ModularTemplate.Common.Infrastructure.EventBus.Aws;
 /// When disabled, messages remain in the SQS queue and will be processed when the feature is re-enabled.
 /// </para>
 /// </remarks>
-/// <remarks>
-/// Initializes a new instance of the <see cref="SqsPollingJobBase"/> class.
-/// </remarks>
-/// <param name="sqsClient">The AWS SQS client.</param>
-/// <param name="eventDispatcher">The event dispatcher for routing events to handlers.</param>
-/// <param name="options">Configuration options for AWS messaging.</param>
-/// <param name="featureFlagService">Service for checking feature flags.</param>
-/// <param name="logger">Logger instance.</param>
+
 [DisallowConcurrentExecution]
 public abstract class SqsPollingJobBase(
     IAmazonSQS sqsClient,
@@ -61,12 +54,6 @@ public abstract class SqsPollingJobBase(
     /// <summary>
     /// Executes the SQS polling job.
     /// </summary>
-    /// <param name="context">The Quartz job execution context.</param>
-    /// <remarks>
-    /// If the <see cref="InfrastructureFeatures.BackgroundJobs"/> feature flag is disabled,
-    /// the job will skip polling. Messages remain in the SQS queue and will be
-    /// processed when the feature is re-enabled.
-    /// </remarks>
     public async Task Execute(IJobExecutionContext context)
     {
         if (!_featureFlagService.IsEnabled(InfrastructureFeatures.BackgroundJobs))

@@ -28,10 +28,10 @@
     <ProjectReference Include="..\..\Modules\Fees\ModularTemplate.Modules.Fees.Presentation\ModularTemplate.Modules.Fees.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Product\ModularTemplate.Modules.Product.Infrastructure\ModularTemplate.Modules.Product.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Product\ModularTemplate.Modules.Product.Presentation\ModularTemplate.Modules.Product.Presentation.csproj" />
-    <ProjectReference Include="..\..\Modules\Sample\ModularTemplate.Modules.Sample.Infrastructure\ModularTemplate.Modules.Sample.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Sample\ModularTemplate.Modules.Sample.Presentation\ModularTemplate.Modules.Sample.Presentation.csproj" />
-    <ProjectReference Include="..\..\Modules\Orders\ModularTemplate.Modules.Orders.Infrastructure\ModularTemplate.Modules.Orders.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Modules\Orders\ModularTemplate.Modules.Orders.Presentation\ModularTemplate.Modules.Orders.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Infrastructure\ModularTemplate.Modules.SampleSales.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Presentation\ModularTemplate.Modules.SampleSales.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Infrastructure\ModularTemplate.Modules.SampleOrders.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Presentation\ModularTemplate.Modules.SampleOrders.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Organization\ModularTemplate.Modules.Organization.Infrastructure\ModularTemplate.Modules.Organization.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Organization\ModularTemplate.Modules.Organization.Presentation\ModularTemplate.Modules.Organization.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Customer\ModularTemplate.Modules.Customer.Infrastructure\ModularTemplate.Modules.Customer.Infrastructure.csproj" />

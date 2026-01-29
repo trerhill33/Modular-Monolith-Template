@@ -1,0 +1,82 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using ModularTemplate.Common.Application.Persistence;
+using ModularTemplate.Common.Infrastructure;
+using ModularTemplate.Common.Infrastructure.EventBus;
+using ModularTemplate.Common.Infrastructure.Inbox.Job;
+using ModularTemplate.Common.Infrastructure.Outbox.Job;
+using ModularTemplate.Common.Infrastructure.Persistence;
+using ModularTemplate.Modules.SampleOrders.Application;
+using ModularTemplate.Modules.SampleOrders.Domain;
+using ModularTemplate.Modules.SampleOrders.Domain.Customers;
+using ModularTemplate.Modules.SampleOrders.Domain.Orders;
+using ModularTemplate.Modules.SampleOrders.Domain.ProductsCache;
+using ModularTemplate.Modules.SampleOrders.Infrastructure.EventBus;
+using ModularTemplate.Modules.SampleOrders.Infrastructure.Persistence;
+using ModularTemplate.Modules.SampleOrders.Infrastructure.Persistence.Repositories;
+using ModularTemplate.Modules.SampleOrders.Presentation.IntegrationEvents;
+using ProcessInboxJob = ModularTemplate.Modules.SampleOrders.Infrastructure.Inbox.ProcessInboxJob;
+using ProcessOutboxJob = ModularTemplate.Modules.SampleOrders.Infrastructure.Outbox.ProcessOutboxJob;
+
+namespace ModularTemplate.Modules.SampleOrders.Infrastructure;
+
+public static class SampleOrdersModule
+{
+    public static IServiceCollection AddSampleOrdersModule(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment,
+        string databaseConnectionString)
+    {
+        services
+            .AddModuleDataSource<ISampleOrdersModule>(databaseConnectionString)
+            .AddPersistence(databaseConnectionString)
+            .AddMessaging(configuration, environment);
+
+        return services;
+    }
+
+    private static IServiceCollection AddPersistence(
+        this IServiceCollection services,
+        string databaseConnectionString)
+    {
+        services.AddModuleDbContext<OrdersDbContext>(databaseConnectionString, Schemas.Orders);
+
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IProductCacheRepository, ProductCacheRepository>();
+        services.AddScoped<IProductCacheWriter, ProductCacheRepository>();
+        services.AddScoped<IUnitOfWork<ISampleOrdersModule>>(sp => sp.GetRequiredService<OrdersDbContext>());
+
+        return services;
+    }
+
+    private static IServiceCollection AddMessaging(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
+    {
+        // Integration event handlers
+        services.AddIntegrationEventHandlers(AssemblyReference.Assembly);
+
+        // SQS polling (disabled in development)
+        services.AddSqsPolling<ProcessSqsJob>(environment);
+
+        // Outbox pattern
+        services.AddOptions<OutboxOptions>()
+            .Bind(configuration.GetSection("Messaging:Outbox"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.ConfigureOptions<ConfigureProcessOutboxJob<ProcessOutboxJob>>();
+
+        // Inbox pattern
+        services.AddOptions<InboxOptions>()
+            .Bind(configuration.GetSection("Messaging:Inbox"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.ConfigureOptions<ConfigureProcessInboxJob<ProcessInboxJob>>();
+
+        return services;
+    }
+}

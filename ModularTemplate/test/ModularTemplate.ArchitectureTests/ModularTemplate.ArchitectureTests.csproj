@@ -23,19 +23,19 @@
     <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Common\ModularTemplate.Common.Presentation\ModularTemplate.Common.Presentation.csproj" />
 
-    <!-- Sample module (all layers for architecture tests) -->
-    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Domain\ModularTemplate.Modules.Sample.Domain.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Application\ModularTemplate.Modules.Sample.Application.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Infrastructure\ModularTemplate.Modules.Sample.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.Presentation\ModularTemplate.Modules.Sample.Presentation.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Sample\ModularTemplate.Modules.Sample.IntegrationEvents\ModularTemplate.Modules.Sample.IntegrationEvents.csproj" />
+    <!-- SampleSales module (all layers for architecture tests) -->
+    <ProjectReference Include="..\..\src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Domain\ModularTemplate.Modules.SampleSales.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Application\ModularTemplate.Modules.SampleSales.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Infrastructure\ModularTemplate.Modules.SampleSales.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.Presentation\ModularTemplate.Modules.SampleSales.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleSales\ModularTemplate.Modules.SampleSales.IntegrationEvents\ModularTemplate.Modules.SampleSales.IntegrationEvents.csproj" />
 
-    <!-- Orders module (all layers for architecture tests) -->
-    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Domain\ModularTemplate.Modules.Orders.Domain.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Application\ModularTemplate.Modules.Orders.Application.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Infrastructure\ModularTemplate.Modules.Orders.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.Presentation\ModularTemplate.Modules.Orders.Presentation.csproj" />
-    <ProjectReference Include="..\..\src\Modules\Orders\ModularTemplate.Modules.Orders.IntegrationEvents\ModularTemplate.Modules.Orders.IntegrationEvents.csproj" />
+    <!-- SampleOrders module (all layers for architecture tests) -->
+    <ProjectReference Include="..\..\src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Domain\ModularTemplate.Modules.SampleOrders.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Application\ModularTemplate.Modules.SampleOrders.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Infrastructure\ModularTemplate.Modules.SampleOrders.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.Presentation\ModularTemplate.Modules.SampleOrders.Presentation.csproj" />
+    <ProjectReference Include="..\..\src\Modules\SampleOrders\ModularTemplate.Modules.SampleOrders.IntegrationEvents\ModularTemplate.Modules.SampleOrders.IntegrationEvents.csproj" />
   </ItemGroup>
 
 </Project>

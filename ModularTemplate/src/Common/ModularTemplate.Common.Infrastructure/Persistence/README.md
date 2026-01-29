@@ -32,9 +32,9 @@ We use `IDbConnectionFactory<TModule>` (generic) instead of a shared `IDbConnect
 
 ```csharp
 // Each module has its own connection factory
-IDbConnectionFactory<IOrdersModule>   // Orders module connections
-IDbConnectionFactory<ISampleModule>   // Sample module connections
-IDbConnectionFactory<ICustomerModule> // Customer module connections
+IDbConnectionFactory<ISampleOrdersModule>   // SampleOrders module connections
+IDbConnectionFactory<ISampleSalesModule>    // SampleSales module connections
+IDbConnectionFactory<ICustomerModule>       // Customer module connections
 ```
 
 **Benefits:**
@@ -47,16 +47,16 @@ IDbConnectionFactory<ICustomerModule> // Customer module connections
 Register in each module's setup:
 
 ```csharp
-services.AddModuleDataSource<IOrdersModule>(databaseConnectionString);
+services.AddModuleDataSource<ISampleOrdersModule>(databaseConnectionString);
 ```
 
 ### Usage in Handlers
 
 ```csharp
 public class ProcessOutboxJob(
-    IDbConnectionFactory<IOrdersModule> dbConnectionFactory,
+    IDbConnectionFactory<ISampleOrdersModule> dbConnectionFactory,
     // ...
-) : ProcessOutboxJobBase<IOrdersModule>(dbConnectionFactory, ...)
+) : ProcessOutboxJobBase<ISampleOrdersModule>(dbConnectionFactory, ...)
 ```
 
 ## Database Configuration Options
@@ -65,8 +65,8 @@ public class ProcessOutboxJob(
 All modules share one database with separate schemas:
 ```
 PostgreSQL: modulartemplate
-├── Schema: sample
-├── Schema: orders
+├── Schema: samplesales
+├── Schema: sampleorders
 ├── Schema: customer
 └── Schema: sales
 ```
@@ -76,9 +76,9 @@ Each module can have its own database via config:
 ```json
 {
   "Modules": {
-    "Orders": {
+    "SampleOrders": {
       "ConnectionStrings": {
-        "Database": "Host=localhost;Database=modulartemplate_orders;..."
+        "Database": "Host=localhost;Database=modulartemplate_sampleorders;..."
       }
     }
   }
