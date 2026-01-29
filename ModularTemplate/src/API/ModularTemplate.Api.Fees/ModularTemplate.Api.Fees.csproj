@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Api.Fees</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared host extensions -->
+    <ProjectReference Include="..\ModularTemplate.Api.Shared\ModularTemplate.Api.Shared.csproj" />
+
+    <!-- Common infrastructure for shared services -->
+    <ProjectReference Include="..\..\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
+
+    <!-- Fees module -->
+    <ProjectReference Include="..\..\Modules\Fees\ModularTemplate.Modules.Fees.Infrastructure\ModularTemplate.Modules.Fees.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Fees\ModularTemplate.Modules.Fees.Presentation\ModularTemplate.Modules.Fees.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>

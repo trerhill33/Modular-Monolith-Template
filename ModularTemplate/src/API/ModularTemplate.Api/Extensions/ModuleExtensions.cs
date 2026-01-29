@@ -1,8 +1,10 @@
 using Asp.Versioning.Builder;
 using ModularTemplate.Common.Presentation.Endpoints;
 using ModularTemplate.Modules.Customer.Presentation.Endpoints;
+using ModularTemplate.Modules.Fees.Presentation.Endpoints;
 using ModularTemplate.Modules.Orders.Presentation.Endpoints;
 using ModularTemplate.Modules.Organization.Presentation.Endpoints;
+using ModularTemplate.Modules.Product.Presentation.Endpoints;
 using ModularTemplate.Modules.Sales.Presentation.Endpoints;
 using ModularTemplate.Modules.Sample.Presentation.Endpoints;
 
@@ -26,6 +28,8 @@ internal static class ModuleExtensions
             new OrganizationModuleEndpoints(),
             new CustomerModuleEndpoints(),
             new SalesModuleEndpoints(),
+            new FeesModuleEndpoints(),
+            new ProductModuleEndpoints(),
         ];
     }
 

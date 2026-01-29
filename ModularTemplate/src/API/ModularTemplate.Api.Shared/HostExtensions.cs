@@ -13,15 +13,6 @@ namespace ModularTemplate.Api.Shared;
 /// </summary>
 public static class HostExtensions
 {
-    /// <summary>
-    /// Adds common services required for a module API host.
-    /// </summary>
-    /// <param name="builder">The web application builder.</param>
-    /// <param name="moduleName">The name of the module (for OpenAPI documentation).</param>
-    /// <param name="databaseConnectionString">The database connection string.</param>
-    /// <param name="cacheConnectionString">The cache connection string (optional).</param>
-    /// <param name="moduleEndpoints">The module's endpoint registration.</param>
-    /// <returns>The web application builder for chaining.</returns>
     public static WebApplicationBuilder AddModuleHostDefaults(
         this WebApplicationBuilder builder,
         string moduleName,
@@ -91,9 +82,6 @@ public static class HostExtensions
     /// <summary>
     /// Configures the middleware pipeline for a module API host.
     /// </summary>
-    /// <param name="app">The web application.</param>
-    /// <param name="moduleEndpoints">The module's endpoint registration (optional).</param>
-    /// <returns>The web application for chaining.</returns>
     public static WebApplication UseModuleHostDefaults(
         this WebApplication app,
         IModuleEndpoints? moduleEndpoints = null)

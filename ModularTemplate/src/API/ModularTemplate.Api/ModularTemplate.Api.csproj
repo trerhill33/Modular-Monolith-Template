@@ -27,6 +27,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Common\ModularTemplate.Common.Presentation\ModularTemplate.Common.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Fees\ModularTemplate.Modules.Fees.Infrastructure\ModularTemplate.Modules.Fees.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Fees\ModularTemplate.Modules.Fees.Presentation\ModularTemplate.Modules.Fees.Presentation.csproj" />
+    <ProjectReference Include="..\..\Modules\Product\ModularTemplate.Modules.Product.Infrastructure\ModularTemplate.Modules.Product.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Modules\Product\ModularTemplate.Modules.Product.Presentation\ModularTemplate.Modules.Product.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Sample\ModularTemplate.Modules.Sample.Infrastructure\ModularTemplate.Modules.Sample.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Modules\Sample\ModularTemplate.Modules.Sample.Presentation\ModularTemplate.Modules.Sample.Presentation.csproj" />
     <ProjectReference Include="..\..\Modules\Orders\ModularTemplate.Modules.Orders.Infrastructure\ModularTemplate.Modules.Orders.Infrastructure.csproj" />
