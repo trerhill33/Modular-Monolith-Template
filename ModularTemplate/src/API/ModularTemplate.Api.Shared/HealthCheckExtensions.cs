@@ -1,6 +1,7 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -145,6 +146,67 @@ public static class HealthCheckExtensions
     {
         app.MapHealthChecks(pattern, new HealthCheckOptions
         {
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        }).AllowAnonymous();
+
+        return app;
+    }
+
+    /// <summary>
+    /// Maps the liveness probe endpoint at /health/live.
+    /// This is a minimal check that just verifies the application responds.
+    /// Use this for Kubernetes liveness probes to determine if the container should be restarted.
+    /// </summary>
+    public static IEndpointRouteBuilder MapLivenessProbeEndpoint(
+        this IEndpointRouteBuilder app,
+        string pattern = "/health/live")
+    {
+        app.MapHealthChecks(pattern, new HealthCheckOptions
+        {
+            // No health checks - just returns 200 if the app is running
+            Predicate = _ => false,
+            ResponseWriter = async (context, _) =>
+            {
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync("{\"status\":\"Healthy\"}");
+            }
+        }).AllowAnonymous();
+
+        return app;
+    }
+
+    /// <summary>
+    /// Maps the readiness probe endpoint at /health/ready.
+    /// This checks database and cache connectivity to determine if the app can handle requests.
+    /// Use this for Kubernetes readiness probes to determine if traffic should be routed to the pod.
+    /// </summary>
+    public static IEndpointRouteBuilder MapReadinessProbeEndpoint(
+        this IEndpointRouteBuilder app,
+        string pattern = "/health/ready")
+    {
+        app.MapHealthChecks(pattern, new HealthCheckOptions
+        {
+            // Only run database and cache checks
+            Predicate = check => check.Name == "database" || check.Name == "cache",
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        }).AllowAnonymous();
+
+        return app;
+    }
+
+    /// <summary>
+    /// Maps the startup probe endpoint at /health/startup.
+    /// This checks only database connectivity to determine if the app has completed startup.
+    /// Use this for Kubernetes startup probes to give slow-starting apps time to initialize.
+    /// </summary>
+    public static IEndpointRouteBuilder MapStartupProbeEndpoint(
+        this IEndpointRouteBuilder app,
+        string pattern = "/health/startup")
+    {
+        app.MapHealthChecks(pattern, new HealthCheckOptions
+        {
+            // Only run database check for startup
+            Predicate = check => check.Name == "database",
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         }).AllowAnonymous();
 

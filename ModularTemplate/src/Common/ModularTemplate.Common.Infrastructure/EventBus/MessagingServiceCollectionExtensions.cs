@@ -3,9 +3,12 @@ using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ModularTemplate.Common.Application.EventBus;
 using ModularTemplate.Common.Infrastructure.EventBus.Aws;
 using ModularTemplate.Common.Infrastructure.EventBus.InMemory;
+using ModularTemplate.Common.Infrastructure.Resilience;
 using Quartz;
 using System.Reflection;
 
@@ -40,7 +43,7 @@ public static class MessagingServiceCollectionExtensions
         }
         else
         {
-            // Production: EventBridge + SQS
+            // Production: EventBridge + SQS with resilience patterns
             services.AddOptions<AwsMessagingOptions>()
                 .Bind(configuration.GetSection(AwsMessagingOptions.SectionName))
                 .ValidateDataAnnotations()
@@ -50,8 +53,15 @@ public static class MessagingServiceCollectionExtensions
             services.AddAWSService<IAmazonEventBridge>();
             services.AddAWSService<IAmazonSQS>();
 
-            // EventBridge publisher
-            services.AddScoped<IEventBus, EventBridgeEventBus>();
+            // EventBridge publisher with resilience wrapper (retry + circuit breaker)
+            services.AddScoped<EventBridgeEventBus>();
+            services.AddScoped<IEventBus>(sp =>
+            {
+                var innerEventBus = sp.GetRequiredService<EventBridgeEventBus>();
+                var resilienceOptions = sp.GetRequiredService<IOptions<ResilienceOptions>>();
+                var logger = sp.GetRequiredService<ILogger<ResilientEventBridgeEventBus>>();
+                return new ResilientEventBridgeEventBus(innerEventBus, resilienceOptions, logger);
+            });
         }
 
         return services;
