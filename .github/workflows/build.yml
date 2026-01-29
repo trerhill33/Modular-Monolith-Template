@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: [SampleOrders, SampleSales, Customer, Organization]
+        module: [SampleOrders, SampleSales, Sales, Customer, Organization, Fees, Product]
 
     steps:
       - name: Checkout

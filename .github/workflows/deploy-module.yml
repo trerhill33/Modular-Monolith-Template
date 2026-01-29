@@ -11,8 +11,11 @@ on:
         options:
           - SampleOrders
           - SampleSales
+          - Sales
           - Customer
           - Organization
+          - Fees
+          - Product
           - All
       environment:
         description: 'Target environment (prod not available - auto-deploy only)'
@@ -76,7 +79,7 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             # Manual trigger - dev/itg (any branch) or qua (development only, validated above)
             if [ "${{ inputs.module }}" == "All" ]; then
-              echo 'modules=["SampleOrders","SampleSales","Customer","Organization"]' >> $GITHUB_OUTPUT
+              echo 'modules=["SampleOrders","SampleSales","Sales","Customer","Organization","Fees","Product"]' >> $GITHUB_OUTPUT
             else
               echo "modules=[\"${{ inputs.module }}\"]" >> $GITHUB_OUTPUT
             fi
@@ -96,7 +99,7 @@ jobs:
             BRANCH="${{ github.event.workflow_run.head_branch }}"
             SHA="${{ github.event.workflow_run.head_sha }}"
 
-            echo 'modules=["SampleOrders","SampleSales","Customer","Organization"]' >> $GITHUB_OUTPUT
+            echo 'modules=["SampleOrders","SampleSales","Sales","Customer","Organization","Fees","Product"]' >> $GITHUB_OUTPUT
             echo "image_tag=${SHA}" >> $GITHUB_OUTPUT
 
             if [ "$BRANCH" == "development" ]; then
