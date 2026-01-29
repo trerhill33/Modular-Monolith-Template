@@ -7,8 +7,12 @@ using ModularTemplate.Common.Infrastructure.EventBus;
 using ModularTemplate.Common.Infrastructure.Inbox.Job;
 using ModularTemplate.Common.Infrastructure.Outbox.Job;
 using ModularTemplate.Common.Infrastructure.Persistence;
+using ModularTemplate.Modules.Fees.Contracts;
 using ModularTemplate.Modules.Fees.Domain;
+using ModularTemplate.Modules.Fees.Domain.FeeSchedules;
 using ModularTemplate.Modules.Fees.Infrastructure.Persistence;
+using ModularTemplate.Modules.Fees.Infrastructure.Persistence.Repositories;
+using ModularTemplate.Modules.Fees.Infrastructure.Services;
 using ProcessInboxJob = ModularTemplate.Modules.Fees.Infrastructure.Inbox.ProcessInboxJob;
 using ProcessOutboxJob = ModularTemplate.Modules.Fees.Infrastructure.Outbox.ProcessOutboxJob;
 
@@ -25,6 +29,7 @@ public static class FeesModule
         services
             .AddModuleDataSource<IFeesModule>(databaseConnectionString)
             .AddPersistence(databaseConnectionString)
+            .AddServices()
             .AddMessaging(configuration, environment);
 
         return services;
@@ -37,6 +42,18 @@ public static class FeesModule
         services.AddModuleDbContext<FeesDbContext>(databaseConnectionString, Schemas.Fees);
 
         services.AddScoped<IUnitOfWork<IFeesModule>>(sp => sp.GetRequiredService<FeesDbContext>());
+
+        // Repositories
+        services.AddScoped<IFeeScheduleRepository, FeeScheduleRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        // Register the public contract implementation
+        // This allows other modules to inject IFeeCalculator
+        services.AddScoped<IFeeCalculator, FeeCalculator>();
 
         return services;
     }

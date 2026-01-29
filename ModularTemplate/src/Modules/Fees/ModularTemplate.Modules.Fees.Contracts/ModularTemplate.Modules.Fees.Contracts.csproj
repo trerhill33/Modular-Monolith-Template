@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Modules.Fees.Contracts</RootNamespace>
+  </PropertyGroup>
+
+  <!-- No dependencies - Contracts project contains only interfaces and DTOs -->
+
+</Project>

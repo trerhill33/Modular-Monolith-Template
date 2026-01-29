@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
     <ProjectReference Include="..\ModularTemplate.Modules.Fees.Application\ModularTemplate.Modules.Fees.Application.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Fees.Contracts\ModularTemplate.Modules.Fees.Contracts.csproj" />
     <ProjectReference Include="..\ModularTemplate.Modules.Fees.Presentation\ModularTemplate.Modules.Fees.Presentation.csproj" />
   </ItemGroup>
 

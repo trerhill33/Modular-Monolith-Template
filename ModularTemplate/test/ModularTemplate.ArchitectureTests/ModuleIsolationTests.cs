@@ -7,7 +7,7 @@ namespace ModularTemplate.ArchitectureTests;
 /// Tests to ensure modules are properly isolated from each other.
 /// Modules can only communicate through:
 /// 1. Integration events (async, via message bus)
-/// 2. Public contracts (if defined)
+/// 2. Public contracts (synchronous, via *.Contracts projects)
 ///
 /// Modules should NEVER directly reference another module's:
 /// - Domain entities or value objects
@@ -23,11 +23,14 @@ public sealed class ModuleIsolationTests : BaseTest
     /// Verifies that all modules are properly isolated from each other.
     ///
     /// Allowed cross-module dependencies:
-    /// - Presentation/Infrastructure CAN depend on other modules' IntegrationEvents (to handle incoming events)
+    /// - Application CAN depend on other modules' Contracts (synchronous public API)
+    /// - Infrastructure CAN depend on other modules' IntegrationEvents and Contracts
+    /// - Presentation CAN depend on other modules' IntegrationEvents
     ///
     /// Forbidden cross-module dependencies:
-    /// - Domain, Application, IntegrationEvents CANNOT depend on ANY other module
-    /// - Presentation/Infrastructure CANNOT depend on other modules' Domain, Application, Infrastructure, Presentation
+    /// - Domain, IntegrationEvents CANNOT depend on ANY other module
+    /// - Application CANNOT depend on other modules' Domain, Application, Infrastructure, Presentation
+    /// - Infrastructure/Presentation CANNOT depend on other modules' Domain, Application, Infrastructure, Presentation
     /// </summary>
     [Fact]
     public void AllModules_ShouldBeIsolated_FromEachOther()
@@ -43,10 +46,13 @@ public sealed class ModuleIsolationTests : BaseTest
         var violations = new List<string>();
 
         // Layers that cannot have ANY cross-module dependencies
-        var strictlyIsolatedLayers = new[] { "Domain", "Application", "IntegrationEvents" };
+        var strictlyIsolatedLayers = new[] { "Domain", "IntegrationEvents" };
 
-        // Layers that CAN depend on other modules' IntegrationEvents (but nothing else)
-        var canConsumeEventsLayers = new[] { "Infrastructure", "Presentation" };
+        // Layers that CAN depend on other modules' Contracts (but nothing else)
+        var canConsumeContractsLayers = new[] { "Application" };
+
+        // Layers that CAN depend on other modules' IntegrationEvents and Contracts
+        var canConsumeEventsAndContractsLayers = new[] { "Infrastructure", "Presentation" };
 
         // Check strictly isolated layers - no cross-module dependencies allowed
         foreach (var layer in strictlyIsolatedLayers)
@@ -72,15 +78,40 @@ public sealed class ModuleIsolationTests : BaseTest
             }
         }
 
-        // Check Presentation/Infrastructure - can depend on IntegrationEvents only
-        foreach (var layer in canConsumeEventsLayers)
+        // Check Application layer - can depend on Contracts only
+        foreach (var layer in canConsumeContractsLayers)
         {
             var moduleAssemblies = GetModuleAssemblies(layer);
 
             foreach (var (moduleName, assembly) in moduleAssemblies)
             {
-                // Get other modules' non-IntegrationEvents namespaces (Domain, Application, Infrastructure, Presentation)
-                var forbiddenNamespaces = GetOtherModuleNonEventNamespaces(moduleName);
+                // Get other modules' non-Contracts namespaces (Domain, Application, Infrastructure, Presentation, IntegrationEvents)
+                var forbiddenNamespaces = GetOtherModuleNonContractsNamespaces(moduleName);
+
+                var result = Types.InAssembly(assembly)
+                    .ShouldNot()
+                    .HaveDependencyOnAny(forbiddenNamespaces)
+                    .GetResult();
+
+                if (!result.IsSuccessful)
+                {
+                    foreach (var failingType in result.FailingTypeNames ?? Array.Empty<string>())
+                    {
+                        violations.Add($"{moduleName}.{layer}: {failingType}");
+                    }
+                }
+            }
+        }
+
+        // Check Infrastructure/Presentation - can depend on IntegrationEvents and Contracts
+        foreach (var layer in canConsumeEventsAndContractsLayers)
+        {
+            var moduleAssemblies = GetModuleAssemblies(layer);
+
+            foreach (var (moduleName, assembly) in moduleAssemblies)
+            {
+                // Get other modules' non-IntegrationEvents and non-Contracts namespaces
+                var forbiddenNamespaces = GetOtherModuleNonEventOrContractsNamespaces(moduleName);
 
                 var result = Types.InAssembly(assembly)
                     .ShouldNot()
@@ -98,6 +129,30 @@ public sealed class ModuleIsolationTests : BaseTest
         }
 
         Assert.Empty(violations);
+    }
+
+    /// <summary>
+    /// Gets other modules' namespaces excluding Contracts (which ARE allowed as cross-module dependencies).
+    /// Returns Domain, Application, Infrastructure, Presentation, and IntegrationEvents namespaces for other modules.
+    /// </summary>
+    private static string[] GetOtherModuleNonContractsNamespaces(string excludeModule)
+    {
+        var nonContractsLayers = new[] { "Domain", "Application", "Infrastructure", "Presentation", "IntegrationEvents" };
+        return [.. Assemblies.ModuleNames
+            .Where(m => m != excludeModule)
+            .SelectMany(m => nonContractsLayers.Select(layer => $"{NamespacePrefix}.Modules.{m}.{layer}"))];
+    }
+
+    /// <summary>
+    /// Gets other modules' namespaces excluding IntegrationEvents and Contracts (which ARE allowed as cross-module dependencies).
+    /// Returns Domain, Application, Infrastructure, and Presentation namespaces for other modules.
+    /// </summary>
+    private static string[] GetOtherModuleNonEventOrContractsNamespaces(string excludeModule)
+    {
+        var nonEventOrContractsLayers = new[] { "Domain", "Application", "Infrastructure", "Presentation" };
+        return [.. Assemblies.ModuleNames
+            .Where(m => m != excludeModule)
+            .SelectMany(m => nonEventOrContractsLayers.Select(layer => $"{NamespacePrefix}.Modules.{m}.{layer}"))];
     }
 
     /// <summary>
@@ -151,28 +206,44 @@ public sealed class ModuleIsolationTests : BaseTest
         //
         // 1. DIRECT DEPENDENCIES ARE FORBIDDEN
         //    - Module A cannot directly reference Module B's types
-        //    - This applies to ALL layers (Domain, Application, Infrastructure, Presentation)
+        //    - This applies to ALL core layers (Domain, Application, Infrastructure, Presentation)
         //
         // 2. CROSS-MODULE COMMUNICATION MUST USE:
-        //    - Integration Events (published via message bus)
-        //    - Public Contracts (DTOs in a shared contracts assembly, if needed)
+        //    - Integration Events (async, published via message bus)
+        //    - Public Contracts (synchronous, via *.Contracts projects)
         //
-        // 3. NAMING CONVENTION IS THE CONTRACT
+        // 3. PUBLIC CONTRACTS PATTERN
+        //    - Contracts projects contain only interfaces and DTOs (no implementation)
+        //    - Contracts have NO dependencies (pure interface/DTO library)
+        //    - Implementation stays in the owning module's Infrastructure layer
+        //    - Other modules reference Contracts, not the implementation
+        //    - Example: Orders.Application -> Fees.Contracts (interface)
+        //               Fees.Infrastructure implements IFeeCalculator
+        //
+        // 4. NAMING CONVENTION IS THE CONTRACT
         //    - {Prefix}.Modules.{ModuleName}.Domain
         //    - {Prefix}.Modules.{ModuleName}.Application
         //    - {Prefix}.Modules.{ModuleName}.Infrastructure
         //    - {Prefix}.Modules.{ModuleName}.Presentation
+        //    - {Prefix}.Modules.{ModuleName}.Contracts (optional, for public API)
+        //    - {Prefix}.Modules.{ModuleName}.IntegrationEvents
         //
-        // 4. COMMON LAYERS ARE SHARED
+        // 5. COMMON LAYERS ARE SHARED
         //    - {Prefix}.Common.Domain - Shared kernel (base entities, value objects)
         //    - {Prefix}.Common.Application - Shared application services
         //    - {Prefix}.Common.Infrastructure - Shared infrastructure
         //    - {Prefix}.Common.Presentation - Shared presentation utilities
         //
-        // 5. DEPENDENCY DIRECTION (Clean Architecture)
+        // 6. DEPENDENCY DIRECTION (Clean Architecture)
         //    Domain <- Application <- Presentation
         //                          <- Infrastructure
         //    (Infrastructure and Presentation depend on Application and Domain)
+        //
+        // 7. CROSS-MODULE DEPENDENCY RULES
+        //    - Domain: No cross-module dependencies
+        //    - Application: Can depend on other modules' Contracts only
+        //    - Infrastructure: Can depend on other modules' Contracts and IntegrationEvents
+        //    - Presentation: Can depend on other modules' IntegrationEvents
 
         Assert.True(true, "Architecture rules documented above");
     }
