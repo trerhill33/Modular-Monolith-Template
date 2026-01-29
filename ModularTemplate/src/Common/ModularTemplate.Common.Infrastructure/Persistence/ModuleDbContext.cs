@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using ModularTemplate.Common.Application.Data;
-using ModularTemplate.Common.Infrastructure.Auditing;
-using ModularTemplate.Common.Infrastructure.Inbox.Data;
-using ModularTemplate.Common.Infrastructure.Outbox.Data;
+using ModularTemplate.Common.Application.Persistence;
+using ModularTemplate.Common.Infrastructure.Auditing.Configurations;
+using ModularTemplate.Common.Infrastructure.Inbox.Persistence;
+using ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 
 namespace ModularTemplate.Common.Infrastructure.Persistence;
 

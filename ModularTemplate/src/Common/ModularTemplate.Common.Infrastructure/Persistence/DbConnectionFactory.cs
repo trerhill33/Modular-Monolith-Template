@@ -1,13 +1,17 @@
-using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Persistence;
 using Npgsql;
 using System.Data.Common;
 
 namespace ModularTemplate.Common.Infrastructure.Persistence;
 
 /// <summary>
-/// PostgreSQL implementation of IDbConnectionFactory.
+/// Module-specific PostgreSQL implementation of <see cref="IDbConnectionFactory{TModule}"/>.
 /// </summary>
-internal sealed class DbConnectionFactory(NpgsqlDataSource dataSource) : IDbConnectionFactory
+/// <remarks>
+/// <para>
+internal sealed class DbConnectionFactory<TModule>(NpgsqlDataSource dataSource)
+    : IDbConnectionFactory<TModule>
+    where TModule : class
 {
     public async ValueTask<DbConnection> OpenConnectionAsync() =>
         await dataSource.OpenConnectionAsync();

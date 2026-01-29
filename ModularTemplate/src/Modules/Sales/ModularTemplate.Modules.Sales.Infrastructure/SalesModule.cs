@@ -1,20 +1,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ModularTemplate.Common.Application.Data;
+using ModularTemplate.Common.Application.Persistence;
+using ModularTemplate.Common.Infrastructure;
 using ModularTemplate.Common.Infrastructure.EventBus;
 using ModularTemplate.Common.Infrastructure.Inbox.Job;
 using ModularTemplate.Common.Infrastructure.Outbox.Job;
 using ModularTemplate.Common.Infrastructure.Persistence;
-using ModularTemplate.Modules.Sales.Application;
 using ModularTemplate.Modules.Sales.Domain;
-using ModularTemplate.Modules.Sales.Domain.Catalogs;
-using ModularTemplate.Modules.Sales.Domain.OrdersCache;
-using ModularTemplate.Modules.Sales.Domain.Products;
-using ModularTemplate.Modules.Sales.Infrastructure.EventBus;
 using ModularTemplate.Modules.Sales.Infrastructure.Persistence;
-using ModularTemplate.Modules.Sales.Infrastructure.Persistence.Repositories;
-using ModularTemplate.Modules.Sales.Presentation.IntegrationEvents;
 using ProcessInboxJob = ModularTemplate.Modules.Sales.Infrastructure.Inbox.ProcessInboxJob;
 using ProcessOutboxJob = ModularTemplate.Modules.Sales.Infrastructure.Outbox.ProcessOutboxJob;
 
@@ -29,6 +23,7 @@ public static class SalesModule
         string databaseConnectionString)
     {
         services
+            .AddModuleDataSource<ISalesModule>(databaseConnectionString)
             .AddPersistence(databaseConnectionString)
             .AddMessaging(configuration, environment);
 
@@ -41,10 +36,6 @@ public static class SalesModule
     {
         services.AddModuleDbContext<SalesDbContext>(databaseConnectionString, Schemas.Sales);
 
-        services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<ICatalogRepository, CatalogRepository>();
-        services.AddScoped<IOrderCacheRepository, OrderCacheRepository>();
-        services.AddScoped<IOrderCacheWriter, OrderCacheRepository>();
         services.AddScoped<IUnitOfWork<ISalesModule>>(sp => sp.GetRequiredService<SalesDbContext>());
 
         return services;
@@ -56,17 +47,23 @@ public static class SalesModule
         IHostEnvironment environment)
     {
         // Integration event handlers
-        services.AddIntegrationEventHandlers(AssemblyReference.Assembly);
+        services.AddIntegrationEventHandlers(Presentation.AssemblyReference.Assembly);
 
         // SQS polling (disabled in development)
-        services.AddSqsPolling<ProcessSqsJob>(environment);
+        services.AddSqsPolling<EventBus.ProcessSqsJob>(environment);
 
         // Outbox pattern
-        services.Configure<OutboxOptions>(configuration.GetSection("Sales:Outbox"));
+        services.AddOptions<OutboxOptions>()
+            .Bind(configuration.GetSection("Messaging:Outbox"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.ConfigureOptions<ConfigureProcessOutboxJob<ProcessOutboxJob>>();
 
         // Inbox pattern
-        services.Configure<InboxOptions>(configuration.GetSection("Sales:Inbox"));
+        services.AddOptions<InboxOptions>()
+            .Bind(configuration.GetSection("Messaging:Inbox"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.ConfigureOptions<ConfigureProcessInboxJob<ProcessInboxJob>>();
 
         return services;

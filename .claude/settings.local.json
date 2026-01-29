@@ -22,7 +22,31 @@
       "Bash(powershell \"Get-WmiObject win32_service | Where-Object { $_PathName -like ''*postgres*'' } | Select-Object Name, State, PathName\")",
       "Bash(powershell -File:*)",
       "Bash(dir \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\data\")",
-      "Bash(dir /s /b \"C:\\\\Program Files\\\\PostgreSQL\\\\*pg_ctl.exe\")"
+      "Bash(dir /s /b \"C:\\\\Program Files\\\\PostgreSQL\\\\*pg_ctl.exe\")",
+      "Bash(dotnet sln:*)",
+      "Bash(git mv:*)",
+      "Bash(rename \"ModularTemplate\\\\src\\\\Modules\\\\Sales\" \"Sample\")",
+      "Bash(move \"ModularTemplate\\\\src\\\\Modules\\\\Sales\" \"ModularTemplate\\\\src\\\\Modules\\\\Sample\")",
+      "Bash(Remove-Item \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.Development.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.itg.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.prod.json\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\modules.sales.qua.json\")",
+      "Bash(Select-String -Path ModularTemplate.Api.sln -Pattern \"Sales\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet ef database update:*)",
+      "Bash(dotnet ef migrations remove:*)",
+      "Bash(dir /b \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\")",
+      "Bash(dotnet list:*)",
+      "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Orders\\\\ModularTemplate.Modules.Orders.Infrastructure\")",
+      "Bash(dir \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\Modules\\\\Customer\\\\ModularTemplate.Modules.Customer.Infrastructure\")",
+      "Bash(del ApiVersioningExtensions.cs ExceptionHandlingExtensions.cs HealthCheckExtensions.cs OpenApiExtensions.cs ConfigurationExtensions.cs MigrationExtensions.cs)",
+      "Bash(Remove-Item \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\ApiVersioningExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\ExceptionHandlingExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\HealthCheckExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\OpenApiExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\ConfigurationExtensions.cs\", \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\\\\Extensions\\\\MigrationExtensions.cs\" -Force)",
+      "Bash(dotnet restore:*)",
+      "Bash(ls -la \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\"\" 2>/dev/null || dir \"X:SESmodular-monolith-repoModularTemplatesrcAPIModularTemplate.Api \")",
+      "Bash(dir /b \"X:\\\\SES\\\\modular-monolith-repo\\\\ModularTemplate\\\\src\\\\API\\\\ModularTemplate.Api\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nrefactor: simplify logging for Datadog readiness\n\nRemove over-engineered Serilog configuration in favor of clean console-only\noutput that''s easy to extend for Datadog/CloudWatch later.\n\nChanges:\n- Remove Serilog.Sinks.File, Serilog.Enrichers.Environment, Serilog.Enrichers.Thread packages\n- Simplify appsettings.json Serilog config \\(remove file sink, unnecessary enrichers\\)\n- Simplify UseSerilogRequestLogging\\(\\) to single-line call\n\nKept: CorrelationId enricher \\(essential for distributed tracing\\), structured logging\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git commit:*)",
+      "Bash(gh pr list:*)"
     ]
   }
 }

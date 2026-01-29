@@ -22,15 +22,9 @@ public static class RetryPolicy
     /// <summary>
     /// Calculates the next retry time based on the retry count using exponential backoff.
     /// </summary>
-    /// <param name="retryCount">The current retry attempt number (1-based).</param>
-    /// <param name="now">The current UTC time.</param>
-    /// <returns>The calculated next retry time.</returns>
-    /// <remarks>
-    /// For retry counts exceeding the number of configured delays, the maximum delay is used.
-    /// </remarks>
     public static DateTime CalculateNextRetry(int retryCount, DateTime now)
     {
-        int index = Math.Min(retryCount - 1, DefaultDelaysInSeconds.Length - 1);
+        var index = Math.Min(retryCount - 1, DefaultDelaysInSeconds.Length - 1);
         return now.AddSeconds(DefaultDelaysInSeconds[index]);
     }
 }

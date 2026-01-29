@@ -5,12 +5,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModularTemplate.Common.Application.Auditing;
 using ModularTemplate.Common.Application.Caching;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Application.Identity;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Application;
 using ModularTemplate.Common.Infrastructure.Auditing;
+using ModularTemplate.Common.Infrastructure.Auditing.Interceptors;
 using ModularTemplate.Common.Infrastructure.Authentication;
 using ModularTemplate.Common.Infrastructure.Authorization;
 using ModularTemplate.Common.Infrastructure.Caching;
@@ -18,8 +19,9 @@ using ModularTemplate.Common.Infrastructure.Clock;
 using ModularTemplate.Common.Infrastructure.EventBus;
 using ModularTemplate.Common.Infrastructure.Features;
 using ModularTemplate.Common.Infrastructure.Identity;
-using ModularTemplate.Common.Infrastructure.Outbox.Data;
+using ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 using ModularTemplate.Common.Infrastructure.Persistence;
+using ModularTemplate.Common.Infrastructure.Resilience;
 using Npgsql;
 using Quartz;
 using StackExchange.Redis;
@@ -34,12 +36,6 @@ public static class InfrastructureConfiguration
     /// <summary>
     /// Adds infrastructure layer services.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="environment">The host environment.</param>
-    /// <param name="databaseConnectionString">Database connection string.</param>
-    /// <param name="redisConnectionString">Redis connection string.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddCommonInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -47,10 +43,8 @@ public static class InfrastructureConfiguration
         string databaseConnectionString,
         string redisConnectionString)
     {
-        // Register centralized application identity configuration
-        services.Configure<ApplicationOptions>(configuration.GetSection(ApplicationOptions.SectionName));
-
         // Register post-configure handlers to derive values from ApplicationOptions
+        // Note: ApplicationOptions must be registered before this via AddApplicationOptions()
         services.ConfigureOptions<ConfigureAwsMessagingOptions>();
 
         services.AddAuthenticationInternal(configuration);
@@ -58,12 +52,23 @@ public static class InfrastructureConfiguration
 
         services
             .AddCoreServices()
+            .AddResilienceOptions(configuration)
             .AddFeatureFlags(configuration)
             .AddAuditingServices()
             .AddPostgreSql(databaseConnectionString)
             .AddQuartzScheduler()
             .AddCaching(configuration, redisConnectionString)
             .AddMessaging(configuration, environment);
+
+        return services;
+    }
+
+    private static IServiceCollection AddResilienceOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<ResilienceOptions>()
+            .Bind(configuration.GetSection(ResilienceOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }
@@ -100,9 +105,29 @@ public static class InfrastructureConfiguration
 
     private static IServiceCollection AddPostgreSql(this IServiceCollection services, string connectionString)
     {
-        NpgsqlDataSource npgsqlDataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
+        var npgsqlDataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
         services.TryAddSingleton(npgsqlDataSource);
-        services.TryAddScoped<IDbConnectionFactory, DbConnectionFactory>();
+        return services;
+    }
+
+    /// <summary>
+    /// Registers a module-specific database data source and connection factory.
+    /// </summary>
+    public static IServiceCollection AddModuleDataSource<TModule>(
+        this IServiceCollection services,
+        string connectionString)
+        where TModule : class
+    {
+        var dataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
+        services.AddKeyedSingleton<NpgsqlDataSource>(typeof(TModule), dataSource);
+
+        // Use factory delegate to resolve the keyed NpgsqlDataSource
+        services.AddScoped<IDbConnectionFactory<TModule>>(sp =>
+        {
+            var keyedDataSource = sp.GetRequiredKeyedService<NpgsqlDataSource>(typeof(TModule));
+            return new DbConnectionFactory<TModule>(keyedDataSource);
+        });
+
         return services;
     }
 
@@ -124,7 +149,10 @@ public static class InfrastructureConfiguration
         IConfiguration configuration,
         string redisConnectionString)
     {
-        services.Configure<CachingOptions>(configuration.GetSection(CachingOptions.SectionName));
+        services.AddOptions<CachingOptions>()
+            .Bind(configuration.GetSection(CachingOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         try
         {

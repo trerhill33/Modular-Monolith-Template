@@ -8,16 +8,10 @@ namespace ModularTemplate.Common.Infrastructure.Identity;
 /// Implementation of ICurrentUserService that retrieves user information
 /// from the current HTTP context's claims principal.
 /// </summary>
-internal sealed class CurrentUserService : ICurrentUserService
+internal sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
-    /// <inheritdoc />
     public Guid? UserId
     {
         get
@@ -29,9 +23,7 @@ internal sealed class CurrentUserService : ICurrentUserService
         }
     }
 
-    /// <inheritdoc />
     public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name;
 
-    /// <inheritdoc />
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 }

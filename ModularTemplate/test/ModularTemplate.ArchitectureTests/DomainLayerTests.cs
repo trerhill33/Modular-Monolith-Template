@@ -1,5 +1,6 @@
-using FluentAssertions;
+using ModularTemplate.Common.Domain.Entities;
 using NetArchTest.Rules;
+using System.Reflection;
 using Xunit;
 
 namespace ModularTemplate.ArchitectureTests;
@@ -27,7 +28,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Application"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any Application layer");
     }
 
@@ -45,7 +46,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Infrastructure"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any Infrastructure layer");
     }
 
@@ -63,7 +64,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Presentation"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any Presentation layer");
     }
 
@@ -87,7 +88,7 @@ public sealed class DomainLayerTests : BaseTest
             .HaveDependencyOnAny(moduleNamespaces)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Domain should not depend on any module-specific code");
     }
 
@@ -113,7 +114,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on any Application layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -137,7 +138,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on any Infrastructure layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -161,7 +162,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on any Presentation layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -185,7 +186,7 @@ public sealed class DomainLayerTests : BaseTest
                 .HaveDependencyOnAny(otherModuleNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Domain should not depend on other modules. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -208,6 +209,96 @@ public sealed class DomainLayerTests : BaseTest
         // - Other modules
 
         Assert.True(true, "Domain layer dependency rules documented above");
+    }
+
+    #endregion
+
+    #region Aggregate Root Enforcement Tests
+
+    /// <summary>
+    /// Non-aggregate entities (entities not implementing IAggregateRoot) should only have internal methods.
+    /// This enforces that child entities can only be accessed through their aggregate root.
+    /// Public properties are allowed (needed for EF Core and read access).
+    /// </summary>
+    [Fact]
+    public void NonAggregateEntities_ShouldOnlyHaveInternalMethods()
+    {
+        var domains = GetModuleAssemblies("Domain");
+        var violations = new List<string>();
+
+        // Methods that are allowed to be public (inherited from Entity/object or special)
+        var allowedPublicMethods = new HashSet<string>
+        {
+            // From Entity base class
+            "ClearDomainEvents",
+            // From object
+            "GetType",
+            "ToString",
+            "Equals",
+            "GetHashCode",
+            // Property accessors are handled separately
+        };
+
+        foreach (var (moduleName, assembly) in domains)
+        {
+            var nonAggregateEntities = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract)
+                .Where(t => IsEntityType(t))
+                .Where(t => !typeof(IAggregateRoot).IsAssignableFrom(t))
+                .ToList();
+
+            foreach (var entityType in nonAggregateEntities)
+            {
+                // Get public methods declared on this type (not inherited)
+                var publicMethods = entityType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                    .Where(m => !m.IsSpecialName) // Exclude property getters/setters, operators
+                    .Where(m => !allowedPublicMethods.Contains(m.Name))
+                    .ToList();
+
+                foreach (var method in publicMethods)
+                {
+                    violations.Add($"{moduleName}.{entityType.Name}.{method.Name}() - should be internal, not public");
+                }
+            }
+        }
+
+        Assert.True(violations.Count == 0,
+            $"Non-aggregate entities should not have public methods (only aggregate roots can expose public methods):\n" +
+            $"{string.Join("\n", violations)}");
+    }
+
+    /// <summary>
+    /// Aggregate roots (entities implementing IAggregateRoot) CAN have public methods.
+    /// This test documents the allowed pattern.
+    /// </summary>
+    [Fact]
+    public void AggregateRoots_CanHavePublicMethods()
+    {
+        // Aggregate roots ARE allowed to have public methods because:
+        // - They are the entry points to aggregates
+        // - External code interacts with aggregates through the root
+        // - Example: Order.Place(), Order.AddLine(), Customer.Update()
+        //
+        // Non-aggregate entities should use internal methods because:
+        // - They should only be modified through their aggregate root
+        // - Example: OrderLine.Create() is internal, called by Order.AddLine()
+
+        Assert.True(true, "Aggregate root method visibility rules documented above");
+    }
+
+    private static bool IsEntityType(Type type)
+    {
+        // Check if the type inherits from Entity (directly or through SoftDeletableEntity, AuditableEntity)
+        var baseType = type.BaseType;
+        while (baseType != null)
+        {
+            if (baseType == typeof(Entity))
+            {
+                return true;
+            }
+            baseType = baseType.BaseType;
+        }
+        return false;
     }
 
     #endregion

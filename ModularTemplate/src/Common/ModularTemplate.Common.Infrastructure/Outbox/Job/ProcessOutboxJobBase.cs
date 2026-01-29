@@ -2,8 +2,8 @@ using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.Features;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Domain.Events;
 using ModularTemplate.Common.Infrastructure.Features;
@@ -30,26 +30,18 @@ namespace ModularTemplate.Common.Infrastructure.Outbox.Job;
 /// Module-specific implementations only need to provide the module name, database schema,
 /// and the assembly containing the domain event handlers.
 /// </para>
-/// <para>
-/// Processing can be disabled via the <see cref="InfrastructureFeatures.Outbox"/> feature flag.
-/// When disabled, messages remain queued and will be processed when the feature is re-enabled.
-/// </para>
 /// </remarks>
 [DisallowConcurrentExecution]
-public abstract class ProcessOutboxJobBase(
-    IDbConnectionFactory dbConnectionFactory,
+public abstract class ProcessOutboxJobBase<TModule>(
+    IDbConnectionFactory<TModule> dbConnectionFactory,
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<OutboxOptions> outboxOptions,
     IFeatureFlagService featureFlagService,
     ILogger logger) : IJob
+    where TModule : class
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
-    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly OutboxOptions _outboxOptions = outboxOptions.Value;
-    private readonly IFeatureFlagService _featureFlagService = featureFlagService;
-    private readonly ILogger _logger = logger;
 
     /// <summary>
     /// Gets the name of the module this job processes messages for.
@@ -78,17 +70,17 @@ public abstract class ProcessOutboxJobBase(
     /// </remarks>
     public async Task Execute(IJobExecutionContext context)
     {
-        if (!_featureFlagService.IsEnabled(InfrastructureFeatures.Outbox))
+        if (!featureFlagService.IsEnabled(InfrastructureFeatures.Outbox))
         {
-            _logger.LogDebug(
+            logger.LogWarning(
                 "{Module} - Outbox processing is disabled via feature flag. Messages will remain queued.",
                 ModuleName);
             return;
         }
 
-        _logger.LogInformation("{Module} - Beginning to process outbox messages", ModuleName);
+        logger.LogInformation("{Module} - Beginning to process outbox messages", ModuleName);
 
-        await using var connection = await _dbConnectionFactory.OpenConnectionAsync();
+        await using var connection = await dbConnectionFactory.OpenConnectionAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
         var outboxMessages = await GetOutboxMessagesAsync(connection, transaction);
@@ -108,7 +100,7 @@ public abstract class ProcessOutboxJobBase(
                     domainEventType,
                     SerializerSettings.Instance)!;
 
-                using var scope = _serviceScopeFactory.CreateScope();
+                using var scope = serviceScopeFactory.CreateScope();
 
                 var handlers = DomainEventHandlersFactory.GetHandlers(
                     domainEvent.GetType(),
@@ -122,7 +114,7 @@ public abstract class ProcessOutboxJobBase(
             }
             catch (Exception caughtException)
             {
-                _logger.LogError(
+                logger.LogError(
                     caughtException,
                     "{Module} - Exception while processing outbox message {MessageId}",
                     ModuleName,
@@ -136,7 +128,7 @@ public abstract class ProcessOutboxJobBase(
 
         await transaction.CommitAsync();
 
-        _logger.LogInformation("{Module} - Completed processing outbox messages", ModuleName);
+        logger.LogInformation("{Module} - Completed processing outbox messages", ModuleName);
     }
 
     private async Task<IReadOnlyList<OutboxMessageResponse>> GetOutboxMessagesAsync(
@@ -160,7 +152,7 @@ public abstract class ProcessOutboxJobBase(
 
         var outboxMessages = await connection.QueryAsync<OutboxMessageResponse>(
             sql,
-            new { Now = _dateTimeProvider.UtcNow },
+            new { Now = dateTimeProvider.UtcNow },
             transaction: transaction);
 
         return outboxMessages.ToList();
@@ -172,7 +164,7 @@ public abstract class ProcessOutboxJobBase(
         OutboxMessageResponse outboxMessage,
         Exception? exception)
     {
-        var now = _dateTimeProvider.UtcNow;
+        var now = dateTimeProvider.UtcNow;
 
         if (exception is null)
         {
@@ -197,7 +189,7 @@ public abstract class ProcessOutboxJobBase(
             if (newRetryCount >= _outboxOptions.MaxRetries)
             {
                 // Dead letter: mark as processed with error
-                _logger.LogError(
+                logger.LogError(
                     "Message {MessageId} moved to dead letter after {Retries} retries",
                     outboxMessage.Id,
                     newRetryCount);
@@ -227,7 +219,7 @@ public abstract class ProcessOutboxJobBase(
                 // Schedule retry with exponential backoff
                 var nextRetryAt = RetryPolicy.CalculateNextRetry(newRetryCount, now);
 
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Message {MessageId} scheduled for retry {Retry}/{Max} at {NextRetry}",
                     outboxMessage.Id,
                     newRetryCount,

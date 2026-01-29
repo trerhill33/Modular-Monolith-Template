@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ModularTemplate.Common.Infrastructure.Caching;
 
 /// <summary>
 /// Configuration options for distributed caching.
 /// </summary>
-public sealed class CachingOptions
+public sealed class CachingOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name for caching options.
@@ -14,4 +16,15 @@ public sealed class CachingOptions
     /// Gets the default cache expiration time in minutes.
     /// </summary>
     public int DefaultExpirationMinutes { get; init; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (DefaultExpirationMinutes <= 0)
+        {
+            yield return new ValidationResult(
+                "DefaultExpirationMinutes must be positive.",
+                [nameof(DefaultExpirationMinutes)]);
+        }
+    }
 }

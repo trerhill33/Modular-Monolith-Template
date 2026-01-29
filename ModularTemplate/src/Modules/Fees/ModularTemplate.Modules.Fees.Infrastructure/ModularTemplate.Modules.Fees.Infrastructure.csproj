@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ModularTemplate.Modules.Fees.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\ModularTemplate.Common.Infrastructure\ModularTemplate.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Fees.Application\ModularTemplate.Modules.Fees.Application.csproj" />
+    <ProjectReference Include="..\ModularTemplate.Modules.Fees.Presentation\ModularTemplate.Modules.Fees.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>

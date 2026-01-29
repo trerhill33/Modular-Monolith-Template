@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NetArchTest.Rules;
 using Xunit;
 
@@ -26,7 +25,7 @@ public sealed class ApplicationLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Infrastructure"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Application should not depend on any Infrastructure layer");
     }
 
@@ -44,7 +43,7 @@ public sealed class ApplicationLayerTests : BaseTest
             .HaveDependencyOn(GetCommonNamespace("Presentation"))
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Application should not depend on any Presentation layer");
     }
 
@@ -68,7 +67,7 @@ public sealed class ApplicationLayerTests : BaseTest
             .HaveDependencyOnAny(moduleNamespaces)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue(
+        Assert.True(result.IsSuccessful,
             "Common.Application should not depend on any module-specific code");
     }
 
@@ -94,7 +93,7 @@ public sealed class ApplicationLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Application should not depend on any Infrastructure layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -118,7 +117,7 @@ public sealed class ApplicationLayerTests : BaseTest
                 .HaveDependencyOnAny(forbiddenNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Application should not depend on any Presentation layer. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }
@@ -142,7 +141,7 @@ public sealed class ApplicationLayerTests : BaseTest
                 .HaveDependencyOnAny(otherModuleNamespaces)
                 .GetResult();
 
-            result.IsSuccessful.Should().BeTrue(
+            Assert.True(result.IsSuccessful,
                 $"{moduleName}.Application should not depend on other modules. " +
                 $"Found dependencies in: {string.Join(", ", result.FailingTypeNames ?? Array.Empty<string>())}");
         }

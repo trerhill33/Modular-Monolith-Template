@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ModularTemplate.Common.Infrastructure.EventBus.Aws;
 
 /// <summary>
@@ -7,12 +9,12 @@ namespace ModularTemplate.Common.Infrastructure.EventBus.Aws;
 /// These options control how the application publishes events to EventBridge
 /// and consumes events from SQS queues.
 /// </remarks>
-public sealed class AwsMessagingOptions
+public sealed class AwsMessagingOptions : IValidatableObject
 {
     /// <summary>
     /// The configuration section name for AWS messaging options.
     /// </summary>
-    public const string SectionName = "AwsMessaging";
+    public const string SectionName = "Messaging:AwsMessaging";
 
     /// <summary>
     /// Gets or sets the name of the EventBridge event bus.
@@ -55,4 +57,34 @@ public sealed class AwsMessagingOptions
     /// after being received.
     /// </remarks>
     public int VisibilityTimeoutSeconds { get; init; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        // PollingIntervalSeconds, MaxMessages, VisibilityTimeoutSeconds are validated
+        // only if SqsQueueUrl is configured (SQS is optional)
+        if (!string.IsNullOrWhiteSpace(SqsQueueUrl))
+        {
+            if (PollingIntervalSeconds <= 0)
+            {
+                yield return new ValidationResult(
+                    "PollingIntervalSeconds must be positive when SQS is configured.",
+                    [nameof(PollingIntervalSeconds)]);
+            }
+
+            if (MaxMessages <= 0 || MaxMessages > 10)
+            {
+                yield return new ValidationResult(
+                    "MaxMessages must be between 1 and 10.",
+                    [nameof(MaxMessages)]);
+            }
+
+            if (VisibilityTimeoutSeconds <= 0)
+            {
+                yield return new ValidationResult(
+                    "VisibilityTimeoutSeconds must be positive.",
+                    [nameof(VisibilityTimeoutSeconds)]);
+            }
+        }
+    }
 }

@@ -10,10 +10,8 @@ public sealed class CacheWriteScope : ICacheWriteScope
 {
     private static readonly AsyncLocal<bool> _isWriteAllowed = new();
 
-    /// <inheritdoc />
     public bool IsWriteAllowed => _isWriteAllowed.Value;
 
-    /// <inheritdoc />
     public IDisposable AllowWrites()
     {
         _isWriteAllowed.Value = true;

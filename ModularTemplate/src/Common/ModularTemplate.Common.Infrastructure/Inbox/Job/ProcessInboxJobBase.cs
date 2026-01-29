@@ -2,9 +2,9 @@ using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ModularTemplate.Common.Application.Data;
 using ModularTemplate.Common.Application.EventBus;
 using ModularTemplate.Common.Application.Features;
+using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Features;
 using ModularTemplate.Common.Infrastructure.Inbox.Handlers;
@@ -30,26 +30,18 @@ namespace ModularTemplate.Common.Infrastructure.Inbox.Job;
 /// Module-specific implementations only need to provide the module name, database schema,
 /// and the assembly containing the integration event handlers.
 /// </para>
-/// <para>
-/// Processing can be disabled via the <see cref="InfrastructureFeatures.Inbox"/> feature flag.
-/// When disabled, messages remain queued and will be processed when the feature is re-enabled.
-/// </para>
 /// </remarks>
 [DisallowConcurrentExecution]
-public abstract class ProcessInboxJobBase(
-    IDbConnectionFactory dbConnectionFactory,
+public abstract class ProcessInboxJobBase<TModule>(
+    IDbConnectionFactory<TModule> dbConnectionFactory,
     IServiceScopeFactory serviceScopeFactory,
     IDateTimeProvider dateTimeProvider,
     IOptions<InboxOptions> inboxOptions,
     IFeatureFlagService featureFlagService,
     ILogger logger) : IJob
+    where TModule : class
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
-    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
     private readonly InboxOptions _inboxOptions = inboxOptions.Value;
-    private readonly IFeatureFlagService _featureFlagService = featureFlagService;
-    private readonly ILogger _logger = logger;
 
     /// <summary>
     /// Gets the name of the module this job processes messages for.
@@ -68,32 +60,25 @@ public abstract class ProcessInboxJobBase(
     /// </summary>
     protected abstract Assembly HandlersAssembly { get; }
 
-    /// <summary>
-    /// Executes the inbox processing job.
-    /// </summary>
-    /// <remarks>
-    /// If the <see cref="InfrastructureFeatures.Inbox"/> feature flag is disabled,
-    /// the job will skip processing. Messages remain in the inbox and will be
-    /// processed when the feature is re-enabled.
-    /// </remarks>
+
     public async Task Execute(IJobExecutionContext context)
     {
-        if (!_featureFlagService.IsEnabled(InfrastructureFeatures.Inbox))
+        if (!featureFlagService.IsEnabled(InfrastructureFeatures.Inbox))
         {
-            _logger.LogDebug(
+            logger.LogWarning(
                 "{Module} - Inbox processing is disabled via feature flag. Messages will remain queued.",
                 ModuleName);
             return;
         }
 
-        _logger.LogInformation("{Module} - Beginning to process inbox messages", ModuleName);
+        logger.LogInformation("{Module} - Beginning to process inbox messages", ModuleName);
 
-        await using var connection = await _dbConnectionFactory.OpenConnectionAsync();
+        await using var connection = await dbConnectionFactory.OpenConnectionAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
-        IReadOnlyList<InboxMessageResponse> inboxMessages = await GetInboxMessagesAsync(connection, transaction);
+        var inboxMessages = await GetInboxMessagesAsync(connection, transaction);
 
-        foreach (InboxMessageResponse inboxMessage in inboxMessages)
+        foreach (var inboxMessage in inboxMessages)
         {
             Exception? exception = null;
 
@@ -108,21 +93,21 @@ public abstract class ProcessInboxJobBase(
                     integrationEventType,
                     SerializerSettings.Instance)!;
 
-                using var scope = _serviceScopeFactory.CreateScope();
+                using var scope = serviceScopeFactory.CreateScope();
 
                 var handlers = IntegrationEventHandlersFactory.GetHandlers(
                     integrationEvent.GetType(),
                     scope.ServiceProvider,
                     HandlersAssembly);
 
-                foreach (IIntegrationEventHandler integrationEventHandler in handlers)
+                foreach (var integrationEventHandler in handlers)
                 {
                     await integrationEventHandler.HandleAsync(integrationEvent, context.CancellationToken);
                 }
             }
             catch (Exception caughtException)
             {
-                _logger.LogError(
+                logger.LogError(
                     caughtException,
                     "{Module} - Exception while processing inbox message {MessageId}",
                     ModuleName,
@@ -136,7 +121,7 @@ public abstract class ProcessInboxJobBase(
 
         await transaction.CommitAsync();
 
-        _logger.LogInformation("{Module} - Completed processing inbox messages", ModuleName);
+        logger.LogInformation("{Module} - Completed processing inbox messages", ModuleName);
     }
 
     private async Task<IReadOnlyList<InboxMessageResponse>> GetInboxMessagesAsync(
@@ -158,9 +143,9 @@ public abstract class ProcessInboxJobBase(
              FOR UPDATE
              """;
 
-        IEnumerable<InboxMessageResponse> inboxMessages = await connection.QueryAsync<InboxMessageResponse>(
+        var inboxMessages = await connection.QueryAsync<InboxMessageResponse>(
             sql,
-            new { Now = _dateTimeProvider.UtcNow },
+            new { Now = dateTimeProvider.UtcNow },
             transaction: transaction);
 
         return inboxMessages.ToList();
@@ -172,7 +157,7 @@ public abstract class ProcessInboxJobBase(
         InboxMessageResponse inboxMessage,
         Exception? exception)
     {
-        var now = _dateTimeProvider.UtcNow;
+        var now = dateTimeProvider.UtcNow;
 
         if (exception is null)
         {
@@ -197,7 +182,7 @@ public abstract class ProcessInboxJobBase(
             if (newRetryCount >= _inboxOptions.MaxRetries)
             {
                 // Dead letter: mark as processed with error
-                _logger.LogError(
+                logger.LogError(
                     "Message {MessageId} moved to dead letter after {Retries} retries",
                     inboxMessage.Id,
                     newRetryCount);
@@ -227,7 +212,7 @@ public abstract class ProcessInboxJobBase(
                 // Schedule retry with exponential backoff
                 var nextRetryAt = RetryPolicy.CalculateNextRetry(newRetryCount, now);
 
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Message {MessageId} scheduled for retry {Retry}/{Max} at {NextRetry}",
                     inboxMessage.Id,
                     newRetryCount,

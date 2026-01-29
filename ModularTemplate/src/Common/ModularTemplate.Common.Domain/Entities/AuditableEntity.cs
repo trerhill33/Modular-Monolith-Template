@@ -10,15 +10,11 @@ namespace ModularTemplate.Common.Domain.Entities;
 /// </remarks>
 public abstract class AuditableEntity : Entity, IAuditableEntity
 {
-    /// <inheritdoc />
     public Guid CreatedByUserId { get; internal set; }
 
-    /// <inheritdoc />
     public DateTime CreatedAtUtc { get; internal set; }
 
-    /// <inheritdoc />
     public Guid? ModifiedByUserId { get; internal set; }
 
-    /// <inheritdoc />
     public DateTime? ModifiedAtUtc { get; internal set; }
 }

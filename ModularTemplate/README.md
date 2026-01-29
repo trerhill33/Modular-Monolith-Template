@@ -89,12 +89,12 @@ ModularTemplate.Api/
 │   │   ├── ModularTemplate.Common.Application/    # CQRS, behaviors
 │   │   ├── ModularTemplate.Common.Infrastructure/ # Database, caching, auth
 │   │   └── ModularTemplate.Common.Presentation/   # Endpoints, API results
-│   └── Modules/
-│       └── Sample/                            # Example module
-│           ├── ModularTemplate.Modules.Sample.Domain/
-│           ├── ModularTemplate.Modules.Sample.Application/
-│           ├── ModularTemplate.Modules.Sample.Infrastructure/
-│           └── ModularTemplate.Modules.Sample.Presentation/
+│   └── Modules/                           # Business modules (5 modules)
+│       ├── Customer/                      # Customer management
+│       ├── Orders/                        # Order processing
+│       ├── Organization/                  # Organization management
+│       ├── Sales/                         # Sales and products
+│       └── Sample/                        # Example module
 └── test/
     └── ModularTemplate.ArchitectureTests/        # Architecture validation
 ```
@@ -124,7 +124,7 @@ Update `appsettings.json` with your connection strings:
 ```json
 {
   "ConnectionStrings": {
-    "Database": "Host=localhost;Database=retailcore;Username=postgres;Password=postgres",
+    "Database": "Host=localhost;Database=modulartemplate;Username=postgres;Password=postgres",
     "Cache": "localhost:6379"
   }
 }
@@ -145,23 +145,86 @@ The API will be available at `https://localhost:5001` with Swagger UI.
 dotnet test
 ```
 
-### Code Coverage
+### EF Core Migrations
 
-The project includes [Microsoft Code Coverage](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-code-coverage) tooling with HTML report generation.
+Each module has its own DbContext and migrations. Use the following commands to manage migrations per module.
+
+#### Add New Migration
 
 ```bash
-# First time setup (restores dotnet tools)
-dotnet tool restore
+# Sample Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure --startup-project src/API/ModularTemplate.Api --context SampleDbContext --output-dir Persistence/Migrations
 
-# Run tests with coverage and generate HTML report
-./scripts/run-coverage.ps1            # Windows
-./scripts/run-coverage.sh             # Linux/Mac
+# Orders Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrdersDbContext --output-dir Persistence/Migrations
 
-# Open report automatically after generation
-./scripts/run-coverage.ps1 -OpenReport
+# Organization Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrganizationDbContext --output-dir Persistence/Migrations
+
+# Customer Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext --output-dir Persistence/Migrations
+
+
+# Sales Module
+dotnet ef migrations add <MigrationName> --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext --output-dir Persistence/Migrations
 ```
 
-Reports are generated in the `coverage/` directory. Configuration excludes migrations, EF configurations, and DbContext files.
+#### Remove Last Migration
+
+```bash
+# Sample Module
+dotnet ef migrations remove --project src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure --startup-project src/API/ModularTemplate.Api --context SampleDbContext
+
+# Orders Module
+dotnet ef migrations remove --project src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrdersDbContext
+
+# Organization Module
+dotnet ef migrations remove --project src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrganizationDbContext
+
+# Customer Module
+dotnet ef migrations remove --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext
+
+
+# Sales Module
+dotnet ef migrations remove --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext
+```
+
+#### Apply Migrations Manually
+
+Migrations are automatically applied on application startup. To apply manually:
+
+```bash
+# Sample Module
+dotnet ef database update --project src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure --startup-project src/API/ModularTemplate.Api --context SampleDbContext
+
+# Orders Module
+dotnet ef database update --project src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrdersDbContext
+
+# Organization Module
+dotnet ef database update --project src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure --startup-project src/API/ModularTemplate.Api --context OrganizationDbContext
+
+# Customer Module
+dotnet ef database update --project src/Modules/Customer/ModularTemplate.Modules.Customer.Infrastructure --startup-project src/API/ModularTemplate.Api --context CustomerDbContext
+
+
+# Sales Module
+dotnet ef database update --project src/Modules/Sales/ModularTemplate.Modules.Sales.Infrastructure --startup-project src/API/ModularTemplate.Api --context SalesDbContext
+```
+
+### Code Coverage
+
+Code coverage is automatically collected and reported on every pull request via GitHub Actions.
+
+**CI/CD Integration:**
+- Coverage is collected using Coverlet during test runs
+- Results are posted as a PR comment with per-assembly breakdown
+- Thresholds: 50% (warning), 75% (passing)
+
+**Local Coverage:**
+```bash
+# Run tests with coverage
+dotnet test --collect:"XPlat Code Coverage" --results-directory ./coverage
+```
 
 ## Creating a New Module
 
@@ -218,18 +281,32 @@ internal sealed class CreateYourEntityCommandHandler(
 ```csharp
 internal sealed class CreateYourEntityEndpoint : IEndpoint
 {
-    public void MapEndpoint(IEndpointRouteBuilder app)
+    public void MapEndpoint(RouteGroupBuilder group)
     {
-        app.MapPost("your-entities", async (Request request, ISender sender) =>
-        {
-            var command = new CreateYourEntityCommand(request.Name);
-            Result<Guid> result = await sender.Send(command);
-            return result.Match(
-                id => Results.Created($"/your-entities/{id}", new { id }),
-                ApiResults.Problem);
-        });
+        group.MapPost("/", CreateYourEntityAsync)
+            .WithSummary("Create a new entity")
+            .WithDescription("Creates a new entity with the specified properties.")
+            .MapToApiVersion(new ApiVersion(1, 0))
+            .Produces<CreateYourEntityResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+    }
+
+    private static async Task<IResult> CreateYourEntityAsync(
+        CreateYourEntityRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var command = new CreateYourEntityCommand(request.Name);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match(
+            id => Results.Created($"/your-entities/{id}", new CreateYourEntityResponse(id)),
+            ApiResults.Problem);
     }
 }
+
+public sealed record CreateYourEntityRequest(string Name);
+public sealed record CreateYourEntityResponse(Guid Id);
 ```
 
 7. Register the module in `Program.cs`:

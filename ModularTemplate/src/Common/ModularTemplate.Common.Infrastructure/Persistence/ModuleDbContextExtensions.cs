@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
-using ModularTemplate.Common.Infrastructure.Auditing;
+using ModularTemplate.Common.Infrastructure.Auditing.Interceptors;
 using ModularTemplate.Common.Infrastructure.Caching;
-using ModularTemplate.Common.Infrastructure.Outbox.Data;
+using ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 
 namespace ModularTemplate.Common.Infrastructure.Persistence;
 
