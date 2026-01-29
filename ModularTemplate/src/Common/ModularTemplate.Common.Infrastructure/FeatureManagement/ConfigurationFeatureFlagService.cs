@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using ModularTemplate.Common.Application.Features;
 
 namespace ModularTemplate.Common.Infrastructure.FeatureManagement;
 

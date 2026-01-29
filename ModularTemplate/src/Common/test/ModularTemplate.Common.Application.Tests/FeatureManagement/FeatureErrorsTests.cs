@@ -1,8 +1,7 @@
-using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Domain.Results;
 using Xunit;
 
-namespace ModularTemplate.Common.Application.Tests.Features;
+namespace ModularTemplate.Common.Application.Tests.FeatureManagement;
 
 public class FeatureErrorsTests
 {

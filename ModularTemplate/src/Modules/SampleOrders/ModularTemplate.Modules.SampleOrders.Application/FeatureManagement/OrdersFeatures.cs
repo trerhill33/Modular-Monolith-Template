@@ -1,4 +1,4 @@
-namespace ModularTemplate.Modules.SampleOrders.Application.Features;
+namespace ModularTemplate.Modules.SampleOrders.Application.FeatureManagement;
 
 /// <summary>
 /// Configuration paths for Orders module feature flags.

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace ModularTemplate.Common.Presentation.Features;
+namespace ModularTemplate.Common.Presentation.FeatureManagement;
 
 /// <summary>
 /// Extension methods for requiring feature flags on endpoints.

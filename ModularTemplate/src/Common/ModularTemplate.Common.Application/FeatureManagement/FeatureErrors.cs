@@ -1,6 +1,6 @@
 using ModularTemplate.Common.Domain.Results;
 
-namespace ModularTemplate.Common.Application.Features;
+namespace ModularTemplate.Common.Application.FeatureManagement;
 
 /// <summary>
 /// Error definitions for feature flag related errors.

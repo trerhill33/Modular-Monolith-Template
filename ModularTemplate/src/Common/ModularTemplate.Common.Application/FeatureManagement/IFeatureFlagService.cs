@@ -1,4 +1,4 @@
-namespace ModularTemplate.Common.Application.Features;
+namespace ModularTemplate.Common.Application.FeatureManagement;
 
 /// <summary>
 /// Service for checking if features are enabled.

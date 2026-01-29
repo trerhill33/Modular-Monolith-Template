@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ModularTemplate.Common.Application.Features;
 
-namespace ModularTemplate.Common.Presentation.Features;
+namespace ModularTemplate.Common.Presentation.FeatureManagement;
 
 /// <summary>
 /// Endpoint filter that checks if a feature is enabled before allowing the request to proceed.

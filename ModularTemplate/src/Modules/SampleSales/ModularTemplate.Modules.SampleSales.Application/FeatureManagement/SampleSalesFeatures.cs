@@ -1,4 +1,4 @@
-namespace ModularTemplate.Modules.SampleSales.Application.Features;
+namespace ModularTemplate.Modules.SampleSales.Application.FeatureManagement;
 
 /// <summary>
 /// Configuration paths for SampleSales module feature flags.

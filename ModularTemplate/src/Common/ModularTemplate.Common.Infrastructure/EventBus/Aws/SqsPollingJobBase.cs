@@ -3,7 +3,6 @@ using Amazon.SQS.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModularTemplate.Common.Application.EventBus;
-using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Infrastructure.FeatureManagement;
 using Newtonsoft.Json;
 using Quartz;
