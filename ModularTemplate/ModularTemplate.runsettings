@@ -2,67 +2,65 @@
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>
-      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+      <!-- Coverlet (XPlat Code Coverage) configuration -->
+      <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
-          <CodeCoverage>
-            <!-- Assemblies to include in coverage (regex patterns) -->
-            <ModulePaths>
-              <Include>
-                <ModulePath>.*ModularTemplate\..*\.dll$</ModulePath>
-              </Include>
-              <Exclude>
-                <!-- Exclude test assemblies -->
-                <ModulePath>.*\.Tests\.dll$</ModulePath>
-                <ModulePath>.*\.IntegrationTests\.dll$</ModulePath>
-                <ModulePath>.*ArchitectureTests\.dll$</ModulePath>
-                <!-- Exclude third-party -->
-                <ModulePath>.*xunit\..*</ModulePath>
-                <ModulePath>.*FluentAssertions\..*</ModulePath>
-                <ModulePath>.*NSubstitute\..*</ModulePath>
-                <ModulePath>.*Moq\..*</ModulePath>
-              </Exclude>
-            </ModulePaths>
+          <Format>cobertura</Format>
 
-            <!-- Source files to exclude -->
-            <Sources>
-              <Exclude>
-                <!-- EF Core Migrations -->
-                <Source>.*\\Migrations\\.*</Source>
-                <Source>.*Migrations.*\.cs$</Source>
-                <!-- EF Core Configurations -->
-                <Source>.*\\Configurations\\.*Configuration\.cs$</Source>
-                <Source>.*Configuration\.cs$</Source>
-                <!-- DbContext files -->
-                <Source>.*DbContext\.cs$</Source>
-                <!-- Generated/Designer files -->
-                <Source>.*\.Designer\.cs$</Source>
-                <Source>.*\.g\.cs$</Source>
-              </Exclude>
-            </Sources>
+          <!--
+            Exclude assemblies using [assembly]type pattern
+            - Test assemblies
+            - Third-party libraries
+          -->
+          <Exclude>
+            [*.Tests]*,
+            [*.IntegrationTests]*,
+            [*ArchitectureTests]*,
+            [xunit.*]*,
+            [FluentAssertions.*]*,
+            [NSubstitute.*]*,
+            [Moq.*]*
+          </Exclude>
 
-            <!-- Attributes that exclude code from coverage -->
-            <Attributes>
-              <Exclude>
-                <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
-                <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
-                <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
-                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
-              </Exclude>
-            </Attributes>
+          <!-- Include only ModularTemplate assemblies -->
+          <Include>
+            [ModularTemplate.*]*
+          </Include>
 
-            <!-- Functions to exclude -->
-            <Functions>
-              <Exclude>
-                <Function>^.*\.Program\.Main\(.*\)$</Function>
-              </Exclude>
-            </Functions>
+          <!--
+            Exclude source files by path pattern (glob)
+            - EF Core Migrations
+            - EF Core Configurations
+            - DbContext files
+            - Generated/Designer files
+          -->
+          <ExcludeByFile>
+            **/Migrations/**/*.cs,
+            **/*Migration.cs,
+            **/Configurations/**/*Configuration.cs,
+            **/*DbContext.cs,
+            **/*.Designer.cs,
+            **/*.g.cs
+          </ExcludeByFile>
 
-            <!-- Use source link for better source mapping -->
-            <UseSourceLink>true</UseSourceLink>
+          <!--
+            Exclude code marked with these attributes
+            - [GeneratedCode]
+            - [ExcludeFromCodeCoverage]
+            - Debugger attributes
+          -->
+          <ExcludeByAttribute>
+            GeneratedCodeAttribute,
+            ExcludeFromCodeCoverageAttribute,
+            DebuggerHiddenAttribute,
+            DebuggerNonUserCodeAttribute
+          </ExcludeByAttribute>
 
-            <!-- Output format -->
-            <Format>Cobertura</Format>
-          </CodeCoverage>
+          <!-- Include auto-properties in coverage -->
+          <SkipAutoProps>true</SkipAutoProps>
+
+          <!-- Use deterministic report generation -->
+          <DeterministicReport>true</DeterministicReport>
         </Configuration>
       </DataCollector>
     </DataCollectors>
