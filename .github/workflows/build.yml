@@ -53,6 +53,16 @@ jobs:
           output: both
           thresholds: '50 75'
 
+      - name: Generate Detailed Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: coverage/**/coverage.cobertura.xml
+          targetdir: coverage-report
+          reporttypes: 'Html;MarkdownSummaryGithub;TextSummary'
+          classfilters: '+*'
+          filefilters: '+*'
+          verbosity: 'Info'
+
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
@@ -60,11 +70,24 @@ jobs:
           recreate: true
           path: code-coverage-results.md
 
-      - name: Upload Coverage Artifacts
+      - name: Add Detailed Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          header: detailed-coverage
+          path: coverage-report/SummaryGithub.md
+
+      - name: Upload Coverage Summary
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-summary
           path: code-coverage-results.md
+
+      - name: Upload Detailed Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-html
+          path: coverage-report
 
   # ========================================
   # Build Docker Images (Matrix)
