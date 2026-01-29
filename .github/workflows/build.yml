@@ -44,15 +44,6 @@ jobs:
             --settings ModularTemplate/ModularTemplate.runsettings \
             --results-directory ./coverage
 
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: coverage/**/coverage.cobertura.xml
-          badge: true
-          format: markdown
-          output: both
-          thresholds: '50 75'
-
       - name: Download Coverage History
         uses: dawidd6/action-download-artifact@v3
         with:
@@ -86,13 +77,6 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
         with:
-          recreate: true
-          path: code-coverage-results.md
-
-      - name: Add Detailed Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
-        with:
           header: detailed-coverage
           path: coverage-report/SummaryGithub.md
 
@@ -102,12 +86,6 @@ jobs:
         with:
           header: delta-coverage
           path: coverage-report/DeltaSummary.md
-
-      - name: Upload Coverage Summary
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-summary
-          path: code-coverage-results.md
 
       - name: Upload Detailed Coverage Report
         uses: actions/upload-artifact@v4
