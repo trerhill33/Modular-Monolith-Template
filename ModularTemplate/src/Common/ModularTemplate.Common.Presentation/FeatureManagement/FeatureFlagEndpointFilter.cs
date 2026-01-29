@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ModularTemplate.Common.Application.FeatureManagement;
 
 namespace ModularTemplate.Common.Presentation.FeatureManagement;
 

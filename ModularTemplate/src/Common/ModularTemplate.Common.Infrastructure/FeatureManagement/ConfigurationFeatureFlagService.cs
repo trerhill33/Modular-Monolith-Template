@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using ModularTemplate.Common.Application.FeatureManagement;
 
 namespace ModularTemplate.Common.Infrastructure.FeatureManagement;
 
@@ -9,9 +10,7 @@ namespace ModularTemplate.Common.Infrastructure.FeatureManagement;
 internal sealed class ConfigurationFeatureFlagService(IConfiguration configuration) : IFeatureFlagService
 {
     public Task<bool> IsEnabledAsync(string featureName, CancellationToken ct = default)
-    {
-        return Task.FromResult(IsEnabled(featureName));
-    }
+        => Task.FromResult(IsEnabled(featureName));
 
     public bool IsEnabled(string featureName)
     {

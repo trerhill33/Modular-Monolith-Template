@@ -1,3 +1,4 @@
+using ModularTemplate.Common.Application.FeatureManagement;
 using ModularTemplate.Common.Domain.Results;
 using Xunit;
 

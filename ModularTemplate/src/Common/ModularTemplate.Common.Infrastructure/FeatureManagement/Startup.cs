@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ModularTemplate.Common.Application.FeatureManagement;
 
 namespace ModularTemplate.Common.Infrastructure.FeatureManagement;
 
