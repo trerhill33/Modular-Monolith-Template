@@ -15,20 +15,16 @@ using System.Reflection;
 namespace ModularTemplate.Common.Infrastructure.EventBus;
 
 /// <summary>
-/// Extension methods for configuring messaging services based on environment.
+/// Extension methods for configuring messaging services.
 /// </summary>
-public static class MessagingServiceCollectionExtensions
+public static class Startup
 {
     /// <summary>
     /// Adds messaging services configured for the current environment.
     /// Development: In-memory event bus (synchronous, no external dependencies)
     /// Production: EventBridge (publishing) + SQS (consuming)
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="environment">The host environment.</param>
-    /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddMessaging(
+    internal static IServiceCollection AddMessagingServices(
         this IServiceCollection services,
         IConfiguration configuration,
         IHostEnvironment environment)

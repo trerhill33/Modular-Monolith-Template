@@ -1,4 +1,4 @@
-# Feature Flags
+# Feature Management
 
 Configuration-based feature toggles using `IConfiguration`.
 

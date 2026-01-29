@@ -6,11 +6,14 @@ using ModularTemplate.Common.Infrastructure.Application;
 namespace ModularTemplate.Common.Infrastructure.Authentication;
 
 /// <summary>
-/// Extension methods for configuring authentication.
+/// Extension methods for configuring authentication services.
 /// </summary>
-internal static class AuthenticationExtensions
+internal static class Startup
 {
-    internal static IServiceCollection AddAuthenticationInternal(
+    /// <summary>
+    /// Adds authentication services to the service collection.
+    /// </summary>
+    internal static IServiceCollection AddAuthenticationServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {

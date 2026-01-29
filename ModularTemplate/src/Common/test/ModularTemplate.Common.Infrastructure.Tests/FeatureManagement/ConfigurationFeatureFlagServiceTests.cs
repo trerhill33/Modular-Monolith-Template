@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
-using ModularTemplate.Common.Infrastructure.Features;
+using ModularTemplate.Common.Infrastructure.FeatureManagement;
 using Xunit;
 
-namespace ModularTemplate.Common.Infrastructure.Tests.Features;
+namespace ModularTemplate.Common.Infrastructure.Tests.FeatureManagement;
 
 public class ConfigurationFeatureFlagServiceTests
 {

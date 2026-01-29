@@ -7,11 +7,14 @@ using ModularTemplate.Common.Application.Authorization;
 namespace ModularTemplate.Common.Infrastructure.Authorization;
 
 /// <summary>
-/// Extension methods for configuring authorization.
+/// Extension methods for configuring authorization services.
 /// </summary>
-internal static class AuthorizationExtensions
+internal static class Startup
 {
-    internal static IServiceCollection AddAuthorizationInternal(this IServiceCollection services)
+    /// <summary>
+    /// Adds authorization services to the service collection.
+    /// </summary>
+    internal static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
     {
         // Add ASP.NET Core authorization services
         services.AddAuthorization();
