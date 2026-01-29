@@ -1,5 +1,6 @@
 using ModularTemplate.Api.Extensions;
 using ModularTemplate.Api.Shared;
+using ModularTemplate.Api.Shared.RateLimiting;
 using ModularTemplate.Common.Application;
 using ModularTemplate.Common.Infrastructure;
 using ModularTemplate.Common.Infrastructure.Application;
@@ -65,16 +66,39 @@ builder.Services
     .AddOpenApiVersioned(builder.Configuration["Application:DisplayName"] ?? "API", modules)
     .AddCors(options =>
     {
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
         options.AddDefaultPolicy(policy =>
         {
-            policy
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+            if (allowedOrigins.Length > 0)
+            {
+                policy
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }
+            else if (builder.Environment.IsDevelopment())
+            {
+                // Only allow any origin in development when no origins configured
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }
+            else
+            {
+                // In production with no configured origins, deny all cross-origin requests
+                policy
+                    .WithOrigins("https://localhost") // Effectively blocks CORS
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }
         });
     })
     .AddHealthChecks(databaseConnectionString, cacheConnectionString)
-    .AddGranularHealthChecks(builder.Configuration);
+    .AddGranularHealthChecks(builder.Configuration)
+    .AddRateLimiting(builder.Configuration);
 
 // Application layer (MediatR, FluentValidation, Pipeline Behaviors)
 builder.Services.AddCommonApplication([
@@ -136,6 +160,7 @@ app.MapHealthCheckEndpoint();
 app.MapTaggedHealthCheckEndpoint("/health/messaging", "messaging");
 app.MapTaggedHealthCheckEndpoint("/health/modules", "module");
 app.UseGlobalExceptionHandling();
+app.UseRateLimiter();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
