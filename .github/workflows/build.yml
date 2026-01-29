@@ -70,11 +70,11 @@ jobs:
   # ========================================
   build-images:
     needs: build-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: [Orders, Sales, Customer, Organization, Sample]
+        module: [SampleOrders, SampleSales, Customer, Organization]
 
     steps:
       - name: Checkout
@@ -94,6 +94,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set image name
+        id: image-name
+        run: |
+          MODULE_LOWER=$(echo "${{ matrix.module }}" | tr '[:upper:]' '[:lower:]')
+          echo "name=modular-api-${MODULE_LOWER}" >> $GITHUB_OUTPUT
+
       - name: Build and push ${{ matrix.module }} image
         uses: docker/build-push-action@v5
         with:
@@ -101,8 +107,8 @@ jobs:
           file: ModularTemplate/src/API/ModularTemplate.Api.${{ matrix.module }}/Dockerfile
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/modular-api-${{ matrix.module }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/modular-api-${{ matrix.module }}:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ steps.image-name.outputs.name }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ steps.image-name.outputs.name }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
