@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using ModularTemplate.Common.Presentation;
 using Xunit;
 
 namespace ModularTemplate.Common.Presentation.Tests;

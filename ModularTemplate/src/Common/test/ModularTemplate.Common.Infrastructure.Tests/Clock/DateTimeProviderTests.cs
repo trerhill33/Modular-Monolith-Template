@@ -1,4 +1,3 @@
-using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Clock;
 using Xunit;
 
