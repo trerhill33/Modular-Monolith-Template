@@ -30,6 +30,17 @@ var builder = WebApplication.CreateBuilder(args);
 var modules = ModuleExtensions.GetModuleEndpoints();
 
 // ========================================
+// Host Configuration
+// ========================================
+
+// Configure graceful shutdown timeout for chaos engineering readiness
+// Allows time for in-flight requests to complete before forced termination
+builder.Host.ConfigureHostOptions(options =>
+{
+    options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+});
+
+// ========================================
 // Serilog Configuration
 // ========================================
 builder.Host.UseSerilog((context, configuration) =>
@@ -155,9 +166,15 @@ var apiVersionSet = app.CreateApiVersionSet();
 app.UseSerilogRequestLogging();
 
 app.UseOpenApiVersioned(modules);
-app.MapHealthCheckEndpoint();
+
+// Health check endpoints for Kubernetes probes and monitoring
+app.MapHealthCheckEndpoint();                                      // /health - full health check
+app.MapLivenessProbeEndpoint();                                    // /health/live - minimal, just checks app responds
+app.MapReadinessProbeEndpoint();                                   // /health/ready - database + cache connectivity
+app.MapStartupProbeEndpoint();                                     // /health/startup - database only
 app.MapTaggedHealthCheckEndpoint("/health/messaging", "messaging");
 app.MapTaggedHealthCheckEndpoint("/health/modules", "module");
+
 app.UseGlobalExceptionHandling();
 app.UseRateLimiter();
 app.UseCors();

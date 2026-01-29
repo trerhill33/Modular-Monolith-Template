@@ -21,6 +21,7 @@ using ModularTemplate.Common.Infrastructure.Features;
 using ModularTemplate.Common.Infrastructure.Identity;
 using ModularTemplate.Common.Infrastructure.Outbox.Persistence;
 using ModularTemplate.Common.Infrastructure.Persistence;
+using ModularTemplate.Common.Infrastructure.Resilience;
 using Npgsql;
 using Quartz;
 using StackExchange.Redis;
@@ -51,12 +52,23 @@ public static class InfrastructureConfiguration
 
         services
             .AddCoreServices()
+            .AddResilienceOptions(configuration)
             .AddFeatureFlags(configuration)
             .AddAuditingServices()
             .AddPostgreSql(databaseConnectionString)
             .AddQuartzScheduler()
             .AddCaching(configuration, redisConnectionString)
             .AddMessaging(configuration, environment);
+
+        return services;
+    }
+
+    private static IServiceCollection AddResilienceOptions(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<ResilienceOptions>()
+            .Bind(configuration.GetSection(ResilienceOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }
