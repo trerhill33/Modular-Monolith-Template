@@ -105,19 +105,30 @@ Each environment needs these secrets configured:
 
 ### Automatic Deployments
 
+Deployments are gated on successful image builds to prevent race conditions.
+
 ```
 PR merged to development
          │
          ▼
-   Build & Test
+   Build & Test (build.yml)
          │
          ▼
+   Build Docker Images
+         │
+         ▼ (workflow_run trigger)
    Deploy to DEV (all modules)
 
 
 PR merged to main (from development)
          │
          ▼
+   Build & Test (build.yml)
+         │
+         ▼
+   Build Docker Images
+         │
+         ▼ (workflow_run trigger)
    Deploy to PROD (all modules)
 ```
 

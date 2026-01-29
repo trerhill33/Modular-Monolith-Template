@@ -27,9 +27,10 @@ on:
         required: false
         default: 'latest'
 
-  # Auto-deploy to dev on push/merge to development
-  # Auto-deploy to prod on push/merge to main
-  push:
+  # Auto-deploy after build workflow completes (ensures images exist)
+  workflow_run:
+    workflows: ["Build Module Images"]
+    types: [completed]
     branches: [development, main]
 
 permissions:
@@ -82,18 +83,34 @@ jobs:
             echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
             echo "image_tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
             echo "should_deploy=true" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" == "refs/heads/development" ]; then
-            # Push/merge to development - auto-deploy all to dev
+
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            # Auto-deploy after build completes - only if build succeeded
+            if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+              echo "::warning::Build workflow did not succeed (conclusion: ${{ github.event.workflow_run.conclusion }}). Skipping deployment."
+              echo "should_deploy=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # Determine environment based on branch
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+            SHA="${{ github.event.workflow_run.head_sha }}"
+
             echo 'modules=["SampleOrders","SampleSales","Customer","Organization"]' >> $GITHUB_OUTPUT
-            echo "environment=dev" >> $GITHUB_OUTPUT
-            echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
-            echo "should_deploy=true" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            # Push/merge to main - auto-deploy all to prod
-            echo 'modules=["SampleOrders","SampleSales","Customer","Organization"]' >> $GITHUB_OUTPUT
-            echo "environment=prod" >> $GITHUB_OUTPUT
-            echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
-            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            echo "image_tag=${SHA}" >> $GITHUB_OUTPUT
+
+            if [ "$BRANCH" == "development" ]; then
+              echo "environment=dev" >> $GITHUB_OUTPUT
+              echo "should_deploy=true" >> $GITHUB_OUTPUT
+              echo "Auto-deploying to dev from development branch (SHA: ${SHA})"
+            elif [ "$BRANCH" == "main" ]; then
+              echo "environment=prod" >> $GITHUB_OUTPUT
+              echo "should_deploy=true" >> $GITHUB_OUTPUT
+              echo "Auto-deploying to prod from main branch (SHA: ${SHA})"
+            else
+              echo "::warning::Unexpected branch: $BRANCH. Skipping deployment."
+              echo "should_deploy=false" >> $GITHUB_OUTPUT
+            fi
           else
             echo "should_deploy=false" >> $GITHUB_OUTPUT
           fi
@@ -208,4 +225,4 @@ jobs:
           echo "- **Image Tag:** ${{ needs.setup.outputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Cluster:** ${{ env.ECS_CLUSTER }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Service:** ${{ steps.vars.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
