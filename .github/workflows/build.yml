@@ -2,9 +2,9 @@ name: Build Module Images
 
 on:
   push:
-    branches: [main, ses]
+    branches: [main, development]
   pull_request:
-    branches: [main, ses]
+    branches: [main, development]
 
 permissions:
   contents: read

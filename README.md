@@ -39,20 +39,20 @@ API available at `https://localhost:5001` with Swagger UI.
 
 ## Branching Strategy
 
-Git Flow with `ses` as the integration branch. Feature branches merge to `ses`, which deploys to staging. Production releases merge from `ses` to `main`.
+Git Flow with `development` as the integration branch. Feature branches merge to `development`, which deploys to staging. Production releases merge from `development` to `main`.
 
 ```
-feature/PROJ-123 ──→ ses ──→ main
-                       │        │
-                       ▼        ▼
-                   staging  production
+feature/PROJ-123 ──→ development ──→ main
+                           │            │
+                           ▼            ▼
+                       staging     production
 ```
 
 ### Environment Mapping
 
 | Branch | Environments | Purpose |
 |--------|--------------|---------|
-| `ses` | staging | Integration testing, QA validation |
+| `development` | staging | Integration testing, QA validation |
 | `main` | production | Live releases |
 
 ### Branch Naming
@@ -79,28 +79,37 @@ test: add integration tests for product creation
 
 ```bash
 # Start feature work
-git checkout ses && git pull
+git checkout development && git pull
 git checkout -b feature/PROJ-123
 
-# Push and create PR to ses
+# Push and create PR to development
 git push -u origin feature/PROJ-123
 
-# After merge to ses, cleanup
-git checkout ses && git pull
+# After merge to development, cleanup
+git checkout development && git pull
 git branch -d feature/PROJ-123
 
-# Production release (from ses to main)
+# Production release (from development to main)
 git checkout main && git pull
-git merge ses
+git merge development
 git push
 ```
+
+### Merge Strategy: Squash and Merge
+
+**All PRs must use "Squash and Merge"** for a clean, linear commit history.
+
+- One commit per PR in the target branch
+- PR title becomes the commit message (follow conventional commit format)
+- Easy rollback: revert one commit to undo an entire feature
+- See [BRANCHING.md](ModularTemplate/BRANCHING.md) for detailed guidelines
 
 ### Branch Protection
 
 | Branch | Rules |
 |--------|-------|
-| `ses` | Require PR approval, passing CI, no direct commits |
-| `main` | Require PR approval, passing CI, merges from `ses` only |
+| `development` | Require PR approval, passing CI, squash merge only, no direct commits |
+| `main` | Require PR approval, passing CI, squash merge only, merges from `development` only |
 
 ### Required GitHub Secrets
 
@@ -117,7 +126,7 @@ For CI/CD deployment to work, configure these secrets in your repository:
 GitHub Actions automates build, test, and deployment:
 
 ### Build & Test (`build.yml`)
-- Triggers on push/PR to `main` and `ses` branches
+- Triggers on push/PR to `main` and `development` branches
 - Runs build and tests with code coverage collection
 - Posts coverage report as PR comment (thresholds: 50% warning, 75% passing)
 - On `main` push: builds Docker images per module via matrix strategy
