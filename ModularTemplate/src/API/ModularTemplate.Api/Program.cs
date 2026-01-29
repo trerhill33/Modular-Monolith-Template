@@ -129,24 +129,7 @@ app.ApplyMigrations(
 var apiVersionSet = app.CreateApiVersionSet();
 
 // Serilog request logging
-app.UseSerilogRequestLogging(options =>
-{
-    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-    {
-        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? "unknown");
-        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-        diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
-
-        if (httpContext.User.Identity?.IsAuthenticated == true)
-        {
-            var userId = httpContext.User.FindFirst("sub")?.Value;
-            if (userId is not null)
-            {
-                diagnosticContext.Set("UserId", userId);
-            }
-        }
-    };
-});
+app.UseSerilogRequestLogging();
 
 app.UseOpenApiVersioned(modules);
 app.MapHealthCheckEndpoint();
