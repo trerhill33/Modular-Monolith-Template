@@ -1,17 +1,18 @@
 # Data Infrastructure
 
-## Why No DbContext Here?
+## DbContext Architecture
 
-Each **module owns its own DbContext and database schema**. This is by design:
+This folder contains `ModuleDbContext<TContext>` - the **abstract base class** that all module DbContexts inherit from. It provides common infrastructure (outbox, inbox, audit tables).
 
+Each **module owns its own concrete DbContext** inheriting from this base:
+```
+src/Modules/{ModuleName}/.../Persistence/{ModuleName}DbContext.cs : ModuleDbContext<T>
+```
+
+Why per-module DbContexts?
 - Modules are isolated bounded contexts with their own data
-- Teams can evolve their schemas independently
+- Teams can evolve schemas independently
 - Modules can be extracted to microservices without shared database coupling
-
-Look for DbContexts in each module's Infrastructure layer:
-```
-src/Modules/{ModuleName}/ModularTemplate.Modules.{ModuleName}.Infrastructure/Persistence/
-```
 
 ## What's in This Folder?
 
