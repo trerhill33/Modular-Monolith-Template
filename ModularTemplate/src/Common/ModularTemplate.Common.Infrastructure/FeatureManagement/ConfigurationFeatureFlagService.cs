@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using ModularTemplate.Common.Application.Features;
 
-namespace ModularTemplate.Common.Infrastructure.Features;
+namespace ModularTemplate.Common.Infrastructure.FeatureManagement;
 
 /// <summary>
 /// Feature flag service that reads feature flags from IConfiguration.

@@ -1,4 +1,4 @@
-namespace ModularTemplate.Common.Infrastructure.Features;
+namespace ModularTemplate.Common.Infrastructure.FeatureManagement;
 
 /// <summary>
 /// Configuration paths for infrastructure-level feature flags.

@@ -6,7 +6,7 @@ using ModularTemplate.Common.Application.Features;
 using ModularTemplate.Common.Application.Persistence;
 using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Domain.Events;
-using ModularTemplate.Common.Infrastructure.Features;
+using ModularTemplate.Common.Infrastructure.FeatureManagement;
 using ModularTemplate.Common.Infrastructure.Messaging;
 using ModularTemplate.Common.Infrastructure.Outbox.Handler;
 using ModularTemplate.Common.Infrastructure.Serialization;

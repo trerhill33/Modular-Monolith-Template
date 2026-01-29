@@ -74,38 +74,7 @@ builder.Services
     .AddGlobalExceptionHandling()
     .AddApiVersioningServices()
     .AddOpenApiVersioned(builder.Configuration["Application:DisplayName"] ?? "API", modules)
-    .AddCors(options =>
-    {
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
-
-        options.AddDefaultPolicy(policy =>
-        {
-            if (allowedOrigins.Length > 0)
-            {
-                policy
-                    .WithOrigins(allowedOrigins)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            }
-            else if (builder.Environment.IsDevelopment())
-            {
-                // Only allow any origin in development when no origins configured
-                policy
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }
-            else
-            {
-                // In production with no configured origins, deny all cross-origin requests
-                policy
-                    .WithOrigins("https://localhost") // Effectively blocks CORS
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }
-        });
-    })
+    .AddCorsServices(builder.Configuration, builder.Environment)
     .AddHealthChecks(databaseConnectionString, cacheConnectionString)
     .AddGranularHealthChecks(builder.Configuration)
     .AddRateLimiting(builder.Configuration);

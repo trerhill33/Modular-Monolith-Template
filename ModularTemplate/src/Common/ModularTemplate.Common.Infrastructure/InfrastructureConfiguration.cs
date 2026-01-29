@@ -1,30 +1,19 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using ModularTemplate.Common.Application.Auditing;
-using ModularTemplate.Common.Application.Caching;
-using ModularTemplate.Common.Application.Features;
-using ModularTemplate.Common.Application.Identity;
 using ModularTemplate.Common.Application.Persistence;
-using ModularTemplate.Common.Domain;
 using ModularTemplate.Common.Infrastructure.Application;
 using ModularTemplate.Common.Infrastructure.Auditing;
-using ModularTemplate.Common.Infrastructure.Auditing.Interceptors;
 using ModularTemplate.Common.Infrastructure.Authentication;
 using ModularTemplate.Common.Infrastructure.Authorization;
 using ModularTemplate.Common.Infrastructure.Caching;
 using ModularTemplate.Common.Infrastructure.Clock;
 using ModularTemplate.Common.Infrastructure.EventBus;
-using ModularTemplate.Common.Infrastructure.Features;
-using ModularTemplate.Common.Infrastructure.Identity;
-using ModularTemplate.Common.Infrastructure.Outbox.Persistence;
+using ModularTemplate.Common.Infrastructure.FeatureManagement;
 using ModularTemplate.Common.Infrastructure.Persistence;
+using ModularTemplate.Common.Infrastructure.Quartz;
 using ModularTemplate.Common.Infrastructure.Resilience;
 using Npgsql;
-using Quartz;
-using StackExchange.Redis;
 
 namespace ModularTemplate.Common.Infrastructure;
 
@@ -47,66 +36,19 @@ public static class InfrastructureConfiguration
         // Note: ApplicationOptions must be registered before this via AddApplicationOptions()
         services.ConfigureOptions<ConfigureAwsMessagingOptions>();
 
-        services.AddAuthenticationInternal(configuration);
-        services.AddAuthorizationInternal();
-
+        // Each feature registers itself via its Startup class
         services
-            .AddCoreServices()
-            .AddResilienceOptions(configuration)
-            .AddFeatureFlags(configuration)
+            .AddClockServices()
+            .AddResilienceServices(configuration)
+            .AddFeatureManagementServices(configuration)
             .AddAuditingServices()
-            .AddPostgreSql(databaseConnectionString)
-            .AddQuartzScheduler()
-            .AddCaching(configuration, redisConnectionString)
-            .AddMessaging(configuration, environment);
+            .AddPersistenceServices(databaseConnectionString)
+            .AddQuartzServices()
+            .AddCachingServices(configuration, redisConnectionString)
+            .AddMessagingServices(configuration, environment)
+            .AddAuthenticationServices(configuration)
+            .AddAuthorizationServices();
 
-        return services;
-    }
-
-    private static IServiceCollection AddResilienceOptions(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddOptions<ResilienceOptions>()
-            .Bind(configuration.GetSection(ResilienceOptions.SectionName))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        return services;
-    }
-
-    private static IServiceCollection AddCoreServices(this IServiceCollection services)
-    {
-        services.TryAddSingleton<IDateTimeProvider, DateTimeProvider>();
-        return services;
-    }
-
-    private static IServiceCollection AddFeatureFlags(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.TryAddSingleton<IFeatureFlagService>(sp =>
-            new ConfigurationFeatureFlagService(configuration));
-        return services;
-    }
-
-    private static IServiceCollection AddAuditingServices(this IServiceCollection services)
-    {
-        services.AddHttpContextAccessor();
-        services.TryAddScoped<ICurrentUserService, CurrentUserService>();
-        services.TryAddScoped<AuditableEntitiesInterceptor>();
-        services.TryAddScoped<SoftDeleteInterceptor>();
-        services.TryAddSingleton<InsertOutboxMessagesInterceptor>();
-        services.TryAddScoped<ICacheWriteScope, CacheWriteScope>();
-        services.TryAddScoped<CacheWriteGuardInterceptor>();
-
-        // Audit trail services
-        services.TryAddScoped<AuditTrailInterceptor>();
-        services.TryAddScoped<IAuditContext, AuditContext>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddPostgreSql(this IServiceCollection services, string connectionString)
-    {
-        var npgsqlDataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
-        services.TryAddSingleton(npgsqlDataSource);
         return services;
     }
 
@@ -129,56 +71,5 @@ public static class InfrastructureConfiguration
         });
 
         return services;
-    }
-
-    private static IServiceCollection AddQuartzScheduler(this IServiceCollection services)
-    {
-        services.AddQuartz(configurator =>
-        {
-            var scheduler = Guid.NewGuid();
-            configurator.SchedulerId = $"default-id-{scheduler}";
-            configurator.SchedulerName = $"default-name-{scheduler}";
-        });
-
-        services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
-        return services;
-    }
-
-    private static IServiceCollection AddCaching(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        string redisConnectionString)
-    {
-        services.AddOptions<CachingOptions>()
-            .Bind(configuration.GetSection(CachingOptions.SectionName))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        try
-        {
-            IConnectionMultiplexer connectionMultiplexer = ConnectionMultiplexer.Connect(redisConnectionString);
-            services.AddSingleton(connectionMultiplexer);
-            services.AddStackExchangeRedisCache(options =>
-                options.ConnectionMultiplexerFactory = () => Task.FromResult(connectionMultiplexer));
-        }
-        catch (Exception ex)
-        {
-            LogRedisFallback(ex, redisConnectionString);
-            services.AddDistributedMemoryCache();
-        }
-
-        services.TryAddScoped<ICacheService, CacheService>();
-        return services;
-    }
-
-    private static void LogRedisFallback(Exception ex, string connectionString)
-    {
-        using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var logger = loggerFactory.CreateLogger("InfrastructureConfiguration");
-        logger.LogWarning(
-            ex,
-            "Failed to connect to Redis at '{ConnectionString}'. Falling back to in-memory distributed cache. " +
-            "This is not suitable for production multi-instance deployments",
-            connectionString);
     }
 }
