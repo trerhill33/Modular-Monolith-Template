@@ -1,5 +1,9 @@
 # ModularTemplate.Api - Modular Monolith Template
 
+[![Build](https://github.com/trerhill33/Modular-Monolith-Template/actions/workflows/build.yml/badge.svg)](https://github.com/trerhill33/Modular-Monolith-Template/actions/workflows/build.yml)
+![Line Coverage](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/trerhill33/Modular-Monolith-Template/main/coverage-report/Summary.json&query=$.summary.linecoverage&label=Line%20Coverage&suffix=%25)
+![Branch Coverage](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/trerhill33/Modular-Monolith-Template/main/coverage-report/Summary.json&query=$.summary.branchcoverage&label=Branch%20Coverage&suffix=%25)
+
 A production-ready .NET 10 modular monolith template with DDD, Clean Architecture, and CQRS.
 
 ## Features
@@ -101,6 +105,17 @@ dotnet ef database update \
 ## Code Coverage
 
 Coverage collected via Coverlet on PR. Thresholds: 50% warning, 75% passing.
+
+**PR Reports include:**
+- Summary with class/method breakdown
+- Delta summary showing coverage changes
+- Risk hotspots (complex code with low coverage)
+- Historical trends
+
+**Artifacts available:**
+- `coverage-report-html` - Interactive HTML report with drill-down to line level
+- `coverage-badges` - SVG badges for documentation
+- `coverage-history` - Historical data for trend analysis
 
 ```bash
 dotnet test --collect:"XPlat Code Coverage" --results-directory ./coverage
