@@ -10,16 +10,26 @@ COPY ModularTemplate/src/Common/ModularTemplate.Common.Domain/*.csproj ./Modular
 COPY ModularTemplate/src/Common/ModularTemplate.Common.Application/*.csproj ./ModularTemplate/src/Common/ModularTemplate.Common.Application/
 COPY ModularTemplate/src/Common/ModularTemplate.Common.Infrastructure/*.csproj ./ModularTemplate/src/Common/ModularTemplate.Common.Infrastructure/
 COPY ModularTemplate/src/Common/ModularTemplate.Common.Presentation/*.csproj ./ModularTemplate/src/Common/ModularTemplate.Common.Presentation/
-COPY ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Domain/*.csproj ./ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Domain/
-COPY ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Application/*.csproj ./ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Application/
-COPY ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure/*.csproj ./ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Infrastructure/
-COPY ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Presentation/*.csproj ./ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.Presentation/
-COPY ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/Sample/ModularTemplate.Modules.Sample.IntegrationEvents/
-COPY ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Domain/*.csproj ./ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Domain/
-COPY ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Application/*.csproj ./ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Application/
-COPY ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure/*.csproj ./ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Infrastructure/
-COPY ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Presentation/*.csproj ./ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.Presentation/
-COPY ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/Orders/ModularTemplate.Modules.Orders.IntegrationEvents/
+COPY ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Domain/*.csproj ./ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Domain/
+COPY ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Application/*.csproj ./ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Application/
+COPY ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Infrastructure/*.csproj ./ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Infrastructure/
+COPY ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Presentation/*.csproj ./ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.Presentation/
+COPY ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/Fees/ModularTemplate.Modules.Fees.IntegrationEvents/
+COPY ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Domain/*.csproj ./ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Domain/
+COPY ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Application/*.csproj ./ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Application/
+COPY ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Infrastructure/*.csproj ./ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Infrastructure/
+COPY ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Presentation/*.csproj ./ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.Presentation/
+COPY ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/Product/ModularTemplate.Modules.Product.IntegrationEvents/
+COPY ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Domain/*.csproj ./ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Domain/
+COPY ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Application/*.csproj ./ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Application/
+COPY ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Infrastructure/*.csproj ./ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Infrastructure/
+COPY ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Presentation/*.csproj ./ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.Presentation/
+COPY ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.IntegrationEvents/
+COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Domain/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Domain/
+COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Application/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Application/
+COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Infrastructure/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Infrastructure/
+COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Presentation/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Presentation/
+COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.IntegrationEvents/
 COPY ModularTemplate/src/Modules/Organization/ModularTemplate.Modules.Organization.Domain/*.csproj ./ModularTemplate/src/Modules/Organization/ModularTemplate.Modules.Organization.Domain/
 COPY ModularTemplate/src/Modules/Organization/ModularTemplate.Modules.Organization.Application/*.csproj ./ModularTemplate/src/Modules/Organization/ModularTemplate.Modules.Organization.Application/
 COPY ModularTemplate/src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure/*.csproj ./ModularTemplate/src/Modules/Organization/ModularTemplate.Modules.Organization.Infrastructure/
@@ -65,9 +75,5 @@ EXPOSE 8080
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "ModularTemplate.Api.dll"]
