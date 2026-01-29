@@ -4,10 +4,12 @@ Configuration-based feature toggles using `IConfiguration`.
 
 ## Two Tiers
 
-| Scope | Config File | Example Path |
-|-------|-------------|--------------|
-| Infrastructure | `appsettings.json` | `Features:Infrastructure:Outbox` |
-| Module | `modules.{module}.json` | `Sales:Features:CatalogV2Pagination` |
+| Scope | Config Location | Example Path |
+|-------|-----------------|--------------|
+| Infrastructure | `appsettings.json` under `Features:Infrastructure` | `Features:Infrastructure:Outbox` |
+| Module | `appsettings.json` under `{ModuleName}:Features` | `SampleSales:Features:CatalogV2Pagination` |
+
+> **Note**: Module-specific config files (`modules.{module}.json`) do not currently exist. All configuration is in the main `appsettings.json` file.
 
 ## Infrastructure Features
 
@@ -39,11 +41,11 @@ Global flags in `appsettings.json`:
 
 ## Module Features
 
-Per-module flags in `modules.{module}.json`:
+Module flags are configured in `appsettings.json` under `{ModuleName}:Features`:
 
 ```json
 {
-  "Sales": {
+  "SampleSales": {
     "Features": {
       "CatalogV2Pagination": true,
       "BulkCreateProducts": false
@@ -52,12 +54,14 @@ Per-module flags in `modules.{module}.json`:
 }
 ```
 
+**Naming Convention**: Module feature paths use the actual module name as the prefix (e.g., `SampleSales:`, `SampleOrders:`, `Customer:`), not abbreviated or generic names.
+
 **Define in module**:
 ```csharp
-public static class SalesFeatures
+public static class SampleSalesFeatures
 {
-    public const string CatalogV2Pagination = "Sales:Features:CatalogV2Pagination";
-    public const string BulkCreateProducts = "Sales:Features:BulkCreateProducts";
+    public const string CatalogV2Pagination = "SampleSales:Features:CatalogV2Pagination";
+    public const string BulkCreateProducts = "SampleSales:Features:BulkCreateProducts";
 }
 ```
 
@@ -66,7 +70,7 @@ public static class SalesFeatures
 ### In Endpoints (returns 404 when disabled)
 ```csharp
 group.MapGet("/v2/products", GetAllV2Async)
-    .RequireFeature(SalesFeatures.CatalogV2Pagination);
+    .RequireFeature(SampleSalesFeatures.CatalogV2Pagination);
 ```
 
 ### In Handlers
@@ -75,7 +79,7 @@ public class CreateProductHandler(IFeatureFlagService features)
 {
     public async Task<Result<Guid>> Handle(...)
     {
-        if (!await features.IsEnabledAsync(SalesFeatures.BulkCreateProducts))
+        if (!await features.IsEnabledAsync(SampleSalesFeatures.BulkCreateProducts))
             return Result.Failure(FeatureErrors.FeatureDisabled("BulkCreateProducts"));
 
         // Feature logic
@@ -98,4 +102,4 @@ if (!_featureFlags.IsEnabled(InfrastructureFeatures.Outbox))
 
 ## Microservice Extraction
 
-Module flags live in module-specific config files. When extracting a module to a microservice, its feature flags move with it.
+Module flags are namespaced under the module name in configuration. When extracting a module to a microservice, its feature flags can be moved to the microservice's own `appsettings.json` without path changes.

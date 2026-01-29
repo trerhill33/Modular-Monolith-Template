@@ -75,7 +75,7 @@ public sealed class Order : SoftDeletableEntity
 **What's Logged**:
 | Field | Description |
 |-------|-------------|
-| `EntityType` | Table/entity name |
+| `EntityName` | Table/entity name |
 | `EntityId` | Primary key value |
 | `Action` | Insert/Update/Delete/SoftDelete/Restore |
 | `OldValues` | Previous field values (JSON) |

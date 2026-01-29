@@ -1,19 +1,41 @@
 # Domain Layer
 
-The **Domain Layer** is the innermost layer of Clean Architecture. It contains the enterprise business rules and is completely independent of external concerns like databases, frameworks, or UI.
+The innermost layer of Clean Architecture containing enterprise business rules, completely independent of external concerns.
 
 ## What Belongs Here
 
 - **Entities** - Objects with identity that encapsulate business logic
 - **Value Objects** - Immutable objects defined by their attributes
-- **Domain Events** - Notifications that something meaningful happened in the domain
-- **Aggregates** - Clusters of entities and value objects treated as a single unit
-- **Repository Interfaces** - Abstractions for data persistence (implementations live in Infrastructure)
+- **Domain Events** - Notifications when something meaningful happens
+- **Aggregates** - Entity/value object clusters treated as a single unit
+- **Repository Interfaces** - Abstractions for persistence (implementations in Infrastructure)
 
-## Key Principle
+## Result Pattern
 
-> "The Domain Layer has no dependencies on other layers. It is the core of the application and contains the business logic that would exist regardless of the technology used."
-> — Robert C. Martin, *Clean Architecture*
+Functional error handling that avoids exceptions for expected failures.
+
+- `Result.Success()` / `Result.Success(value)` - Return success
+- `Result.Failure(error)` - Return failure with error details
+- `result.Match(onSuccess, onFailure)` - Handle both cases cleanly
+
+**Error Types:** `Error.Failure()`, `Error.Validation()`, `Error.NotFound()`, `Error.Problem()`, `Error.Conflict()`
+
+## Entity Base Classes
+
+- **AuditableEntity** - Tracks `CreatedByUserId`, `CreatedAtUtc`, `ModifiedByUserId`, `ModifiedAtUtc` (auto-populated by interceptor)
+- **SoftDeletableEntity** - Extends auditable with soft delete support; tracks `IsDeleted`, `DeletedAtUtc`, `DeletedByUserId`; includes `Restore()` method
+
+## Repository Interfaces
+
+- **IReadRepository<TEntity, TId>** - Read-only operations: `GetByIdAsync`, `GetAllAsync`
+- **IRepository<TEntity, TId>** - Extends read with write operations: `Add`, `Update`, `Remove`, etc.
+
+## Other Abstractions
+
+- **IDateTimeProvider** - Testable abstraction for `UtcNow`
+- **ICacheProjection** - Marker for cache entities with `LastSyncedAtUtc` tracking
+- **IAuditable** - Marker for field-level audit logging
+- **ISoftDeletable** - Marker for soft deletion support
 
 ## References
 

@@ -21,11 +21,12 @@ This guarantees **at-least-once delivery** - events are never lost even if the a
 |------|---------|
 | `OutboxOptions.cs` | Configuration (interval, batch size, max retries) |
 | `ProcessOutboxJobBase.cs` | Abstract base job - modules inherit from this |
+| `ConfigureProcessOutboxJob.cs` | Quartz job configuration helper |
 | `IdempotentDomainEventHandlerBase.cs` | Base decorator for idempotent handling |
 | `InsertOutboxMessagesInterceptor.cs` | EF interceptor that captures domain events |
 | `DomainEventHandlersFactory.cs` | Discovers handlers via reflection |
-| `Models/OutboxMessage.cs` | The outbox message entity |
-| `Models/OutboxMessageConsumer.cs` | Tracks which handlers processed each message |
+| `Persistence/OutboxMessage.cs` | The outbox message entity |
+| `Persistence/OutboxMessageConsumer.cs` | Tracks which handlers processed each message |
 | `Configurations/*.cs` | EF Core entity configurations |
 
 ## Retry & Dead Letter
@@ -35,6 +36,13 @@ Failed messages are retried with exponential backoff:
 - **Max retries:** 5 (configurable)
 - **Dead letter:** After max retries, message is marked processed with error
 
+## Feature Flag
+
+Outbox processing can be disabled via the `InfrastructureFeatures.Outbox` feature flag. When disabled, the background job will skip processing and log a debug message. This is useful for:
+- Temporarily pausing event processing during maintenance
+- Debugging event handling issues
+- Testing scenarios without event dispatch
+
 ## Module Implementation
 
-Each module provides a thin implementation inheriting from base classes. See any module's `Infrastructure/Outbox/README.md` for details.
+Each module provides a thin implementation inheriting from base classes. The module-specific `ProcessOutboxJob` class extends `ProcessOutboxJobBase` and configures the module's database context and event handlers.

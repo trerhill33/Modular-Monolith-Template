@@ -53,11 +53,17 @@ public static class ProductModule
         services.AddSqsPolling<EventBus.ProcessSqsJob>(environment);
 
         // Outbox pattern
-        services.Configure<OutboxOptions>(configuration.GetSection("Features:Messaging:Outbox"));
+        services.AddOptions<OutboxOptions>()
+            .Bind(configuration.GetSection("Messaging:Outbox"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.ConfigureOptions<ConfigureProcessOutboxJob<ProcessOutboxJob>>();
 
         // Inbox pattern
-        services.Configure<InboxOptions>(configuration.GetSection("Features:Messaging:Inbox"));
+        services.AddOptions<InboxOptions>()
+            .Bind(configuration.GetSection("Messaging:Inbox"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.ConfigureOptions<ConfigureProcessInboxJob<ProcessInboxJob>>();
 
         return services;

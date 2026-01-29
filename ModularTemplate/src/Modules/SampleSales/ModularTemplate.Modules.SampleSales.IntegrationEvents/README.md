@@ -1,69 +1,34 @@
-# Sales Integration Events
+# SampleSales Integration Events
 
-This project contains the public contracts (events) that the Sales module publishes for other modules to consume. This is the **only** project from the Sales module that other modules are allowed to reference.
+Public contracts (events) that SampleSales publishes for other modules to consume. This is the **only** project from SampleSales that other modules may reference.
 
 ## Event Flow
 
 ```
-Sales Module (Publisher)
-───────────────────────────────────────────────────────────────────
-Domain Layer          Application Layer              Infrastructure
-───────────────────────────────────────────────────────────────────
-Product.Create()
-  │
-  ▼
-ProductCreatedDomainEvent ──▶ ProductCreatedDomainEventHandler
-                                       │
-                                       ▼
-                             IEventBus.PublishAsync(
-                                ProductCreatedIntegrationEvent)
-                                       │
-                                       ▼
-                                       Outbox ──▶ Message Bus
+Publisher (SampleSales)                    Consumer (e.g., SampleOrders)
+───────────────────────────                ────────────────────────────────
+Domain Event                               Message Bus
+    │                                          │
+    ▼                                          ▼
+Domain Event Handler                       Inbox Table
+    │                                          │
+    ▼                                          ▼
+Outbox ──▶ Message Bus ──────────────────▶ ProcessInboxJob ──▶ Handler
 ```
 
-```
-Orders Module (Consumer)
-───────────────────────────────────────────────────────────────────
-Infrastructure                  Presentation Layer (ACL)
-───────────────────────────────────────────────────────────────────
-Message Bus
-  │
-  ▼
-IntegrationEventConsumer
-  │
-  ▼
-inbox_messages table
-  │
-  ▼
-ProcessInboxJob ──────────────▶ ProductCreatedIntegrationEventHandler
-                                  │
-                                  │ (updates local cache)
-                                  ▼
-                                IProductCacheWriter.UpsertAsync()
-```
+## Key Concepts
 
-## Cross-Module Communication Pattern
-
-The Sales module is the **source of truth** for product data. When products change:
-
-1. Sales module publishes integration events
-2. Orders module subscribes and updates its `ProductCache`
-3. Orders module can query products without direct dependency on Sales
-4. Eventual consistency is maintained via the inbox pattern
-
-This enables:
-- **Loose coupling** - No direct module dependencies
-- **Data sovereignty** - Each module owns its data
-- **Resilience** - Inbox pattern handles transient failures
+| Concept | Description |
+|---------|-------------|
+| **Source of Truth** | SampleSales owns product data; consumers maintain local caches |
+| **Loose Coupling** | Modules communicate via events, no direct dependencies |
+| **Eventual Consistency** | Inbox/Outbox pattern handles failures and retries |
 
 ## Dependency Rule
 
-This project has **NO dependencies** on other layers or modules. It is a pure contract package containing only:
-- Integration event record definitions
-- Shared primitive types if needed
-
 ```
+Other Modules ──▶ SampleSales.IntegrationEvents ◀── SampleSales Internal
+                  (this project)
 ┌─────────────────────────────────────────────────────────────────┐
 │                         Other Modules                           │
 │   (Can ONLY reference this IntegrationEvents project)           │
@@ -78,12 +43,14 @@ This project has **NO dependencies** on other layers or modules. It is a pure co
                               ▲
                               │ (publishes)
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Sales Module Internal                        │
+│                     Sales Module Internal                       │
 │   • Domain (domain events trigger integration events)           │
 │   • Application (handlers publish integration events)           │
 │   • Infrastructure (sends to message bus)                       │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+This project depends only on **Common.Application** for the `IntegrationEvent` base class.
 
 ## References
 
