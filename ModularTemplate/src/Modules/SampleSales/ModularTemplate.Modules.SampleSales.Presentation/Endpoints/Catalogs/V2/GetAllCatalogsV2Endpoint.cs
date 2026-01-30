@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using ModularTemplate.Common.Presentation.Endpoints;
-using ModularTemplate.Common.Presentation.Features;
+using ModularTemplate.Common.Presentation.FeatureManagement;
 using ModularTemplate.Common.Presentation.Results;
 using ModularTemplate.Modules.SampleSales.Application.Catalogs.GetCatalog;
 using ModularTemplate.Modules.SampleSales.Application.Catalogs.GetCatalogs;
-using ModularTemplate.Modules.SampleSales.Application.Features;
+using ModularTemplate.Modules.SampleSales.Application.FeatureManagement;
 
 namespace ModularTemplate.Modules.SampleSales.Presentation.Endpoints.Catalogs.V2;
 

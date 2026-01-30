@@ -1,17 +1,18 @@
 # Data Infrastructure
 
-## Why No DbContext Here?
+## DbContext Architecture
 
-Each **module owns its own DbContext and database schema**. This is by design:
+This folder contains `ModuleDbContext<TContext>` - the **abstract base class** that all module DbContexts inherit from. It provides common infrastructure (outbox, inbox, audit tables).
 
+Each **module owns its own concrete DbContext** inheriting from this base:
+```
+src/Modules/{ModuleName}/.../Persistence/{ModuleName}DbContext.cs : ModuleDbContext<T>
+```
+
+Why per-module DbContexts?
 - Modules are isolated bounded contexts with their own data
-- Teams can evolve their schemas independently
+- Teams can evolve schemas independently
 - Modules can be extracted to microservices without shared database coupling
-
-Look for DbContexts in each module's Infrastructure layer:
-```
-src/Modules/{ModuleName}/ModularTemplate.Modules.{ModuleName}.Infrastructure/Database/
-```
 
 ## What's in This Folder?
 
@@ -20,9 +21,30 @@ This folder contains **shared data infrastructure** used by all modules:
 | File | Purpose |
 |------|---------|
 | `DbConnectionFactory<TModule>.cs` | Creates module-specific database connections for Dapper queries |
+| `ModuleDbContext.cs` | Base DbContext for all modules with common infrastructure (outbox, inbox, audit) |
+| `ReadRepository.cs` | Generic read-only repository base class with expression-based ID lookup |
 | `Repository.cs` | Generic repository base class |
-| `AuditableEntityConfiguration.cs` | EF Core config for audit fields |
-| `SoftDeletableEntityConfiguration.cs` | EF Core config for soft delete |
+
+### Extension Methods in Auditing/Configurations/
+
+These are **static extension methods** (not traditional EF `IEntityTypeConfiguration` classes) that modules call in their entity configurations:
+
+| File | Purpose |
+|------|---------|
+| `AuditableEntityConfiguration.cs` | Extension method to configure audit fields (CreatedAtUtc, ModifiedAtUtc, etc.) |
+| `SoftDeletableEntityConfiguration.cs` | Extension method to configure soft delete fields and query filters |
+
+Usage in module entity configurations:
+```csharp
+public class MyEntityConfiguration : IEntityTypeConfiguration<MyEntity>
+{
+    public void Configure(EntityTypeBuilder<MyEntity> builder)
+    {
+        builder.ConfigureAuditProperties();      // From AuditableEntityConfiguration
+        builder.ConfigureSoftDeleteProperties(); // From SoftDeletableEntityConfiguration
+    }
+}
+```
 
 ## Database Connection Factory
 
@@ -119,4 +141,4 @@ dotnet ef migrations script \
   --output migrations.sql
 ```
 
-For detailed migration documentation, see each module's `Database/README.md`.
+For module-specific migration details, check each module's `Persistence/` folder.

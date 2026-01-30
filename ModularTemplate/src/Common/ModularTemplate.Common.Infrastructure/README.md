@@ -4,12 +4,13 @@ The **Infrastructure Layer** provides implementations for external concerns. It 
 
 ## What Belongs Here
 
-- **Repository Implementations** - Database access using EF Core, Dapper, etc.
-- **External Service Integrations** - Email, file storage, third-party APIs
-- **Message Bus / Event Publishing** - MassTransit, RabbitMQ integrations
+- **Repository Implementations** - Database access using EF Core with PostgreSQL/Npgsql
+- **AWS Event Infrastructure** - AWS EventBridge for event publishing, AWS SQS for event consumption
+- **Feature Management** - Configuration-based feature flags for controlling feature availability
 - **Caching** - Redis, in-memory cache implementations
-- **Background Jobs** - Quartz.NET job definitions
+- **Background Jobs** - Quartz.NET job definitions (SQS polling, inbox/outbox processing)
 - **Outbox/Inbox Pattern** - Reliable messaging implementations
+- **External Service Integrations** - Email, file storage, third-party APIs (planned)
 
 ## Key Principle
 

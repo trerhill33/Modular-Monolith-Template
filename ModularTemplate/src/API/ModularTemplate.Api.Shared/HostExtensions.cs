@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using ModularTemplate.Common.Infrastructure.Application;
 using ModularTemplate.Common.Presentation.Endpoints;
 
@@ -48,33 +47,9 @@ public static class HostExtensions
             builder.Services.AddOpenApiSimple(moduleName);
         }
 
-        // Exception handling
-        builder.Services.AddGlobalExceptionHandling();
-
-        // CORS - configured from appsettings, defaults to restrictive policy
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
-        builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policy =>
-            {
-                if (builder.Environment.IsDevelopment() && allowedOrigins.Length == 0)
-                {
-                    // Development fallback only - still requires explicit configuration in non-dev
-                    policy.SetIsOriginAllowed(_ => true)
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-                }
-                else if (allowedOrigins.Length > 0)
-                {
-                    policy.WithOrigins(allowedOrigins)
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-                }
-                // If no origins configured in non-dev, CORS will block all cross-origin requests
-            });
-        });
+        builder.Services
+            .AddGlobalExceptionHandling()
+            .AddCorsServices(builder.Configuration, builder.Environment);
 
         return builder;
     }

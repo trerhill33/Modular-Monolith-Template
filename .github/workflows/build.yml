@@ -40,30 +40,64 @@ jobs:
             --no-build \
             --configuration Release \
             --verbosity normal \
+            --collect:"XPlat Code Coverage" \
             --settings ModularTemplate/ModularTemplate.runsettings \
             --results-directory ./coverage
 
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
+      - name: Download Coverage History
+        uses: dawidd6/action-download-artifact@v3
         with:
-          filename: coverage/**/coverage.cobertura.xml
-          badge: true
-          format: markdown
-          output: both
-          thresholds: '50 75'
+          name: coverage-history
+          path: coverage-history
+          if_no_artifact_found: warn
+          workflow_conclusion: success
+          search_artifacts: true
+
+      - name: Generate Detailed Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: coverage/**/coverage.cobertura.xml
+          targetdir: coverage-report
+          historydir: coverage-history
+          reporttypes: 'Html;HtmlSummary;MarkdownSummaryGithub;MarkdownDeltaSummary;Badges;JsonSummary'
+          classfilters: '+*'
+          filefilters: '+*'
+          verbosity: 'Info'
+          riskhotspotassemblyfilters: '+*'
+          riskhotspotclassfilters: '+*'
+
+      - name: Upload Coverage History
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-history
+          path: coverage-history
+          retention-days: 90
 
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
         with:
-          recreate: true
-          path: code-coverage-results.md
+          header: detailed-coverage
+          path: coverage-report/SummaryGithub.md
 
-      - name: Upload Coverage Artifacts
+      - name: Add Delta Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request' && hashFiles('coverage-report/DeltaSummary.md') != ''
+        with:
+          header: delta-coverage
+          path: coverage-report/DeltaSummary.md
+
+      - name: Upload Detailed Coverage Report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: code-coverage-results.md
+          name: coverage-report-html
+          path: coverage-report
+
+      - name: Upload Coverage Badges
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-badges
+          path: coverage-report/badge_*.svg
 
   # ========================================
   # Build Docker Images (Matrix)
@@ -74,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: [SampleOrders, SampleSales, Customer, Organization]
+        module: [SampleOrders, SampleSales, Sales, Customer, Organization, Fees, Product]
 
     steps:
       - name: Checkout

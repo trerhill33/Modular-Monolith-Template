@@ -15,6 +15,7 @@ COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales
 COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Infrastructure/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Infrastructure/
 COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Presentation/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.Presentation/
 COPY ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/SampleSales/ModularTemplate.Modules.SampleSales.IntegrationEvents/
+COPY ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.IntegrationEvents/*.csproj ./ModularTemplate/src/Modules/SampleOrders/ModularTemplate.Modules.SampleOrders.IntegrationEvents/
 
 # Restore dependencies
 RUN dotnet restore ModularTemplate/src/API/ModularTemplate.Api.SampleSales/ModularTemplate.Api.SampleSales.csproj
@@ -45,9 +46,5 @@ EXPOSE 8080
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "ModularTemplate.Api.SampleSales.dll"]

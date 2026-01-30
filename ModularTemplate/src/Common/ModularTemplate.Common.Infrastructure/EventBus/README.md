@@ -78,8 +78,9 @@ internal sealed class ProcessSqsJob(
     IAmazonSQS sqsClient,
     IEventDispatcher eventDispatcher,
     IOptions<AwsMessagingOptions> options,
+    IFeatureFlagService featureFlagService,
     ILogger<ProcessSqsJob> logger)
-    : SqsPollingJobBase(sqsClient, eventDispatcher, options, logger)
+    : SqsPollingJobBase(sqsClient, eventDispatcher, options, featureFlagService, logger)
 {
     protected override string ModuleName => "MyModule";
 }
@@ -187,5 +188,3 @@ See [Resilience README](../Resilience/README.md) for full documentation.
 
 - [Resilience Patterns](../Resilience/README.md) - Circuit breaker, retry, timeout details
 - [Outbox Pattern](../Outbox/README.md) - Reliable event publishing
-- [Messaging Architecture](../../../../docs/architecture/MESSAGING.md) - Full architecture details
-- [EventBridge + SQS Roadmap](../../../../docs/architecture/EVENTBRIDGE-SQS-ROADMAP.md) - Implementation details

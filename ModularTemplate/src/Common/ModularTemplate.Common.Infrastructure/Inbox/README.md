@@ -21,12 +21,14 @@ This ensures **exactly-once processing** - even if the same event is delivered m
 | File | Purpose |
 |------|---------|
 | `InboxOptions.cs` | Configuration (interval, batch size, max retries) |
-| `ProcessInboxJobBase.cs` | Abstract base job - modules inherit from this |
+| `Job/ProcessInboxJobBase.cs` | Abstract base job - modules inherit from this |
+| `Job/ConfigureProcessInboxJob.cs` | Registers the inbox processing job with DI |
 | `IdempotentIntegrationEventHandlerBase.cs` | Base decorator for idempotent handling |
 | `IntegrationEventHandlersFactory.cs` | Discovers handlers via reflection |
-| `Models/InboxMessage.cs` | The inbox message entity |
-| `Models/InboxMessageConsumer.cs` | Tracks which handlers processed each message |
-| `Configurations/*.cs` | EF Core entity configurations |
+| `Persistence/InboxMessage.cs` | The inbox message entity |
+| `Persistence/InboxMessageConsumer.cs` | Tracks which handlers processed each message |
+| `Persistence/InboxMessageConfiguration.cs` | EF Core entity configuration for InboxMessage |
+| `Persistence/InboxMessageConsumerConfiguration.cs` | EF Core entity configuration for InboxMessageConsumer |
 
 ## Retry & Dead Letter
 
@@ -37,4 +39,4 @@ Failed messages are retried with exponential backoff:
 
 ## Module Implementation
 
-Each module provides a thin implementation inheriting from base classes. See any module's `Infrastructure/Inbox/README.md` for details.
+Each module provides a thin implementation inheriting from `ProcessInboxJobBase`. See any module's `Infrastructure/Inbox/ProcessInboxJob.cs` for an example.

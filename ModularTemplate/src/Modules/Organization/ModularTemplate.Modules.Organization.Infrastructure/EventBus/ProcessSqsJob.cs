@@ -2,7 +2,7 @@ using Amazon.SQS;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ModularTemplate.Common.Application.EventBus;
-using ModularTemplate.Common.Application.Features;
+using ModularTemplate.Common.Application.FeatureManagement;
 using ModularTemplate.Common.Infrastructure.EventBus.Aws;
 
 namespace ModularTemplate.Modules.Organization.Infrastructure.EventBus;

@@ -26,7 +26,6 @@ namespace ModularTemplate.Common.Infrastructure.Application;
 ///   <item>EventBusName: {ShortName}-events (e.g., "acme-orders-events")</item>
 ///   <item>EventSource: dot notation (e.g., "acme.orders")</item>
 ///   <item>Auth Audience: {ShortName}-api (e.g., "acme-orders-api")</item>
-///   <item>Keycloak Realm: {ShortName} (e.g., "acme-orders")</item>
 /// </list>
 /// </para>
 /// </remarks>
