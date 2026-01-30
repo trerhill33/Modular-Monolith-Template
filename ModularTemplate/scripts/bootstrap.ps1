@@ -399,7 +399,6 @@ if ($DryRun) {
     - EventBusName:   $($Names.ShortName)-events
     - EventSource:    $($Names.LowerDot)
     - Auth Audience:  $($Names.ShortName)-api
-    - Keycloak Realm: $($Names.ShortName)
 
 "@ -ForegroundColor White
 }

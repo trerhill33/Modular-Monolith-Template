@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace ModularTemplate.Common.Infrastructure.Authentication;
 
 /// <summary>
-/// Authentication configuration options.
+/// Authentication configuration options for OpenID Connect / OAuth 2.0.
 /// </summary>
 /// <remarks>
-/// Values can be explicitly set or derived from <c>Application</c> settings.
+/// Supports Azure AD, Auth0, Okta, or any OIDC-compliant provider.
 /// <list type="bullet">
 ///   <item><c>Audience</c>: Defaults to {Application:ShortName}-api</item>
-///   <item><c>KeycloakRealm</c>: Defaults to {Application:ShortName}</item>
+///   <item><c>Authority</c>: The identity provider URL (e.g., https://login.microsoftonline.com/{tenant-id}/v2.0)</item>
 /// </list>
 /// </remarks>
 public sealed class AuthenticationOptions : IValidatableObject
@@ -21,41 +21,52 @@ public sealed class AuthenticationOptions : IValidatableObject
 
     /// <summary>
     /// Gets or sets the JWT audience claim.
+    /// For Azure AD, this is typically the Application ID URI or client ID.
     /// If not set, derived from Application:ShortName with "-api" suffix.
     /// </summary>
     public string Audience { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the OpenID Connect metadata address.
+    /// Gets or sets the identity provider authority URL.
+    /// For Azure AD: https://login.microsoftonline.com/{tenant-id}/v2.0
+    /// For Auth0: https://{domain}
     /// </summary>
-    public string MetadataAddress { get; set; } = string.Empty;
+    public string Authority { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the Keycloak base URL (e.g., "http://localhost:8080").
-    /// Used to construct MetadataAddress if not explicitly set.
+    /// Gets or sets the Azure AD tenant ID (optional, for Azure AD convenience).
+    /// If set, Authority is derived automatically.
     /// </summary>
-    public string KeycloakBaseUrl { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the Keycloak realm name.
-    /// If not set, derived from Application:ShortName.
-    /// </summary>
-    public string KeycloakRealm { get; set; } = string.Empty;
+    public string TenantId { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets whether HTTPS is required for metadata retrieval.
     /// </summary>
     public bool RequireHttpsMetadata { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets whether to validate the issuer.
+    /// </summary>
+    public bool ValidateIssuer { get; set; } = true;
+
+    /// <summary>
+    /// Gets the effective authority, deriving from TenantId if Authority is not set.
+    /// </summary>
+    public string GetAuthority() =>
+        !string.IsNullOrEmpty(Authority)
+            ? Authority
+            : !string.IsNullOrEmpty(TenantId)
+                ? $"https://login.microsoftonline.com/{TenantId}/v2.0"
+                : string.Empty;
+
     /// <inheritdoc />
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        // KeycloakBaseUrl is required if MetadataAddress is not set
-        if (string.IsNullOrWhiteSpace(MetadataAddress) && string.IsNullOrWhiteSpace(KeycloakBaseUrl))
+        if (string.IsNullOrWhiteSpace(Authority) && string.IsNullOrWhiteSpace(TenantId))
         {
             yield return new ValidationResult(
-                "Either MetadataAddress or KeycloakBaseUrl must be configured.",
-                [nameof(MetadataAddress), nameof(KeycloakBaseUrl)]);
+                "Either Authority or TenantId must be configured.",
+                [nameof(Authority), nameof(TenantId)]);
         }
     }
 }

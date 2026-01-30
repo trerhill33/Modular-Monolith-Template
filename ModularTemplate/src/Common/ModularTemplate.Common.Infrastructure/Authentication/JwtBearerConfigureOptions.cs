@@ -1,15 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ModularTemplate.Common.Infrastructure.Authentication;
 
 /// <summary>
 /// Configures JWT Bearer authentication options from <see cref="AuthenticationOptions"/>.
 /// </summary>
-/// <remarks>
-/// Uses the post-configured <see cref="AuthenticationOptions"/> which derives values
-/// from <c>Application</c> settings when not explicitly set.
-/// </remarks>
 internal sealed class JwtBearerConfigureOptions(IOptions<AuthenticationOptions> authOptions)
     : IConfigureNamedOptions<JwtBearerOptions>
 {
@@ -20,7 +17,9 @@ internal sealed class JwtBearerConfigureOptions(IOptions<AuthenticationOptions> 
     public void Configure(string? name, JwtBearerOptions options)
     {
         options.Audience = _authOptions.Audience;
-        options.MetadataAddress = _authOptions.MetadataAddress;
+        options.Authority = _authOptions.GetAuthority();
         options.RequireHttpsMetadata = _authOptions.RequireHttpsMetadata;
+        options.TokenValidationParameters ??= new TokenValidationParameters();
+        options.TokenValidationParameters.ValidateIssuer = _authOptions.ValidateIssuer;
     }
 }

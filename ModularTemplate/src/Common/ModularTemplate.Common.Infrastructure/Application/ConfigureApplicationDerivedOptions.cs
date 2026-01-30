@@ -50,18 +50,5 @@ public sealed class ConfigureAuthenticationOptions(IOptions<ApplicationOptions> 
         {
             options.Audience = $"{_app.ShortName}-api";
         }
-
-        // Derive KeycloakRealm from ShortName if not explicitly set
-        if (string.IsNullOrEmpty(options.KeycloakRealm))
-        {
-            options.KeycloakRealm = _app.ShortName;
-        }
-
-        // Derive MetadataAddress from KeycloakBaseUrl and KeycloakRealm if not explicitly set
-        if (string.IsNullOrEmpty(options.MetadataAddress))
-        {
-            options.MetadataAddress =
-                $"{options.KeycloakBaseUrl}/realms/{options.KeycloakRealm}/.well-known/openid-configuration";
-        }
     }
 }
