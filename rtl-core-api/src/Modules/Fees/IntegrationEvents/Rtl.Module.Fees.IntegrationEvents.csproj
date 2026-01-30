@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Rtl.Module.Fees.IntegrationEvents</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Application\Rtl.Core.Application.csproj" />
+  </ItemGroup>
+
+</Project>

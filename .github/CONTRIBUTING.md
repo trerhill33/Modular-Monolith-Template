@@ -1,6 +1,6 @@
 # Contributing Guide
 
-This document outlines the branch strategy, protection rules, and deployment process for the ModularTemplate project.
+This document outlines the branch strategy, protection rules, and deployment process for the Retail Core project.
 
 ---
 
@@ -189,13 +189,13 @@ git push -u origin feature/my-feature
 
 | Module | ECR Image | ECS Service |
 |--------|-----------|-------------|
-| SampleOrders | `modular-api-sampleorders` | `sampleorders-service` |
-| SampleSales | `modular-api-samplesales` | `samplesales-service` |
-| Sales | `modular-api-sales` | `sales-service` |
-| Customer | `modular-api-customer` | `customer-service` |
-| Organization | `modular-api-organization` | `organization-service` |
-| Fees | `modular-api-fees` | `fees-service` |
-| Product | `modular-api-product` | `product-service` |
+| SampleOrders | `rtl-core-api-sampleorders` | `sampleorders-service` |
+| SampleSales | `rtl-core-api-samplesales` | `samplesales-service` |
+| Sales | `rtl-core-api-sales` | `sales-service` |
+| Customer | `rtl-core-api-customer` | `customer-service` |
+| Organization | `rtl-core-api-organization` | `organization-service` |
+| Fees | `rtl-core-api-fees` | `fees-service` |
+| Product | `rtl-core-api-product` | `product-service` |
 
 ---
 

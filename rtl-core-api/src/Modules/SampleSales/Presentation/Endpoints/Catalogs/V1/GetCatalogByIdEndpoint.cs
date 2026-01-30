@@ -1,0 +1,36 @@
+using Asp.Versioning;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Rtl.Core.Presentation.Endpoints;
+using Rtl.Core.Presentation.Results;
+using Rtl.Module.SampleSales.Application.Catalogs.GetCatalog;
+
+namespace Rtl.Module.SampleSales.Presentation.Endpoints.Catalogs.V1;
+
+internal sealed class GetCatalogByIdEndpoint : IEndpoint
+{
+    public void MapEndpoint(RouteGroupBuilder group)
+    {
+        group.MapGet("/{catalogId:guid}", GetCatalogByIdAsync)
+            .WithSummary("Get a catalog by ID")
+            .WithDescription("Retrieves a catalog by its unique identifier.")
+            .MapToApiVersion(new ApiVersion(1, 0))
+            .Produces<CatalogResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
+    }
+
+    private static async Task<IResult> GetCatalogByIdAsync(
+        Guid catalogId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetCatalogQuery(catalogId);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.Match(Results.Ok, ApiResults.Problem);
+    }
+}

@@ -1,0 +1,35 @@
+using Rtl.Core.Application.Messaging;
+using Rtl.Core.Domain.Results;
+using Rtl.Module.SampleSales.Domain.Products;
+
+namespace Rtl.Module.SampleSales.Application.Products.GetProduct;
+
+internal sealed class GetProductQueryHandler(IProductRepository productRepository)
+    : IQueryHandler<GetProductQuery, ProductResponse>
+{
+    public async Task<Result<ProductResponse>> Handle(
+        GetProductQuery request,
+        CancellationToken cancellationToken)
+    {
+        Product? product = await productRepository.GetByIdAsync(
+            request.ProductId,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return Result.Failure<ProductResponse>(ProductErrors.NotFound(request.ProductId));
+        }
+
+        return new ProductResponse(
+            product.Id,
+            product.Name,
+            product.Description,
+            product.Price.Amount,
+            product.Price.Currency,
+            product.IsActive,
+            product.CreatedAtUtc,
+            product.CreatedByUserId,
+            product.ModifiedAtUtc,
+            product.ModifiedByUserId);
+    }
+}

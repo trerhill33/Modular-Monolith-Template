@@ -1,0 +1,8 @@
+using System.Reflection;
+
+namespace Rtl.Module.Product.IntegrationEvents;
+
+public static class AssemblyReference
+{
+    public static readonly Assembly Assembly = typeof(AssemblyReference).Assembly;
+}

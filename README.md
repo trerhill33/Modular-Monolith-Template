@@ -1,18 +1,18 @@
-# ModularTemplate
+# Retail Core (Rtl.Core)
 
-A production-ready .NET 10 modular monolith template implementing Domain-Driven Design (DDD), Clean Architecture, and CQRS patterns.
+A production-ready .NET 10 modular monolith implementing Domain-Driven Design (DDD), Clean Architecture, and CQRS patterns.
 
 ## Quick Start
 
 ```bash
 # Build
-dotnet build ModularTemplate/ModularTemplate.Api.sln
+dotnet build rtl-core-api/Rtl.Core.Api.sln
 
 # Test
-dotnet test ModularTemplate/ModularTemplate.Api.sln
+dotnet test rtl-core-api/Rtl.Core.Api.sln
 
 # Run
-dotnet run --project ModularTemplate/src/API/ModularTemplate.Api
+dotnet run --project rtl-core-api/src/Api/Host/Rtl.Core.Api.csproj
 ```
 
 API available at `https://localhost:5001` with Swagger UI.
@@ -21,14 +21,14 @@ API available at `https://localhost:5001` with Swagger UI.
 
 | Document | Description |
 |----------|-------------|
-| [Technical Docs](ModularTemplate/README.md) | Architecture, patterns, migrations, module creation |
+| [Technical Docs](rtl-core-api/README.md) | Architecture, patterns, migrations, module creation |
 
 ## Repository Structure
 
 ```
-├── ModularTemplate/
+├── rtl-core-api/
 │   ├── src/
-│   │   ├── API/                    # Web API host
+│   │   ├── Api/                    # Web API hosts
 │   │   ├── Common/                 # Shared kernel (Domain, Application, Infrastructure, Presentation)
 │   │   └── Modules/                # Business modules (Orders, Sales, Customer, Organization, Sample)
 │   └── test/                       # Architecture tests
@@ -100,7 +100,7 @@ git push
 - One commit per PR in the target branch
 - PR title becomes the commit message (follow conventional commit format)
 - Easy rollback: revert one commit to undo an entire feature
-- See [BRANCHING.md](ModularTemplate/BRANCHING.md) for detailed guidelines
+- See [BRANCHING.md](rtl-core-api/BRANCHING.md) for detailed guidelines
 
 ### Branch Protection
 

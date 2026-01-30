@@ -40,7 +40,7 @@ permissions:
   contents: read
 
 env:
-  ECS_CLUSTER: modular-cluster
+  ECS_CLUSTER: rtl-core-cluster
 
 jobs:
   # ========================================
@@ -159,7 +159,7 @@ jobs:
           echo "service_name=${MODULE_LOWER}-service" >> $GITHUB_OUTPUT
           echo "task_family=${MODULE_LOWER}-task" >> $GITHUB_OUTPUT
           echo "container_name=${MODULE_LOWER}-api" >> $GITHUB_OUTPUT
-          echo "image_name=modular-api-${MODULE_LOWER}" >> $GITHUB_OUTPUT
+          echo "image_name=rtl-core-api-${MODULE_LOWER}" >> $GITHUB_OUTPUT
 
       - name: Download current task definition
         run: |

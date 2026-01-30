@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Rtl.Module.Customer.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Infrastructure\Rtl.Core.Infrastructure.csproj" />
+    <ProjectReference Include="..\Application\Rtl.Module.Customer.Application.csproj" />
+    <ProjectReference Include="..\Presentation\Rtl.Module.Customer.Presentation.csproj" />
+  </ItemGroup>
+
+</Project>

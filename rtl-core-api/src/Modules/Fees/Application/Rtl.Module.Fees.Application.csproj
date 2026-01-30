@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Rtl.Module.Fees.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Application\Rtl.Core.Application.csproj" />
+    <ProjectReference Include="..\Domain\Rtl.Module.Fees.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

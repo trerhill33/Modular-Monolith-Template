@@ -29,19 +29,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore ModularTemplate/ModularTemplate.Api.sln
+        run: dotnet restore rtl-core-api/Rtl.Core.Api.sln
 
       - name: Build
-        run: dotnet build ModularTemplate/ModularTemplate.Api.sln --no-restore --configuration Release
+        run: dotnet build rtl-core-api/Rtl.Core.Api.sln --no-restore --configuration Release
 
       - name: Test with Coverage
         run: |
-          dotnet test ModularTemplate/ModularTemplate.Api.sln \
+          dotnet test rtl-core-api/Rtl.Core.Api.sln \
             --no-build \
             --configuration Release \
             --verbosity normal \
             --collect:"XPlat Code Coverage" \
-            --settings ModularTemplate/ModularTemplate.runsettings \
+            --settings rtl-core-api/Rtl.Core.runsettings \
             --results-directory ./coverage
 
       - name: Download Coverage History
@@ -132,13 +132,13 @@ jobs:
         id: image-name
         run: |
           MODULE_LOWER=$(echo "${{ matrix.module }}" | tr '[:upper:]' '[:lower:]')
-          echo "name=modular-api-${MODULE_LOWER}" >> $GITHUB_OUTPUT
+          echo "name=rtl-core-api-${MODULE_LOWER}" >> $GITHUB_OUTPUT
 
       - name: Build and push ${{ matrix.module }} image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ModularTemplate/src/API/ModularTemplate.Api.${{ matrix.module }}/Dockerfile
+          file: rtl-core-api/src/Api/Host.${{ matrix.module }}/Dockerfile
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ steps.image-name.outputs.name }}:${{ github.sha }}
