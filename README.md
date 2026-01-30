@@ -22,7 +22,6 @@ API available at `https://localhost:5001` with Swagger UI.
 | Document | Description |
 |----------|-------------|
 | [Technical Docs](ModularTemplate/README.md) | Architecture, patterns, migrations, module creation |
-| [AI Assistant Guide](CLAUDE.md) | Claude Code setup, skills, and agents |
 
 ## Repository Structure
 
@@ -33,8 +32,7 @@ API available at `https://localhost:5001` with Swagger UI.
 │   │   ├── Common/                 # Shared kernel (Domain, Application, Infrastructure, Presentation)
 │   │   └── Modules/                # Business modules (Orders, Sales, Customer, Organization, Sample)
 │   └── test/                       # Architecture tests
-├── .github/workflows/              # CI/CD pipelines
-└── CLAUDE.md                       # AI assistant configuration
+└── .github/workflows/              # CI/CD pipelines
 ```
 
 ## Branching Strategy
